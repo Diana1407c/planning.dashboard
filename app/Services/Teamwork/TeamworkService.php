@@ -7,7 +7,7 @@ use App\Models\Project;
 
 class TeamworkService
 {
-    public static function getEngineers(){
+    public static function syncEngineers(){
         $engineers = (new TeamworkProxy())->getPeople();
 
         foreach ($engineers as $engineer) {
@@ -21,7 +21,7 @@ class TeamworkService
         }
     }
 
-    public static function getProjects(){
+    public static function syncProjects(){
         $projects = (new TeamworkProxy())->getProjects();
 
         foreach ($projects as $project) {

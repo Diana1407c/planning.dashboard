@@ -2,24 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\EngineerRequest;
-use App\Jobs\SyncTeamworkEngineers;
-use App\Models\Team;
-use App\Models\User;
+use App\Http\Requests\ProjectRequest;
+use App\Jobs\SyncTeamworkProjects;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Widget;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 
 /**
- * Class EngineerCrudController
+ * Class ProjectCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class EngineerCrudController extends CrudController
+class ProjectCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -34,15 +30,16 @@ class EngineerCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Engineer::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/engineer');
-        CRUD::setEntityNameStrings('engineer', 'engineers');
+        CRUD::setModel(\App\Models\Project::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/project');
+        CRUD::setEntityNameStrings('project', 'projects');
         $this->crud->denyAccess(['create', 'delete', 'update']);
     }
 
     /**
      * Define what happens when the List operation is loaded.
      *
+     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
     protected function setupListOperation()
@@ -53,31 +50,13 @@ class EngineerCrudController extends CrudController
             'route'    => $this->crud->route.'/sync',
         ]);
 
-        CRUD::column('first_name');
-        CRUD::column('last_name');
-        CRUD::column('email');
-        CRUD::column('username');
-
-        CRUD::addColumn([
-            'label' => 'Team',
-            'name'  => 'team_id',
-            'entity' => 'team',
-            'attribute' => 'name',
-            'model' => Team::class
-        ]);
-
-        CRUD::addColumn([
-            'label' => 'Related user',
-            'name'  => 'user_id',
-            'entity' => 'user',
-            'attribute' => 'name',
-            'model' => User::class
-        ]);
+        CRUD::column('name');
+        CRUD::column('status');
     }
 
     public function sync(): Application|\Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|RedirectResponse
     {
-        SyncTeamworkEngineers::dispatch();
+        SyncTeamworkProjects::dispatch();
 
         return redirect($this->crud->route);
     }

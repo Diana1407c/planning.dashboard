@@ -18,10 +18,17 @@ Route::group([
     'namespace'  => 'App\Http\Controllers\Admin',
 ], function () { // custom admin routes
     Route::crud('team', 'TeamCrudController');
+
     Route::crud('technology', 'TechnologyCrudController');
+
     Route::crud('engineer', 'EngineerCrudController');
+    Route::get('engineer/sync', 'EngineerCrudController@sync');
+
+    Route::crud('project', 'ProjectCrudController');
+    Route::get('project/sync', 'ProjectCrudController@sync');
 
     Route::get('team_lead_planning', 'TeamLeadPlanningController@index')
         ->name('page.team_lead_planning.index')
         ->middleware('inertia:team_lead_planning');
+
 }); // this should be the absolute last line of this file
