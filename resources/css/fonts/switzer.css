@@ -1,0 +1,217 @@
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-Variable.woff2') format('woff2'),
+    url('Switzer/Switzer-Variable.woff') format('woff'),
+    url('Switzer/Switzer-Variable.ttf') format('truetype');
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-VariableItalic.woff2') format('woff2'),
+    url('Switzer/Switzer-VariableItalic.woff') format('woff'),
+    url('Switzer/Switzer-VariableItalic.ttf') format('truetype');
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-Thin.woff2') format('woff2'),
+    url('Switzer/Switzer-Thin.woff') format('woff'),
+    url('Switzer/Switzer-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-display: swap;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-ThinItalic.woff2') format('woff2'),
+    url('Switzer/Switzer-ThinItalic.woff') format('woff'),
+    url('Switzer/Switzer-ThinItalic.ttf') format('truetype');
+    font-weight: 100;
+    font-display: swap;
+    font-style: italic;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-Extralight.woff2') format('woff2'),
+    url('Switzer/Switzer-Extralight.woff') format('woff'),
+    url('Switzer/Switzer-Extralight.ttf') format('truetype');
+    font-weight: 200;
+    font-display: swap;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-ExtralightItalic.woff2') format('woff2'),
+    url('Switzer/Switzer-ExtralightItalic.woff') format('woff'),
+    url('Switzer/Switzer-ExtralightItalic.ttf') format('truetype');
+    font-weight: 200;
+    font-display: swap;
+    font-style: italic;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-Light.woff2') format('woff2'),
+    url('Switzer/Switzer-Light.woff') format('woff'),
+    url('Switzer/Switzer-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-display: swap;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-LightItalic.woff2') format('woff2'),
+    url('Switzer/Switzer-LightItalic.woff') format('woff'),
+    url('Switzer/Switzer-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-display: swap;
+    font-style: italic;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-Regular.woff2') format('woff2'),
+    url('Switzer/Switzer-Regular.woff') format('woff'),
+    url('Switzer/Switzer-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-display: swap;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-Italic.woff2') format('woff2'),
+    url('Switzer/Switzer-Italic.woff') format('woff'),
+    url('Switzer/Switzer-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-display: swap;
+    font-style: italic;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-Medium.woff2') format('woff2'),
+    url('Switzer/Switzer-Medium.woff') format('woff'),
+    url('Switzer/Switzer-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-display: swap;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-MediumItalic.woff2') format('woff2'),
+    url('Switzer/Switzer-MediumItalic.woff') format('woff'),
+    url('Switzer/Switzer-MediumItalic.ttf') format('truetype');
+    font-weight: 500;
+    font-display: swap;
+    font-style: italic;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-Semibold.woff2') format('woff2'),
+    url('Switzer/Switzer-Semibold.woff') format('woff'),
+    url('Switzer/Switzer-Semibold.ttf') format('truetype');
+    font-weight: 600;
+    font-display: swap;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-SemiboldItalic.woff2') format('woff2'),
+    url('Switzer/Switzer-SemiboldItalic.woff') format('woff'),
+    url('Switzer/Switzer-SemiboldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-display: swap;
+    font-style: italic;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-Bold.woff2') format('woff2'),
+    url('Switzer/Switzer-Bold.woff') format('woff'),
+    url('Switzer/Switzer-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-display: swap;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-BoldItalic.woff2') format('woff2'),
+    url('Switzer/Switzer-BoldItalic.woff') format('woff'),
+    url('Switzer/Switzer-BoldItalic.ttf') format('truetype');
+    font-weight: 700;
+    font-display: swap;
+    font-style: italic;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-Extrabold.woff2') format('woff2'),
+    url('Switzer/Switzer-Extrabold.woff') format('woff'),
+    url('Switzer/Switzer-Extrabold.ttf') format('truetype');
+    font-weight: 800;
+    font-display: swap;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-ExtraboldItalic.woff2') format('woff2'),
+    url('Switzer/Switzer-ExtraboldItalic.woff') format('woff'),
+    url('Switzer/Switzer-ExtraboldItalic.ttf') format('truetype');
+    font-weight: 800;
+    font-display: swap;
+    font-style: italic;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-Black.woff2') format('woff2'),
+    url('Switzer/Switzer-Black.woff') format('woff'),
+    url('Switzer/Switzer-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-display: swap;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('Switzer/Switzer-BlackItalic.woff2') format('woff2'),
+    url('Switzer/Switzer-BlackItalic.woff') format('woff'),
+    url('Switzer/Switzer-BlackItalic.ttf') format('truetype');
+    font-weight: 900;
+    font-display: swap;
+    font-style: italic;
+}
+
