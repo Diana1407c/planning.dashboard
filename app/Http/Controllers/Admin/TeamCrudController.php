@@ -166,7 +166,6 @@ class TeamCrudController extends CrudController
 
     public function store(TeamRequest $request): View
     {
-//        dd(view($this->crud->getCreateView(), $this->data));
         $team = Team::query()->create($request->validated());
 
         $membersIds = explode('|', $request->get('members', []));

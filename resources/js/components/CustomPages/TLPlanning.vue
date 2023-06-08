@@ -92,15 +92,12 @@ export default {
                 week: null,
                 year: null
             },
-            tableLoaded: false,
-            teamsLoaded: false,
-            projectsLoaded: false
         }
     },
     components: {VueDatePicker, VueMultiselect},
     computed:{
         loaded(){
-            return this.teamsLoaded && this.projectsLoaded && this.tableLoaded
+            return this.projects !== 0 && this.teams !== 0
         }
     },
     mounted() {
@@ -129,29 +126,24 @@ export default {
         },
 
         getProjects(){
-            this.projectsLoaded = false
             axios.get('projects', {params: {
                     project_ids: this.filter.project_ids.map(obj => obj.id),
                 }}).then((response) => {
                 this.projects = response.data.data
-                this.projectsLoaded = true
             });
         },
 
         getTeams(){
-            this.teamsLoaded = false
             axios.get('teams', {params: {
                     team_ids: this.filter.team_ids.map(obj => obj.id),
             }}).then(response => {
                 this.teams = response.data.data;
-                this.teamsLoaded = true
             }).catch(error => {
                 console.error(error);
             });
         },
 
         getPlannings(){
-            this.tableLoaded = false
             axios.get('tl-planning', {params: {
                     team_ids: this.filter.team_ids.map(obj => obj.id),
                     project_ids: this.filter.project_ids.map(obj => obj.id),
@@ -159,7 +151,6 @@ export default {
                     week: this.filter.week
                 }}).then(response => {
                 this.table = response.data.table;
-                this.tableLoaded = true
             }).catch(error => {
                 console.error(error);
             });
