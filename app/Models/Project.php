@@ -10,6 +10,7 @@ use stdClass;
 /**
  * @property integer $id
  * @property string $name
+ * @property string $status
  * @property StdClass $teamLeadPlannings
  * @property StdClass $projectManagerPlannings
  */
@@ -18,7 +19,7 @@ class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'status'];
 
     public function teamLeadPlannings(): HasMany
     {

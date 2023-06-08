@@ -29,10 +29,6 @@ Route::group(['prefix' => 'teams'], function() {
 Route::group(['prefix' => 'tl-planning'], function() {
     Route::get('', [TeamLeadPlanningController::class, 'index']);
     Route::post('', [TeamLeadPlanningController::class, 'storeOrUpdate']);
-    Route::get('teams', [TeamLeadPlanningController::class, 'teamIndex']);
-    Route::get('teams/{team}', [TeamLeadPlanningController::class, 'teamShow']);
-    Route::get('engineers', [TeamLeadPlanningController::class, 'engineerIndex']);
-    Route::get('engineers/{engineer}', [TeamLeadPlanningController::class, 'engineerShow']);
 });
 
 

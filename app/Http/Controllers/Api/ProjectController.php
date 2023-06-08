@@ -7,7 +7,6 @@ use App\Http\Resources\ProjectResource;
 use App\Http\Resources\Short\ShortProjectResource;
 use App\Models\Project;
 use App\Services\ProjectService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
