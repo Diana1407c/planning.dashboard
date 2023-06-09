@@ -46,7 +46,7 @@ class ProjectCrudController extends CrudController
     {
         Widget::add([
             'type'    => 'button',
-            'label'    => 'Sync Engineers',
+            'label'    => 'Sync Projects',
             'route'    => $this->crud->route.'/sync',
         ]);
 
