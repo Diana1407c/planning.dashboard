@@ -1,0 +1,98 @@
+.planning-table{
+    width: auto !important;
+    border: 1px solid rgba(0,40,100,.12) !important;
+}
+
+.w-5{
+    min-width: 50px !important;
+    width: 50px !important;
+}
+
+.w-10{
+    min-width: 100px !important;
+    width: 100px !important;
+}
+
+.w-8{
+    min-width: 80px !important;
+    width: 80px !important;
+}
+
+.w-15{
+    min-width: 150px !important;
+    width: 150px !important;
+}
+
+.w-20{
+    min-width: 200px !important;
+    width: 200px !important;
+}
+
+.cell-p{
+    padding: 5px 10px !important;
+}
+
+.vertical-text {
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  text-orientation: mixed;
+  white-space: nowrap;
+}
+
+.cell-table{
+    padding: 8px 0 !important;
+}
+
+table td:hover{
+    cursor: default;
+}
+
+.date-change-button{
+    min-width: 200px;
+}
+
+.week-inscription {
+  background-color: #f2f2f2;
+  text-align: center;
+  font-size: 20px;
+  margin: 0;
+  font-weight: bold;
+  color: #333;
+}
+
+.separator-filter{
+    box-sizing: border-box !important;
+    border-top: 1px solid #9282ed !important;
+    margin: 10px 0 !important;
+}
+
+.no-arrows {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.no-arrows::-webkit-inner-spin-button,
+.no-arrows::-webkit-outer-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.vue-notification {
+  margin: 0 5px 5px;
+  padding: 10px;
+  font-size: 16px;
+  color: #ffffff;
+  border-left: 5px solid #187fe7;
+  background: #68cd86;
+  border-left-color: #42a85f;
+}
+
+.diselect_all{
+    font-size: 14px;
+    font-weight: bold;
+    border-bottom: 2px solid;
+    &:hover{
+        background-color: #ffcccb;
+    }
+}

@@ -4,7 +4,7 @@
     </div>
     <div class="row">
         <div class="col-12">
-            <VueMultiselect
+            <multiselect
                 v-model="filter.project_ids"
                 :options="allProjects"
                 :close-on-select="true"
@@ -14,8 +14,11 @@
                 :multiple="true"
                 track-by="name"
                 @select="getData"
-                @remove="getData"
-            />
+                @remove="getData">
+                <template v-if="filter.project_ids.length" #beforeList class="multiselect__element" >
+                    <span @click="handleDiselect" class="multiselect__option diselect_all"><span>Diselect All</span></span>
+                </template>
+            </multiselect>
         </div>
     </div>
     <div class="d-flex box-filter-separator">
@@ -72,13 +75,13 @@
         </div>
         <div class="row">
             <div class="col-4 d-flex justify-content-start">
-                <button :disabled="!loaded" type="button" class="btn btn-primary date-change-button" @click="handleDateInput(false)"><i class="fa-solid fa-arrow-left"></i> Previous</button>
+                <button type="button" class="btn btn-primary date-change-button" @click="handleDateInput(false)"><i class="fa-solid fa-arrow-left"></i> Previous</button>
             </div>
             <div class="col-4 d-flex justify-content-center align-items-center">
                 <div class="week-inscription">{{ start_week }} - {{ end_week }}</div>
             </div>
             <div class="col-4 d-flex justify-content-end">
-                <button :disabled="!loaded" type="button" class="btn btn-primary date-change-button" @click="handleDateInput(true)">Next <i class="fa-solid fa-arrow-right"></i></button>
+                <button type="button" class="btn btn-primary date-change-button" @click="handleDateInput(true)">Next <i class="fa-solid fa-arrow-right"></i></button>
             </div>
         </div>
         <div class="d-flex box-filter-separator">
@@ -89,7 +92,7 @@
 
 <script>
 import Layout from "./../Layout.vue";
-import VueMultiselect from 'vue-multiselect';
+import Multiselect from 'vue-multiselect';
 const { getWeek } = require('date-fns');
 import { useNotification } from "@kyvg/vue3-notification";
 
@@ -118,7 +121,7 @@ export default {
             loaded: false,
         }
     },
-    components: {VueMultiselect},
+    components: {Multiselect},
     async mounted() {
         const storedObject = localStorage.getItem("filter-pm");
         if (storedObject) {
@@ -265,7 +268,12 @@ export default {
 
             await this.getWeekRange()
             await this.getData()
-        }
+        },
+
+        async handleDiselect(){
+            this.filter.project_ids = []
+            await this.getData()
+        },
     },
 }
 </script>

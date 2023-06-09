@@ -14,8 +14,12 @@
                 :multiple="true"
                 track-by="name"
                 @select="getData"
-                @remove="getData"
-            />
+                @remove="getData">
+
+                <template v-if="filter.project_ids.length" #beforeList class="multiselect__element" >
+                    <span @click="handleDiselectTeams" class="multiselect__option diselect_all"><span>Diselect All</span></span>
+                </template>
+            </VueMultiselect>
         </div>
         <div class="col-6">
             <VueMultiselect
@@ -28,8 +32,12 @@
                 :multiple="true"
                 track-by="name"
                 @select="getData"
-                @remove="getData"
-            />
+                @remove="getData">
+
+                <template v-if="filter.project_ids.length" #beforeList class="multiselect__element" >
+                    <span @click="handleDiselectProjects" class="multiselect__option diselect_all"><span>Diselect All</span></span>
+                </template>
+            </VueMultiselect>
         </div>
     </div>
     <div class="d-flex box-filter-separator">
@@ -173,7 +181,7 @@ export default {
 
         plan(event, engineerId, projectId){
             if(!event.target.value){
-                event.target.value = 0
+                event.target.value = this.table[engineerId][projectId]
             }
 
             if(Number(event.target.value) === this.table[engineerId][projectId]){
@@ -240,6 +248,16 @@ export default {
             await this.getWeekRange()
             await this.getData()
             this.loaded = true;
+        },
+
+        async handleDiselectTeams(){
+            this.filter.team_ids = []
+            await this.getData()
+        },
+
+        async handleDiselectProjects(){
+            this.filter.project_ids = []
+            await this.getData()
         }
     },
 }
