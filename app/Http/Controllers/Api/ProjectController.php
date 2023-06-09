@@ -17,7 +17,7 @@ class ProjectController extends Controller
         return ProjectResource::collection(ProjectService::filter($request));
     }
 
-    public function shortIndex(): AnonymousResourceCollection
+    public function all(): AnonymousResourceCollection
     {
         return ShortProjectResource::collection(Project::all());
     }

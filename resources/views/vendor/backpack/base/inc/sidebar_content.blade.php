@@ -4,4 +4,6 @@
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('technology') }}"><i class="nav-icon la la-question"></i> Technologies</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('engineer') }}"><i class="nav-icon la la-question"></i> Engineers</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('team') }}"><i class="nav-icon la la-question"></i> Teams</a></li>
-<li class="nav-item"><a class="nav-link" href="{{ backpack_url('team_lead_planning') }}"><i class="nav-icon la la-question"></i> Team Lead Planning</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('team_lead_planning') }}"><i class="nav-icon la la-question"></i> TL Planning</a></li>
+
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('project_manager_planning') }}"><i class="nav-icon la la-question"></i> PM Planning</a></li>

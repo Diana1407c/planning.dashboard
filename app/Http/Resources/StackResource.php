@@ -2,11 +2,11 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Project;
+use App\Models\Stack;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectResource extends JsonResource
+class StackResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,11 +15,10 @@ class ProjectResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        /** @var Project $this */
+        /** @var Stack $this */
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'state' => $this->state
+            'name' => $this->name
         ];
     }
 }

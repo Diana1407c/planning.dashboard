@@ -21,8 +21,7 @@ class TeamworkProxy
             foreach ($results->projects as $result){
                 $projects[] = [
                     'id' => $result->id,
-                    'name' => $result->name,
-                    'status' => $result->status
+                    'name' => $result->name
                 ];
             }
 

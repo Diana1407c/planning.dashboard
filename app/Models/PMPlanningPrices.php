@@ -6,22 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PMPlanning extends Model
+class PMPlanningPrices extends Model
 {
     use HasFactory;
 
-    protected $table = 'project_manager_planning';
+    protected $table = 'pm_planning_prices';
     protected $fillable = [
-        'project_id', 'stack_id', 'year', 'week', 'hours'
+        'project_id', 'year', 'week', 'cost'
     ];
 
     public function project(): belongsTo
     {
         return $this->belongsTo(Project::class);
-    }
-
-    public function technology(): belongsTo
-    {
-        return $this->belongsTo(Technology::class);
     }
 }
