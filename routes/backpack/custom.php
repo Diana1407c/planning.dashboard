@@ -31,4 +31,7 @@ Route::group([
         ->name('page.team_lead_planning.index')
         ->middleware('inertia:team_lead_planning');
 
-}); // this should be the absolute last line of this file
+    Route::get('project_manager_planning', 'ProjectManagerPlanningController@index')
+        ->name('page.project_manager.index')
+        ->middleware('inertia:project_manager_planning');
+});

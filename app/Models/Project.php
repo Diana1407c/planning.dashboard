@@ -11,17 +11,21 @@ use stdClass;
 /**
  * @property integer $id
  * @property string $name
- * @property string $status
+ * @property string $state
  * @property StdClass $teamLeadPlannings
  * @property StdClass $projectManagerPlannings
  */
 
 class Project extends Model
 {
+    const STATE_ACTIVE = 'active';
+    const STATE_MAINTENANCE = 'maintenance';
+    const STATE_OPERATIONAL = 'operational';
+
     use CrudTrait;
     use HasFactory;
 
-    protected $fillable = ['name', 'status'];
+    protected $fillable = ['name', 'state'];
 
     public function teamLeadPlannings(): HasMany
     {
@@ -31,5 +35,10 @@ class Project extends Model
     public function projectManagerPlannings(): HasMany
     {
         return $this->hasMany(PMPlanning::class);
+    }
+
+    public function prices(): HasMany
+    {
+        return $this->hasMany(PMPlanningPrices::class);
     }
 }

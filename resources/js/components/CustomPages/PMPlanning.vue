@@ -3,26 +3,8 @@
         <hr class="col-12 separator-filter">
     </div>
     <div class="row">
-        <div class="col-6">
-            <VueMultiselect
-                v-model="filter.team_ids"
-                :options="allTeams"
-                :close-on-select="true"
-                :clear-on-select="false"
-                placeholder="Select teams"
-                label="name"
-                :multiple="true"
-                track-by="name"
-                @select="getData"
-                @remove="getData">
-
-                <template v-if="filter.project_ids.length" #beforeList class="multiselect__element" >
-                    <span @click="handleDiselectTeams" class="multiselect__option diselect_all"><span>Diselect All</span></span>
-                </template>
-            </VueMultiselect>
-        </div>
-        <div class="col-6">
-            <VueMultiselect
+        <div class="col-12">
+            <multiselect
                 v-model="filter.project_ids"
                 :options="allProjects"
                 :close-on-select="true"
@@ -33,11 +15,10 @@
                 track-by="name"
                 @select="getData"
                 @remove="getData">
-
                 <template v-if="filter.project_ids.length" #beforeList class="multiselect__element" >
-                    <span @click="handleDiselectProjects" class="multiselect__option diselect_all"><span>Diselect All</span></span>
+                    <span @click="handleDiselect" class="multiselect__option diselect_all"><span>Diselect All</span></span>
                 </template>
-            </VueMultiselect>
+            </multiselect>
         </div>
     </div>
     <div class="d-flex box-filter-separator">
@@ -57,30 +38,37 @@
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-    <div class="table-responsive">
-        <table v-if="loaded" class="table table-striped table-bordered planning-table">
-            <thead>
+    <div></div>
+    <table v-if="loaded" class="table table-striped table-bordered planning-table">
+        <thead>
+        <tr>
+            <th class="w-5 vertical-text text-center align-middle">State</th>
+            <th class="w-20 text-center align-middle">Projects</th>
+            <th class="w-10 text-center align-middle">Cost (€)</th>
+            <th class="w-8 vertical-text text-center align-middle" v-for="stack in stacks">{{ stack.name }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <template v-for="(projects, state) in groupedProjects" :key="state">
             <tr>
-                <th class="w-5 vertical-text text-center align-middle">Team</th>
-                <th class="w-20 text-center align-middle">Members</th>
-                <th class="w-8 vertical-text text-center align-middle" v-for="project in projects">{{ project.name }}</th>
+                <td class="vertical-text w-5" :rowspan="projects.length+1">
+                    <div class="d-flex justify-content-center align-items-center">
+                        {{ state }}
+                    </div>
+                </td>
             </tr>
-            </thead>
-            <tbody>
-            <template v-for="team in teams" :key="team.id">
-                <tr>
-                    <td class="vertical-text w-5 text-center align-middle" :rowspan="team.members.length+1">{{ team.name }}</td>
-                </tr>
-                <tr v-for="member in team.members">
-                    <td class="w-20 align-middle cell-p">{{ member.name }}</td>
-                    <td class="w-8 align-middle cell-p" v-for="project in projects">
-                        <input type="number" class="form-control text-center no-arrows" :value="table[member.id][project.id]" @blur="plan($event, member.id, project.id)">
-                    </td>
-                </tr>
-            </template>
-            </tbody>
-        </table>
-    </div>
+            <tr v-for="project in projects">
+                <td class="w-20 align-middle cell-p">{{ project.name }}</td>
+                <td class="w-10 align-middle cell-p">
+                    <input type="number" class="form-control text-center no-arrows" :value="prices[project.id]" @blur="changePrice($event, project.id)"/>
+                </td>
+                <td class="w-8 align-middle cell-p" v-for="stack in stacks">
+                    <input type="number" class="form-control text-center no-arrows" :value="table[project.id][stack.id]" @blur="plan($event, project.id, stack.id)">
+                </td>
+            </tr>
+        </template>
+        </tbody>
+    </table>
     <div v-if="loaded">
         <div class="d-flex box-filter-separator">
             <hr class="col-12 separator-filter">
@@ -104,35 +92,38 @@
 
 <script>
 import Layout from "./../Layout.vue";
+import Multiselect from 'vue-multiselect';
 const { getWeek } = require('date-fns');
-import VueMultiselect from 'vue-multiselect';
+import { useNotification } from "@kyvg/vue3-notification";
+
+const { notify } = useNotification()
 
 export default {
     name: "TLPlanning",
     layout: (h, page) => h(Layout, [page]),
     props: {
-        allTeams: Object,
+        stacks: Object,
         allProjects: Object
     },
     data(){
         return {
-            projects: [],
-            teams: [],
+            groupedProjects: [],
             table: [],
+            prices: [],
             start_week: null,
             end_week: null,
             filter: {
-                team_ids: [],
+                stack_ids: [],
                 project_ids: [],
                 week: null,
                 year: null
             },
-            loaded: false
+            loaded: false,
         }
     },
-    components: {VueMultiselect},
+    components: {Multiselect},
     async mounted() {
-        const storedObject = localStorage.getItem("filter-tl");
+        const storedObject = localStorage.getItem("filter-pm");
         if (storedObject) {
             this.filter = JSON.parse(storedObject);
         }
@@ -141,10 +132,10 @@ export default {
     },
     methods: {
         async getData(){
-            localStorage.setItem("filter-tl", JSON.stringify(this.filter));
+            localStorage.setItem("filter-pm", JSON.stringify(this.filter));
             await this.getProjects()
-            await this.getTeams()
             await this.getPlannings()
+            await this.getPrices()
             this.loaded = true;
         },
 
@@ -152,23 +143,19 @@ export default {
             await axios.get('projects', {params: {
                     project_ids: this.filter.project_ids.map(obj => obj.id),
                 }}).then((response) => {
-                this.projects = response.data.data
-            });
-        },
 
-        async getTeams(){
-            await axios.get('teams', {params: {
-                    team_ids: this.filter.team_ids.map(obj => obj.id),
-            }}).then(response => {
-                this.teams = response.data.data;
-            }).catch(error => {
-                console.error(error);
+                this.groupedProjects = response.data.data.reduce((result, item) => {
+                    if (!result[item.state]) {
+                        result[item.state] = [];
+                    }
+                    result[item.state].push(item);
+                    return result;
+                }, {});
             });
         },
 
         async getPlannings(){
-            await axios.get('tl-planning', {params: {
-                    team_ids: this.filter.team_ids.map(obj => obj.id),
+            await axios.get('pm-planning', {params: {
                     project_ids: this.filter.project_ids.map(obj => obj.id),
                     year: this.filter.year,
                     week: this.filter.week
@@ -179,23 +166,57 @@ export default {
             });
         },
 
-        plan(event, engineerId, projectId){
-            if(!event.target.value){
-                event.target.value = this.table[engineerId][projectId]
-            }
+        async getPrices(){
+            await axios.get('pm-prices', {params: {
+                    project_ids: this.filter.project_ids.map(obj => obj.id),
+                    year: this.filter.year,
+                    week: this.filter.week
+                }}).then(response => {
+                this.prices = response.data.prices;
+            }).catch(error => {
+                console.error(error);
+            });
+        },
 
-            if(Number(event.target.value) === this.table[engineerId][projectId]){
+        plan(event, projectId, stackId){
+            if(!event.target.value){
+                event.target.value = this.table[projectId][stackId]
                 return;
             }
 
-            axios.post('tl-planning', {
+            if(Number(event.target.value) === this.table[projectId][stackId]){
+                return;
+            }
+
+            axios.post('pm-planning', {
                 project_id: projectId,
-                engineer_id: engineerId,
+                stack_id: stackId,
                 week: this.filter.week,
                 year: this.filter.year,
                 hours: event.target.value
             }).then((response) => {
-                this.table[engineerId][projectId] = Number(response.data.hours)
+                this.table[projectId][stackId] = Number(response.data.hours)
+                this.$notify(response.data.message);
+            });
+        },
+
+        changePrice(event, projectId){
+            if(!event.target.value){
+                event.target.value = this.prices[projectId]
+                return;
+            }
+
+            if(Number(event.target.value) === this.prices[projectId]){
+                return;
+            }
+
+            axios.post('pm-prices', {
+                project_id: projectId,
+                week: this.filter.week,
+                year: this.filter.year,
+                cost: event.target.value
+            }).then((response) => {
+                this.prices[projectId] = Number(response.data.price)
                 this.$notify(response.data.message);
             });
         },
@@ -209,7 +230,7 @@ export default {
             await this.getWeekRange()
         },
 
-        async  getWeekRange() {
+        async getWeekRange() {
             let startDate = new Date(this.filter.year, 0, 1 + (this.filter.week - 1) * 7);
             let endDate = new Date(startDate.getTime() + 6 * 24 * 60 * 60 * 1000);
 
@@ -247,18 +268,12 @@ export default {
 
             await this.getWeekRange()
             await this.getData()
-            this.loaded = true;
         },
 
-        async handleDiselectTeams(){
-            this.filter.team_ids = []
-            await this.getData()
-        },
-
-        async handleDiselectProjects(){
+        async handleDiselect(){
             this.filter.project_ids = []
             await this.getData()
-        }
+        },
     },
 }
 </script>

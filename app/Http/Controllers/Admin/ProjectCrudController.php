@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\ProjectRequest;
 use App\Jobs\SyncTeamworkProjects;
+use App\Models\Project;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Widget;
@@ -33,7 +33,7 @@ class ProjectCrudController extends CrudController
         CRUD::setModel(\App\Models\Project::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/project');
         CRUD::setEntityNameStrings('project', 'projects');
-        $this->crud->denyAccess(['create', 'delete', 'update']);
+        $this->crud->denyAccess(['create', 'delete']);
     }
 
     /**
@@ -51,7 +51,23 @@ class ProjectCrudController extends CrudController
         ]);
 
         CRUD::column('name');
-        CRUD::column('status');
+        CRUD::column('state');
+    }
+
+    protected function setupUpdateOperation()
+    {
+        CRUD::addField([
+            'label'     => "State",
+            'type'      => 'select_from_array',
+            'name'      => 'state',
+            'allows_null' => false,
+            'default'     => Project::STATE_ACTIVE,
+            'options'   => [
+                Project::STATE_ACTIVE => 'Active',
+                Project::STATE_MAINTENANCE => 'Maintenance',
+                Project::STATE_OPERATIONAL => 'Operational'
+            ],
+        ]);
     }
 
     public function sync(): Application|\Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|RedirectResponse

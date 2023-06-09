@@ -17,7 +17,7 @@ class TeamController extends Controller
         return TeamResource::collection(TeamService::filter($request));
     }
 
-    public function shortIndex(): AnonymousResourceCollection
+    public function all(): AnonymousResourceCollection
     {
         return ShortTeamsResource::collection(Team::all());
     }
