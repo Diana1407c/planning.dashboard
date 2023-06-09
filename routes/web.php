@@ -14,11 +14,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::inertia('/auth/login', 'Auth/Login')->name('login')->middleware('guest');
-
-Route::group(['prefix' => 'dashboard', 'middleware' => 'jwt.verify'], function() {
-    Route::inertia('/', 'Panel/Dashboard');
+    return redirect('/admin');
 });
