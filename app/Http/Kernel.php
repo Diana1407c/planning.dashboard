@@ -3,8 +3,6 @@
 namespace App\Http;
 
 use App\Http\Middleware\HandleInertiaRequests;
-use App\Http\Middleware\JWTRegister;
-use App\Http\Middleware\JWTVerify;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
