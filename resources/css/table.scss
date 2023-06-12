@@ -1,0 +1,54 @@
+.planning-table, .planning-table th{
+    width: auto !important;
+    border: 1px solid rgba(0,40,100,.12) !important;
+}
+
+.w-5{
+    min-width: 50px !important;
+    width: 50px !important;
+}
+
+.w-10{
+    min-width: 100px !important;
+    width: 100px !important;
+}
+
+.w-8{
+    min-width: 80px !important;
+    width: 80px !important;
+}
+
+.w-15{
+    min-width: 150px !important;
+    width: 150px !important;
+}
+
+.w-20{
+    min-width: 200px !important;
+    width: 200px !important;
+}
+
+.cell-p{
+    padding: 6px 10px !important;
+}
+
+.vertical-text {
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  text-orientation: mixed;
+  white-space: nowrap;
+}
+
+table td:hover{
+    cursor: default;
+}
+
+.date-th{
+    min-width: 130px !important;
+    width: 130px !important;
+}
+
+.plan-type-cell{
+    min-width: 65px !important;
+    width: 65px !important;
+}
