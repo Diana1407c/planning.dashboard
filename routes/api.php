@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\PMPricesController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ProjectManagerPlanningController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\StackController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TeamLeadPlanningController;
@@ -48,6 +49,10 @@ Route::group(['prefix' => 'pm-planning'], function() {
 Route::group(['prefix' => 'pm-prices'], function() {
     Route::get('', [PMPricesController::class, 'index']);
     Route::post('', [PMPricesController::class, 'storeOrUpdate']);
+});
+
+Route::group(['prefix' => 'reports'], function() {
+    Route::get('comparison', [ReportController::class, 'comparison']);
 });
 
 

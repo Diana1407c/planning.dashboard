@@ -6,3 +6,25 @@
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('team') }}"><i class="nav-icon la la-group"></i> Teams</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('team_lead_planning') }}"><i class="nav-icon la la-history"></i> TL Planning</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('project_manager_planning') }}"><i class="nav-icon la la-history"></i> PM Planning</a></li>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+        <i class="nav-icon la la-files-o"></i> Reports
+    </a>
+    <ul class="dropdown-menu">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ backpack_url('reports/comparison') }}">
+                <i class="la la-files-o"></i> Comparision Report
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ backpack_url('engineer') }}">
+                <i class="la la-files-o"></i> Second Type
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ backpack_url('technology') }}">
+                <i class="la la-files-o"></i> Third Type
+            </a>
+        </li>
+    </ul>
+</li>
