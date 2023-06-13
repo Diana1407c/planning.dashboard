@@ -48,8 +48,25 @@
                 <td colspan="2" class="align-middle cell-p">{{ project.name }}</td>
 
                 <template v-for="(date, index) in dates">
-                    <td class="plan-type-cell text-center align-middle cell-p">{{ report[project.id][index]['PM'] }}</td>
-                    <td class="plan-type-cell text-center align-middle cell-p">{{ report[project.id][index]['TL'] }}</td>
+                    <td colspan="2" class="hours-compare-td date-th text-center align-middle p-0">
+                        <div class="d-inline-block hours-pm plan-type-cell text-center align-middle cell-p">{{ report[project.id][index]['PM'] }}</div>
+                        <div class="d-inline-block hours-tl plan-type-cell text-center align-middle cell-p">{{ report[project.id][index]['TL'] }}</div>
+                        <div class="info-box">
+                            <div class="info-arrow-wrapper">
+                                <div class="info-arrow"></div>
+                            </div>
+                            <div class="info-box-content d-flex">
+                                <div class="row">
+                                    <div class="col-6">
+                                        Open
+                                    </div>
+                                    <div class="col-6">
+                                        Info
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
                 </template>
             </tr>
             </tbody>
@@ -81,6 +98,19 @@ export default {
     components: {VueDatePicker, multiselect},
     async mounted() {
         await this.getReport();
+
+        const cells = document.querySelectorAll('.hours-compare-td');
+
+        cells.forEach((cell) => {
+            cell.addEventListener('click', () => {
+                cells.forEach((c) => {
+                    if (c !== cell) {
+                        c.classList.remove('active');
+                    }
+                });
+                cell.classList.toggle('active');
+            });
+        });
     },
     methods: {
         async handleDiselect(){

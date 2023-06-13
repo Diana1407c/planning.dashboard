@@ -7,11 +7,12 @@ use App\Services\DateService;
 use App\Services\PMPlanningService;
 use App\Services\ProjectService;
 use App\Services\TLPlanningPlanning;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function comparison(Request $request)
+    public function comparison(Request $request): JsonResponse
     {
         $projects = ProjectService::filter($request);
         $dates = DateService::convertDatesToWeek($request->get('start_date'), $request->get('end_date'));
