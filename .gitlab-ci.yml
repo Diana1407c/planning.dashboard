@@ -41,6 +41,7 @@ build:
   tags:
     - ebs
   script:
+    - echo test
     - echo "  === $CI_PROJECT_NAME - Start Build Dockerfile ===  "
     - cat "${envVars}" | envsubst > .env
     - devspace run build
