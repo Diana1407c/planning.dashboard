@@ -24,3 +24,9 @@ yarn-error.log
 /public/mix-manifest.json
 /package-lock.json
 /composer.lock
+
+# add do project .gitignore file
+.env*
+.devspace/
+k8s-deployment
+

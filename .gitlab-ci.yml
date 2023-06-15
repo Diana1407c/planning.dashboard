@@ -1,26 +1,125 @@
+---
 stages:
-  - merge
+  - build:version_incrementing
+  - build
+  - deploy
 
-check_merge_approve:
-  image: docker:20
-  stage: merge
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: always
+services:
+  - docker:dind
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
+  DOCKER_REPO_IMAGE: "$CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME"
+  DOCKER_REPOSITORY: "$CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME"
+  DOCKER_IMAGE_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
+  K8S_DOCKER_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
+
+image:
+  name: $CI_REGISTRY/ebs-iaas/k8s-deployment:ci-cd-tools-v02
+
+before_script:
+  - echo "  === Sync Git Module - K8S-Deployment ===  "
+  - git submodule deinit --all -f
+  - git submodule sync
+  - git submodule update --init
+  - git submodule add -b production --force ../../ebs-iaas/k8s-deployment.git
+  - git submodule sync && git submodule update --recursive --remote -f &&  ls k8s*
+
+########### non production jobs
+build:
+  stage: build
+  environment: development
+  variables:
+    DOCKER_IMAGE_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
+    K8S_DOCKER_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
+  only:
+    refs:
+      - development
+    variables:
+      - $CI_REGISTRY  =~ /git2.devebs.net/
   tags:
     - ebs
-  before_script:
-    - echo $CI_MERGE_REQUEST_IID
-    - apk add curl jq
   script:
-    - |
-      MERGE_REQUEST_AUTHOR=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" https://gitlab.devebs.net/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID | jq ".author.username")
-      APPROVERS=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" https://gitlab.devebs.net/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/approvals | jq ".approved_by[].user.username" | jq "del(. | select(. == $MERGE_REQUEST_AUTHOR))" | jq '. | select(. != null )')
-      echo "Author $MERGE_REQUEST_AUTHOR"
-      if [[ "$APPROVERS" ]]; then
-        echo 'Approved'
-        echo -e "Approvers:\n$APPROVERS"
-      else
-        echo 'Merge should be approved'
-        exit 1
-      fi
+    - echo "  === $CI_PROJECT_NAME - Start Build Dockerfile ===  "
+    - cat "${envVars}" | envsubst > .env
+    - devspace run build
+
+deploy_dev_k8s:
+  stage: deploy
+  environment: development
+  variables:
+    DOCKER_IMAGE_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
+    K8S_DOCKER_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
+  dependencies: [build]
+  only:
+    refs:
+      - development
+    variables:
+      - $CI_REGISTRY  =~ /git2.devebs.net/
+  tags:
+    - ebs
+  script:
+    - echo "  === $CI_PROJECT_NAME - Start Deployment ===  "
+    - cat "${envVars}" | envsubst > .env
+    - devspace run deployment
+    - devspace run check-deployment
+
+
+########### production steps
+version_incrementing:
+  stage: build:version_incrementing
+  only:
+    refs:
+#      - master
+      - production
+    variables:
+      - $CI_REGISTRY  =~ /git2.devebs.net/
+  tags:
+    - ebs
+  script:
+    - echo "  === Incrementing VersMinor ===  "
+    - bash k8s-deployment/version.sh  --variable=VersMinor
+
+build_production:
+  stage: build
+  environment: production
+  dependencies: [version_incrementing]
+  variables:
+    DOCKER_IMAGE_TAG: "${VersMajor}.${VersMinor}-prod"
+    K8S_DOCKER_TAG: "${VersMajor}.${VersMinor}-prod"
+  only:
+    refs:
+#      - master
+      - production
+    variables:
+      - $CI_REGISTRY  =~ /git2.devebs.net/
+  tags:
+    - ebs
+  script:
+    - echo "  === $CI_PROJECT_NAME - Start Build Dockerfile ===  "
+    - cat "${envVars}" | envsubst > .env
+    - devspace run build
+
+deploy_production:
+  stage: deploy
+  environment: production
+  variables:
+    DOCKER_IMAGE_TAG: "${VersMajor}.${VersMinor}-prod"
+    K8S_DOCKER_TAG: "${VersMajor}.${VersMinor}-prod"
+  dependencies: [build_production]
+  only:
+    refs:
+#      - master
+      - production
+    variables:
+      - $CI_REGISTRY  =~ /git2.devebs.net/
+  tags:
+    - ebs
+  script:
+    - echo "  === $CI_PROJECT_NAME - Start Deployment ===  "
+    - cat "${envVars}" | envsubst > .env
+    - devspace run deployment
+    - export rollBack=true
+    - devspace run check-deployment
+
