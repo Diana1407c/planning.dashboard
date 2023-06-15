@@ -35,7 +35,7 @@ build:
     K8S_DOCKER_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
   only:
     refs:
-      - development
+      - k8s_deployment
     variables:
       - $CI_REGISTRY  =~ /git2.devebs.net/
   tags:
@@ -54,7 +54,7 @@ deploy_dev_k8s:
   dependencies: [build]
   only:
     refs:
-      - development
+      - k8s_deployment
     variables:
       - $CI_REGISTRY  =~ /git2.devebs.net/
   tags:
