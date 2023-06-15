@@ -27,7 +27,7 @@ class UsersCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Users::class);
+        CRUD::setModel(\App\Models\User::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/users');
         CRUD::setEntityNameStrings('users', 'users');
     }
@@ -96,12 +96,34 @@ class UsersCrudController extends CrudController
             'label' => 'Password Confirmation',
             'type' => 'password',
         ]);
-        CRUD::field('role')->type('enum')->options([
-            'admin' => 'Admin',
-            'project_manager' => 'Project Manager',
-            'team_lead' => 'Team Lead',
-            'accountant' => 'Accountant',
-        ]);
+        CRUD::addField([
+            'label'             => 'User Role Permissions',
+            'field_unique_name' => 'user_role_permission',
+            'type'              => 'checklist_dependency',
+            'name'              => ['roles', 'permissions'],
+            'subfields'         => [
+                'primary' => [
+                    'label'            => 'Roles',
+                    'name'             => 'roles',
+                    'entity'           => 'roles',
+                    'entity_secondary' => 'permissions',
+                    'attribute'        => 'name',
+                    'model'            => "Backpack\PermissionManager\app\Models\Role",
+                    'pivot'            => true,
+                    'number_columns'   => 3,
+                ],
+                'secondary' => [
+                    'label'          => 'Permission',
+                    'name'           => 'permissions',
+                    'entity'         => 'permissions',
+                    'entity_primary' => 'roles',
+                    'attribute'      => 'name',
+                    'model'          => "Backpack\PermissionManager\app\Models\Permission",
+                    'pivot'          => true,
+                    'number_columns' => 3,
+                ],
+            ],
+    ]);
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:
