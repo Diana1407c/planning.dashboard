@@ -37,7 +37,7 @@ build:
     refs:
       - k8s_deployment
     variables:
-      - $CI_REGISTRY  =~ /git2.devebs.net/
+      - $CI_REGISTRY  =~ /gitlab.devebs.net/
   tags:
     - ebs
   script:
@@ -57,7 +57,7 @@ deploy_dev_k8s:
     refs:
       - k8s_deployment
     variables:
-      - $CI_REGISTRY  =~ /git2.devebs.net/
+      - $CI_REGISTRY  =~ /gitlab.devebs.net/
   tags:
     - ebs
   script:
@@ -75,7 +75,7 @@ version_incrementing:
 #      - master
       - production
     variables:
-      - $CI_REGISTRY  =~ /git2.devebs.net/
+      - $CI_REGISTRY  =~ /gitlab.devebs.net/
   tags:
     - ebs
   script:
@@ -94,7 +94,7 @@ build_production:
 #      - master
       - production
     variables:
-      - $CI_REGISTRY  =~ /git2.devebs.net/
+      - $CI_REGISTRY  =~ /gitlab.devebs.net/
   tags:
     - ebs
   script:
@@ -114,7 +114,7 @@ deploy_production:
 #      - master
       - production
     variables:
-      - $CI_REGISTRY  =~ /git2.devebs.net/
+      - $CI_REGISTRY  =~ /gitlab.devebs.net/
   tags:
     - ebs
   script:
