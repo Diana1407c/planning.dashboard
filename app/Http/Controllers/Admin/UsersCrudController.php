@@ -55,13 +55,22 @@ class UsersCrudController extends CrudController
         CRUD::column('email');
         CRUD::column('created_at');
         CRUD::column('updated_at');
-        CRUD::column('role')->type('enum')->options([
-            'admin' => 'Admin',
-            'project_manager' => 'Project Manager',
-            'team_lead' => 'Team Lead',
-            'accountant' => 'Accountant',
+        CRUD::addColumn([
+            'name'       => 'role',
+            'type'      => 'select',
+            'name'      => 'role_id',
+            'entity'    => 'roles',
+            'attribute' => 'name',
+            'model'     => "Backpack\PermissionManager\app\Models\Role",
         ]);
-
+        CRUD::addColumn([
+            'name'         => 'permissions',
+            'type'         => 'select_multiple',
+            'label'        => 'Extra Permissions',
+            'entity'       => 'permissions',
+            'attribute'    => 'name',
+            'model'        => "Backpack\PermissionManager\app\Models\Permission",
+        ]);
         /**
          * Columns can be defined using the fluent syntax or array syntax:
          * - CRUD::column('price')->type('number');
