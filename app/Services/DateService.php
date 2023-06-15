@@ -6,7 +6,7 @@ use Illuminate\Support\Carbon;
 
 class DateService
 {
-    public static function convertToWeek($date)
+    public static function toWeek($date): array
     {
         $carbonDate = Carbon::parse($date);
 
@@ -16,7 +16,7 @@ class DateService
         ];
     }
 
-    public static function convertDatesToWeek($startDate, $endDate = null)
+    public static function rangeToWeeks($startDate, $endDate = null): array
     {
         if($endDate){
             $carbonEndDate = Carbon::parse($endDate);
@@ -24,17 +24,21 @@ class DateService
             $carbonEndDate = Carbon::parse($startDate)->addMonth();
         }
 
-        return self::convertToWeek($startDate) + [
-                'end_week' => $carbonEndDate->weekOfYear,
-                'end_year' => $carbonEndDate->year,
-            ];
+        $carbonStartWeek = self::toWeek($startDate);
+
+        return [
+            'start_week' => $carbonStartWeek['week'],
+            'start_year' => $carbonStartWeek['year'],
+            'end_week' => $carbonEndDate->weekOfYear,
+            'end_year' => $carbonEndDate->year,
+        ];
     }
 
-    public static function generateYearWeekArray($dates)
+    public static function weeksDateArray($dates): array
     {
         $yearWeekArray = [];
 
-        $startDate = Carbon::now()->setISODate($dates['year'], $dates['week'])->startOfWeek();
+        $startDate = Carbon::now()->setISODate($dates['start_year'], $dates['start_week'])->startOfWeek();
         $endDate = Carbon::now()->setISODate($dates['end_year'], $dates['end_week'])->startOfWeek();
 
         while ($startDate->lte($endDate)) {

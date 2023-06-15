@@ -48,36 +48,22 @@
                 <td colspan="2" class="align-middle cell-p">{{ project.name }}</td>
 
                 <template v-for="(date, index) in dates">
-                    <td colspan="2" class="hours-compare-td date-th text-center align-middle p-0">
+                    <td colspan="2" class="hours-compare-td date-th text-center align-middle p-0" @click="openModal(project, date, index)">
                         <div class="d-inline-block hours-pm plan-type-cell text-center align-middle cell-p">{{ report[project.id][index]['PM'] }}</div>
                         <div class="d-inline-block hours-tl plan-type-cell text-center align-middle cell-p">{{ report[project.id][index]['TL'] }}</div>
-                        <div class="info-box">
-                            <div class="info-arrow-wrapper">
-                                <div class="info-arrow"></div>
-                            </div>
-                            <div class="info-box-content d-flex">
-                                <div class="row">
-                                    <div class="col-6">
-                                        Open
-                                    </div>
-                                    <div class="col-6">
-                                        Info
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </td>
                 </template>
             </tr>
             </tbody>
         </table>
     </div>
+    <info-box v-if="detailOpened" :is-open="detailOpened" :project="projectModal" :date="dateModal" :dateIndex="dateIndexModal" :close="closeModal"></info-box>
 </template>
 
 <script>
 import VueDatePicker from '@vuepic/vue-datepicker'
 import multiselect from 'vue-multiselect';
-
+import InfoBox from '../../Elements/InfoBox.vue';
 export default {
     name: "Comparison",
     props: {
@@ -92,27 +78,30 @@ export default {
                 project_ids: [],
                 date: [new Date()]
             },
+            detailOpened: false,
+            projectModal: null,
+            dateModal: null,
+            dateIndexModal: null,
             loaded: false,
         }
     },
-    components: {VueDatePicker, multiselect},
+    components: {VueDatePicker, multiselect, InfoBox},
     async mounted() {
-        await this.getReport();
-
-        const cells = document.querySelectorAll('.hours-compare-td');
-
-        cells.forEach((cell) => {
-            cell.addEventListener('click', () => {
-                cells.forEach((c) => {
-                    if (c !== cell) {
-                        c.classList.remove('active');
-                    }
-                });
-                cell.classList.toggle('active');
-            });
-        });
+        await this.getReport()
     },
+
     methods: {
+        openModal(project, date, dateIndex){
+            this.projectModal = project
+            this.dateIndexModal = dateIndex
+            this.dateModal = date
+            this.detailOpened = true;
+        },
+
+        closeModal(){
+            this.detailOpened = false;
+        },
+
         async handleDiselect(){
             this.filter.project_ids = []
             await this.getReport()
@@ -129,7 +118,7 @@ export default {
                 this.report = response.data.report
                 this.loaded = true;
             });
-        },
+        }
     }
 }
 </script>

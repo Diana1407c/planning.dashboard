@@ -52,6 +52,7 @@ Route::group(['prefix' => 'pm-prices'], function() {
 
 Route::group(['prefix' => 'reports'], function() {
     Route::get('comparison', [ReportController::class, 'comparison']);
+    Route::get('comparison/detail/{project}', [ReportController::class, 'comparisonDetail']);
 });
 
 

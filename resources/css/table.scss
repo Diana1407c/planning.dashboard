@@ -74,44 +74,5 @@ table td:hover{
     position: relative;
 }
 
-.info-box {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: transparent;
-  color: black;
-  display: none;
-  z-index: 1;
-}
-
-.info-arrow-wrapper{
-    height: 12px;
-    display: flex;
-    justify-content: center;
-    text-align: center;
-}
-
-.info-arrow {
-  width: 0;
-  height: 0;
-  border-left: 13px solid transparent;
-  border-right: 13px solid transparent;
-  border-bottom: 12px solid #9c92d1;
-}
-
-.info-box-content{
-    padding: 10px;
-    flex-grow: 1;
-    border: 1px solid #9c92d1 !important;
-    border-radius: 10px;
-    background-color: #fff;
-}
-
-.hours-compare-td.active .info-box {
-  display: flex;
-  flex-direction: column;
-}
-
 
 
