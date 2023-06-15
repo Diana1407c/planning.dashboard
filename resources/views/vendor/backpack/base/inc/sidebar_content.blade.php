@@ -6,3 +6,11 @@
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('team') }}"><i class="nav-icon la la-group"></i> Teams</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('team_lead_planning') }}"><i class="nav-icon la la-history"></i> TL Planning</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('project_manager_planning') }}"><i class="nav-icon la la-history"></i> PM Planning</a></li>
+<li class="nav-item nav-dropdown open">
+    <a class="nav-link nav-dropdown-toggle" href="#"><i class="nav-icon la la-group"></i> Authentication</a>
+    <ul class="nav-dropdown-items">
+        <li class="nav-item"><a class="nav-link" href="{{ backpack_url('users') }}"><i class="nav-icon la la-user"></i> <span>Users</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="nav-icon la la-group"></i> <span>Draft:Roles</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="nav-icon la la-key"></i> <span>Draft:Permissions</span></a></li>
+    </ul>
+</li>

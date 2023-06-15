@@ -34,4 +34,5 @@ Route::group([
     Route::get('project_manager_planning', 'ProjectManagerPlanningController@index')
         ->name('page.project_manager.index')
         ->middleware('inertia:project_manager_planning');
+    Route::crud('users', 'UsersCrudController');
 });
