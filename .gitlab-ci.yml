@@ -24,7 +24,7 @@ before_script:
   - git submodule sync
   - git submodule update --init
   - git submodule add -b production --force ../../ebs-iaas/k8s-deployment.git
-  - git submodule sync && git submodule update --recursive --remote -f &&  ls k8s*
+  - git submodule update --recursive --remote &&  ls k8s*
 
 ########### non production jobs
 build:
