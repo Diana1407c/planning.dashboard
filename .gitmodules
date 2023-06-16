@@ -1,4 +1,0 @@
-[submodule "k8s-deployment"]
-	path = k8s-deployment
-	url = https://gitlab.devebs.net/ebs-iaas/k8s-deployment.git
-	branch = production
