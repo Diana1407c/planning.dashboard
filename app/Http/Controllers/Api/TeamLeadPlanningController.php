@@ -14,7 +14,9 @@ class TeamLeadPlanningController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $engineers = EngineerService::filter($request);
+        $engineers = EngineerService::filter([
+            'team_ids' => $request->get('team_ids')
+        ]);
         $projects = ProjectService::filter($request);
 
         $table = [];
@@ -39,13 +41,21 @@ class TeamLeadPlanningController extends Controller
         $data = $request->validated();
         $unique = array_diff_key($data, ['hours' => '']);
 
-        $planned = TLPlanning::updateOrCreate($unique, [
+        if($request->get('hours') == 0){
+            TLPlanning::where($unique)->delete();
+
+            $hours = $request->get('hours');
+        } else {
+            $planned = TLPlanning::updateOrCreate($unique, [
                 'hours' => $request->get('hours')
             ]);
 
+            $hours = $planned->hours;
+        }
+
         return response()->json([
             'message' => 'Successfully changed',
-            'hours' => $planned->hours
+            'hours' => $hours
         ]);
     }
 }

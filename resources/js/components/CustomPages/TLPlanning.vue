@@ -161,9 +161,7 @@ export default {
                     team_ids: this.filter.team_ids.map(obj => obj.id),
             }}).then(response => {
                 this.teams = response.data.data;
-            }).catch(error => {
-                console.error(error);
-            });
+            }).catch(() => {});
         },
 
         async getPlannings(){
@@ -174,9 +172,7 @@ export default {
                     week: this.filter.week
                 }}).then(response => {
                 this.table = response.data.table;
-            }).catch(error => {
-                console.error(error);
-            });
+            }).catch(() => {});
         },
 
         plan(event, engineerId, projectId){

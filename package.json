@@ -33,8 +33,8 @@
         "sass-loader": "^13.2.2",
         "style-loader": "^3.3.2",
         "stylus-loader": "^7.1.0",
+        "usemodal-vue3": "^0.3.7",
         "vue-currency-input": "^3.0.5",
-        "vue-final-modal": "4.2.0",
         "vue-multiselect": "^3.0.0-beta.2",
         "vue-select": "^4.0.0-beta.6",
         "webpack": "^5.80.0"

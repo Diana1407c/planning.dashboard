@@ -6,3 +6,5 @@
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('team') }}"><i class="nav-icon la la-group"></i> Teams</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('team_lead_planning') }}"><i class="nav-icon la la-history"></i> TL Planning</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('project_manager_planning') }}"><i class="nav-icon la la-history"></i> PM Planning</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('reports/comparison') }}"><i class="nav-icon la la-files-o"></i> Comparision Report</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('reports/engineers') }}"><i class="nav-icon la la-files-o"></i> Engineers Report</a></li>
