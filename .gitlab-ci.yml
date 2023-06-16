@@ -40,6 +40,7 @@ build:
       - $CI_REGISTRY  =~ /gitlab.devebs.net/
   tags:
     - ebs
+  cache: {}
   script:
     - echo test
     - echo "  === $CI_PROJECT_NAME - Start Build Dockerfile ===  "
