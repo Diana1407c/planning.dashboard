@@ -47,7 +47,7 @@ build:
     - devspace run build
   cache:
     key: ''
-    paths: []
+    paths: [/tmp/]
 
 
 deploy_dev_k8s:
