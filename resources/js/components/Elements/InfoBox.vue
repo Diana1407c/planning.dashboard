@@ -9,7 +9,7 @@
                 <table class="table table-striped table-bordered planning-table">
                     <thead>
                     <tr>
-                        <th class="w-8 text-center align-middle">Cost</th>
+                        <th class="w-8 text-center align-middle">Cost (€)</th>
                         <th class="w-10 text-center align-middle" v-for="stack in stacks">{{ stack.name }}</th>
                     </tr>
                     </thead>
@@ -138,7 +138,9 @@ export default {
                 this.pmPlanning = response.data.pm_planning
                 this.cost = response.data.cost
                 this.loadingDetails = false;
-            }).catch(() => {})
+            }).catch(() => {
+                this.loadingDetails = false;
+            })
         }
     }
 }

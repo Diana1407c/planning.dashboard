@@ -13,8 +13,7 @@ use App\Models\Team;
 use App\Services\DateService;
 use App\Services\PMPlanningService;
 use App\Services\ProjectService;
-use App\Services\StackService;
-use App\Services\TLPlanningPlanning;
+use App\Services\TLPlanningService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -26,8 +25,8 @@ class ReportController extends Controller
         $dates = DateService::rangeToWeeks($request->get('start_date'), $request->get('end_date'));
         $datesArray = DateService::weeksDateArray($dates);
 
-        $PMPlannings = PMPlanningService::filter(['range' => $dates]);
-        $TLPlannings = TLPlanningPlanning::filter(['range' => $dates]);
+        $PMPlannings = PMPlanningService::sumHoursByProjectAndDate(['range' => $dates]);
+        $TLPlannings = TLPlanningService::sumHoursByProjectAndDate(['range' => $dates]);
 
         $rawDates = [];
         $report = [];
@@ -58,13 +57,13 @@ class ReportController extends Controller
 
     public function comparisonDetail(Project $project, Request $request): JsonResponse
     {
-        $PMPlannings = PMPlanningService::filterDetail([
+        $PMPlannings = PMPlanningService::hoursByStack([
             'week' => $request->get('week'),
             'year' => $request->get('year'),
             'project_id' => $project->id
         ]);
 
-        $TLPlannings = TLPlanningPlanning::filterDetail([
+        $TLPlannings = TLPlanningService::hoursByEngineer([
             'week' => $request->get('week'),
             'year' => $request->get('year'),
             'project_id' => $project->id

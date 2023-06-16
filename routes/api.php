@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\EngineerController;
 use App\Http\Controllers\Api\PMPricesController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ProjectManagerPlanningController;
@@ -53,6 +54,8 @@ Route::group(['prefix' => 'pm-prices'], function() {
 Route::group(['prefix' => 'reports'], function() {
     Route::get('comparison', [ReportController::class, 'comparison']);
     Route::get('comparison/detail/{project}', [ReportController::class, 'comparisonDetail']);
+
+    Route::get('engineers', [EngineerController::class, 'index']);
 });
 
 

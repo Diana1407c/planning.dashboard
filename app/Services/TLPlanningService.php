@@ -2,26 +2,24 @@
 
 namespace App\Services;
 
-use App\Models\PMPlanning;
+use App\Models\TLPlanning;
 use App\Services\Base\FilterBase;
 use Illuminate\Support\Collection;
 
-class PMPlanningService
+class TLPlanningService
 {
     use FilterBase;
-
-    public static function hoursByStack(array $filters): Collection
+    public static  function hoursByEngineer(array $filters): Collection
     {
-        $query = PMPlanning::query();
+        $query = TLPlanning::query();
 
         self::filter($query, $filters);
 
-        return $query->pluck('hours', 'stack_id');
+        return $query->pluck('hours', 'engineer_id');
     }
-
-    public static function sumHoursByProjectAndDate(array $filters): Collection
+    public static  function sumHoursByProjectAndDate(array $filters): Collection
     {
-        $query = PMPlanning::query()->selectRaw('SUM(hours) as sum_hours, project_id, year, week');
+        $query = TLPlanning::query()->selectRaw('SUM(hours) as sum_hours, project_id, year, week');
 
         self::filter($query, $filters);
 

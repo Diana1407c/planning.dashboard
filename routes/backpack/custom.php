@@ -27,15 +27,13 @@ Route::group([
     Route::crud('project', 'ProjectCrudController');
     Route::get('project/sync', 'ProjectCrudController@sync');
 
-    Route::get('team_lead_planning', 'TeamLeadPlanningController@index')
-        ->name('page.team_lead_planning.index')
-        ->middleware('inertia:team_lead_planning');
+    Route::group(['middleware' => 'inertia:inertia'], function (){
+        Route::get('team_lead_planning', 'TeamLeadPlanningController@index')->name('page.team_lead_planning.index');
+        Route::get('project_manager_planning', 'ProjectManagerPlanningController@index')->name('page.project_manager.index');
 
-    Route::get('project_manager_planning', 'ProjectManagerPlanningController@index')
-        ->name('page.project_manager.index')
-        ->middleware('inertia:project_manager_planning');
-
-    Route::get('reports/comparison', 'ComparisonReportController@index')
-        ->name('page.comparison_report.index')
-        ->middleware('inertia:comparison_report');
+        Route::group(['prefix' => 'reports'], function (){
+            Route::get('comparison', 'ComparisonReportController@index')->name('page.comparison_report.index');
+            Route::get('engineers', 'EngineerReportController@index')->name('page.engineer_report.index');
+        });
+    });
 });

@@ -19,8 +19,25 @@ class EngineerResource extends JsonResource
             'id' => $this->id,
             'name' => $this->fullName(),
             'email' => $this->email,
+            'username' => $this->username,
             'team_name' => $this->team->name,
-            'team_id' => $this->team_id
+            'team_id' => $this->team_id,
+            'plannings' => $this->plannings()
         ];
+    }
+
+    protected function plannings(): array
+    {
+        $plannings['total'] = $this->teamLeadPlannings->sum('hours');
+
+        $plannings['details'] = $this->teamLeadPlannings->groupBy('project_id')
+            ->map(function ($groupedItems) {
+                return [
+                    'project' => $groupedItems->first()->project->name,
+                    'hours' => $groupedItems->sum('hours'),
+                ];
+            })->values();
+
+        return $plannings;
     }
 }

@@ -17,8 +17,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ backpack_url('engineer') }}">
-                <i class="la la-files-o"></i> Second Type
+            <a class="nav-link" href="{{ backpack_url('reports/engineers') }}">
+                <i class="la la-files-o"></i> Engineers Report
             </a>
         </li>
         <li class="nav-item">
