@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\UserRequest;
+use Backpack\PermissionManager\app\Http\Requests\UserStoreCrudRequest as StoreRequest;
+use Backpack\PermissionManager\app\Http\Requests\UserUpdateCrudRequest as UpdateRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Widget;
@@ -15,8 +16,12 @@ use Backpack\CRUD\app\Library\Widget;
 class UserCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation { store as traitStore; }
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation { update as traitUpdate; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation {
+        store as traitStore;
+    }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation {
+        update as traitUpdate;
+    }
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
@@ -41,34 +46,34 @@ class UserCrudController extends CrudController
     protected function setupListOperation()
     {
         $userCount = \App\Models\User::count();
-            Widget::add([
-                'type'        => 'progress',
-                'class'       => 'card border-0 text-white bg-primary',
-                'processClass'=> 'progress-bar',
-                'value'       => $userCount,
-                'description' => 'Registered users.',
-                'progress'    => 100 * (int)$userCount / 1000,
-                'hint'        => 1000 - $userCount . ' more until next milestone.',
-           ]);
+        Widget::add([
+            'type' => 'progress',
+            'class' => 'card border-0 text-white bg-primary',
+            'processClass' => 'progress-bar',
+            'value' => $userCount,
+            'description' => 'Registered users.',
+            'progress' => 100 * (int)$userCount / 1000,
+            'hint' => 1000 - $userCount . ' more until next milestone.',
+        ]);
 
         CRUD::column('name');
         CRUD::column('email');
         CRUD::column('created_at');
         CRUD::column('updated_at');
         CRUD::addColumn([
-            'name'       => 'role',
-            'type'      => 'select',
-            'entity'    => 'roles',
+            'name' => 'role',
+            'type' => 'select',
+            'entity' => 'roles',
             'attribute' => 'name',
-            'model'     => "Backpack\PermissionManager\app\Models\Role",
+            'model' => "Backpack\PermissionManager\app\Models\Role",
         ]);
         CRUD::addColumn([
-            'name'         => 'permissions',
-            'type'         => 'select_multiple',
-            'label'        => 'Extra Permissions',
-            'entity'       => 'permissions',
-            'attribute'    => 'name',
-            'model'        => "Backpack\PermissionManager\app\Models\Permission",
+            'name' => 'permissions',
+            'type' => 'select_multiple',
+            'label' => 'Extra Permissions',
+            'entity' => 'permissions',
+            'attribute' => 'name',
+            'model' => "Backpack\PermissionManager\app\Models\Permission",
         ]);
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -90,8 +95,58 @@ class UserCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(UserRequest::class);
+        $this->addUserFields();
+        CRUD::setValidation(StoreRequest::class);
+        /**
+         * Fields can be defined using the fluent syntax or array syntax:
+         * - CRUD::field('price')->type('number');
+         * - CRUD::addField(['name' => 'price', 'type' => 'number']));
+         */
+    }
+    /**
+     * Define what happens when the Update operation is loaded.
+     *
+     * @see https://backpackforlaravel.com/docs/crud-operation-update
+     * @return void
+     */
+    protected function setupUpdateOperation()
+    {
+        $this->addUserFields();
+        CRUD::setValidation(UpdateRequest::class);
+    }
 
+    public function store()
+    {
+        $this->handlePasswordEncryption();
+
+        return $this->traitStore();
+    }
+
+    public function update()
+    {
+        $this->handlePasswordEncryption();
+
+        return $this->traitUpdate();
+    }
+
+    protected function handlePasswordEncryption()
+    {
+        $this->crud->setRequest($this->crud->validateRequest());
+        $request = $this->crud->getRequest();
+
+        // Encrypt password if specified.
+        if ($request->input('password')) {
+            $request->request->set('password', bcrypt($request->input('password')));
+        } else {
+            $request->request->remove('password');
+        }
+
+        $this->crud->setRequest($request);
+        $this->crud->unsetValidation();
+    }
+
+    protected function addUserFields()
+    {
         CRUD::field('name');
         CRUD::field('email');
         CRUD::addField([
@@ -131,53 +186,6 @@ class UserCrudController extends CrudController
                     'number_columns' => 3,
                 ],
             ],
-    ]);
-
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number']));
-         */
-    }
-
-    /**
-     * Define what happens when the Update operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
-     */
-    protected function setupUpdateOperation()
-    {
-        $this->setupCreateOperation();
-    }
-
-    public function store()
-    {
-        $this->handlePasswordEncryption();
-
-        return $this->traitStore();
-    }
-
-    public function update()
-    {
-        $this->handlePasswordEncryption();
-
-        return $this->traitUpdate();
-    }
-
-    protected function handlePasswordEncryption()
-    {
-        $this->crud->setRequest($this->crud->validateRequest());
-        $request = $this->crud->getRequest();
-
-        // Encrypt password if specified.
-        if ($request->input('password')) {
-            $request->request->set('password', bcrypt($request->input('password')));
-        } else {
-            $request->request->remove('password');
-        }
-
-        $this->crud->setRequest($request);
-        $this->crud->unsetValidation();
+        ]);
     }
 }
