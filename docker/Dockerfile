@@ -19,8 +19,8 @@ WORKDIR /var/www/html
 
 COPY . /var/www/html/
 
-COPY php.ini /usr/local/etc/php/
-COPY entrypoint.sh /usr/local/bin/dockerInit
+COPY ./php.ini /usr/local/etc/php/
+COPY ./entrypoint.sh /usr/local/bin/dockerInit
 
 
 SHELL ["/bin/bash", "--login", "-i", "-c"]
