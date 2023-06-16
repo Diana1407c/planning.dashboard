@@ -35,15 +35,15 @@ dev:
       remotePort: ${K8S_CONTAINER_PORT}
   open:
   - url: http://localhost:8081
- sync:
- - imageName: application
-   localSubPath: ./app
-   containerPath: /usr/app/app
-   labelSelector:
-     app: ${PROJECT_NAME}
-     environment: ${K8S_ENV}
-   excludePaths:
-   - node_modules/
+  sync:
+  - imageName: application
+    localSubPath: ./app
+    containerPath: /usr/app/app
+    labelSelector:
+      app: ${PROJECT_NAME}
+      environment: ${K8S_ENV}
+    excludePaths:
+    - node_modules/
 
 profiles:
 - name: build
