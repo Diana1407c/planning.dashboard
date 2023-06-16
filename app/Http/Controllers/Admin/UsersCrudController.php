@@ -61,7 +61,7 @@ class UsersCrudController extends CrudController
             'name'      => 'role_id',
             'entity'    => 'roles',
             'attribute' => 'name',
-            'model'     => "Backpack\PermissionManager\app\Models\Role",
+            'model'     => "app\Models\Role",
         ]);
         CRUD::addColumn([
             'name'         => 'permissions',
@@ -69,7 +69,7 @@ class UsersCrudController extends CrudController
             'label'        => 'Extra Permissions',
             'entity'       => 'permissions',
             'attribute'    => 'name',
-            'model'        => "Backpack\PermissionManager\app\Models\Permission",
+            'model'        => "app\Models\Permission",
         ]);
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -117,7 +117,7 @@ class UsersCrudController extends CrudController
                     'entity'           => 'roles',
                     'entity_secondary' => 'permissions',
                     'attribute'        => 'name',
-                    'model'            => "Backpack\PermissionManager\app\Models\Role",
+                    'model'            => "app\Models\Role",
                     'pivot'            => true,
                     'number_columns'   => 3,
                 ],
@@ -127,7 +127,7 @@ class UsersCrudController extends CrudController
                     'entity'         => 'permissions',
                     'entity_primary' => 'roles',
                     'attribute'      => 'name',
-                    'model'          => "Backpack\PermissionManager\app\Models\Permission",
+                    'model'          => "app\Models\Permission",
                     'pivot'          => true,
                     'number_columns' => 3,
                 ],

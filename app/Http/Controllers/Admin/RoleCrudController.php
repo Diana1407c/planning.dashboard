@@ -29,6 +29,8 @@ class RoleCrudController extends CrudController
         CRUD::setModel(\App\Models\Role::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/role');
         CRUD::setEntityNameStrings('role', 'roles');
+        $this->crud->denyAccess(['create', 'delete', 'update']);
+
     }
 
     /**
