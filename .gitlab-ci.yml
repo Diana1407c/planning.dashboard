@@ -45,9 +45,9 @@ build:
     - echo "  === $CI_PROJECT_NAME - Start Build Dockerfile ===  "
     - cat "${envVars}" | envsubst > .env
     - devspace run build
-  cache:
-    key: ''
-    paths: []
+  # cache:
+  #   key: ''
+  #   paths: []
 
 
 deploy_dev_k8s:
