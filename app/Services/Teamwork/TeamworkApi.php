@@ -2,6 +2,7 @@
 
 namespace App\Services\Teamwork;
 
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use stdClass;
@@ -41,6 +42,35 @@ class TeamworkApi
     public function getPeople(): array
     {
         $response = $this->client->get($this->url('/people.json'), [
+            'headers' => $this->headers(),
+        ]);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function getTimeEntries(Carbon $fromDate, Carbon $toDate, int $page = 1): array
+    {
+        $response = $this->client->get($this->url("/time_entries.json"), [
+            'query'=> [
+                'page' => $page,
+                'fromdate' => $fromDate->format('Ymd'),
+                'todate' => $toDate->format('Ymd')
+            ],
+            'headers' => $this->headers(),
+        ]);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function getPerson(int $id): array
+    {
+        $response = $this->client->get($this->url("/people/$id.json"), [
             'headers' => $this->headers(),
         ]);
 

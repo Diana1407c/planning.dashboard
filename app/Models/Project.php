@@ -25,7 +25,7 @@ class Project extends Model
     use CrudTrait;
     use HasFactory;
 
-    protected $fillable = ['name', 'state'];
+    protected $fillable = ['id', 'name', 'state'];
 
     public function teamLeadPlannings(): HasMany
     {

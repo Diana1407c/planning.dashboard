@@ -4,12 +4,14 @@ RUN apt-get update && \
     apt-get install -y \
     git \
     curl \
+    cron \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
     zip \
     unzip \
     redis \
+    supervisor \
     libx11-xcb1 libxss1 libgbm1 \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
@@ -20,6 +22,7 @@ WORKDIR /var/www/html
 COPY . /var/www/html/
 
 COPY php.ini /usr/local/etc/php/
+COPY supervisor.conf /etc/supervisor/conf.d/supervisord.conf
 COPY entrypoint.sh /usr/local/bin/dockerInit
 
 
