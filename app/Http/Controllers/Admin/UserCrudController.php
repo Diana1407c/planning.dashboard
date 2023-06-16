@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\UsersRequest;
+use App\Http\Requests\UserRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Widget;
 
 /**
- * Class UsersCrudController
+ * Class UserCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class UsersCrudController extends CrudController
+class UserCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation { store as traitStore; }
@@ -58,10 +58,9 @@ class UsersCrudController extends CrudController
         CRUD::addColumn([
             'name'       => 'role',
             'type'      => 'select',
-            'name'      => 'role_id',
             'entity'    => 'roles',
             'attribute' => 'name',
-            'model'     => "app\Models\Role",
+            'model'     => "Backpack\PermissionManager\app\Models\Role",
         ]);
         CRUD::addColumn([
             'name'         => 'permissions',
@@ -69,7 +68,7 @@ class UsersCrudController extends CrudController
             'label'        => 'Extra Permissions',
             'entity'       => 'permissions',
             'attribute'    => 'name',
-            'model'        => "app\Models\Permission",
+            'model'        => "Backpack\PermissionManager\app\Models\Permission",
         ]);
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -91,7 +90,7 @@ class UsersCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(UsersRequest::class);
+        CRUD::setValidation(UserRequest::class);
 
         CRUD::field('name');
         CRUD::field('email');
@@ -117,7 +116,7 @@ class UsersCrudController extends CrudController
                     'entity'           => 'roles',
                     'entity_secondary' => 'permissions',
                     'attribute'        => 'name',
-                    'model'            => "app\Models\Role",
+                    'model'            => "Backpack\PermissionManager\app\Models\Role",
                     'pivot'            => true,
                     'number_columns'   => 3,
                 ],
@@ -127,7 +126,7 @@ class UsersCrudController extends CrudController
                     'entity'         => 'permissions',
                     'entity_primary' => 'roles',
                     'attribute'      => 'name',
-                    'model'          => "app\Models\Permission",
+                    'model'          => "Backpack\PermissionManager\app\Models\Permission",
                     'pivot'          => true,
                     'number_columns' => 3,
                 ],
