@@ -20,5 +20,7 @@
     </ul>
 </li>
 <?php endif; ?>
+<?php if(backpack_user()->hasRole('admin|project_manager|accountant')):?>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('reports/comparison') }}"><i class="nav-icon la la-files-o"></i> Comparision Report</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('reports/engineers') }}"><i class="nav-icon la la-files-o"></i> Engineers Report</a></li>
+<?php endif; ?>

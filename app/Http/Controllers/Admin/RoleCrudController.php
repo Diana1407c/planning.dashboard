@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\RoleRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use App\Http\Requests\RoleUpdateRequest as UpdateRequest;
 use Backpack\PermissionManager\app\Http\Controllers\RoleCrudController as Role;
 
 /**
@@ -15,23 +15,12 @@ use Backpack\PermissionManager\app\Http\Controllers\RoleCrudController as Role;
 class RoleCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-
-    /**
-     * Configure the CrudPanel object. Apply settings to all operations.
-     *
-     * @return void
-     */
     public function setup()
     {
         CRUD::setModel(\App\Models\Role::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/role');
         CRUD::setEntityNameStrings('role', 'roles');
-        $this->crud->denyAccess(['create', 'delete', 'update']);
-
     }
 
     /**
@@ -42,42 +31,112 @@ class RoleCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::setFromDb(); // columns
+        /**
+         * Show a column for the name of the role.
+         */
+        $this->crud->addColumn([
+            'name'  => 'name',
+            'label' => trans('backpack::permissionmanager.name'),
+            'type'  => 'text',
+        ]);
 
         /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']);
+         * Show a column with the number of users that have that particular role.
+         *
+         * Note: To account for the fact that there can be thousands or millions
+         * of users for a role, we did not use the `relationship_count` column,
+         * but instead opted to append a fake `user_count` column to
+         * the result, using Laravel's `withCount()` method.
+         * That way, no users are loaded.
          */
-    }
-
-    /**
-     * Define what happens when the Create operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-create
-     * @return void
-     */
-    protected function setupCreateOperation()
-    {
-        CRUD::setValidation(RoleRequest::class);
-
-        CRUD::setFromDb(); // fields
+        $this->crud->query->withCount('users');
+        $this->crud->addColumn([
+            'label'     => trans('backpack::permissionmanager.users'),
+            'type'      => 'text',
+            'name'      => 'users_count',
+            'wrapper'   => [
+                'href' => function ($crud, $column, $entry, $related_key) {
+                    return backpack_url('user?role='.$entry->getKey());
+                },
+            ],
+            'suffix'    => ' '.strtolower(trans('backpack::permissionmanager.users')),
+        ]);
 
         /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number']));
+         * In case multiple guards are used, show a column for the guard.
          */
+        if (config('backpack.permissionmanager.multiple_guards')) {
+            $this->crud->addColumn([
+                'name'  => 'guard_name',
+                'label' => trans('backpack::permissionmanager.guard_type'),
+                'type'  => 'text',
+            ]);
+        }
+
+        /**
+         * Show the exact permissions that role has.
+         */
+        $this->crud->addColumn([
+            // n-n relationship (with pivot table)
+            'label'     => mb_ucfirst(trans('backpack::permissionmanager.permission_plural')),
+            'type'      => 'select_multiple',
+            'name'      => 'permissions', // the method that defines the relationship in your Model
+            'entity'    => 'permissions', // the method that defines the relationship in your Model
+            'attribute' => 'name', // foreign key attribute that is shown to user
+            'model'     => '\App\Models\Permission', // foreign key model
+            'pivot'     => true, // on create&update, do you need to add/delete pivot table entries?
+        ]);
     }
 
-    /**
-     * Define what happens when the Update operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
-     */
     protected function setupUpdateOperation()
     {
-        $this->setupCreateOperation();
+        $this->addFields();
+        $this->crud->setValidation(UpdateRequest::class);
+    }
+
+    private function addFields()
+    {
+        $this->crud->addField([
+            'name'  => 'name',
+            'label' => trans('backpack::permissionmanager.name'),
+            'type'  => 'text',
+        ]);
+
+        if (config('backpack.permissionmanager.multiple_guards')) {
+            $this->crud->addField([
+                'name'    => 'guard_name',
+                'label'   => trans('backpack::permissionmanager.guard_type'),
+                'type'    => 'select_from_array',
+                'options' => $this->getGuardTypes(),
+            ]);
+        }
+
+        $this->crud->addField([
+            'label'     => mb_ucfirst(trans('backpack::permissionmanager.permission_plural')),
+            'type'      => 'checklist',
+            'name'      => 'permissions',
+            'entity'    => 'permissions',
+            'attribute' => 'name',
+            'model'     => '\App\Models\Permission',
+            'pivot'     => true,
+        ]);
+    }
+
+    /*
+     * Get an array list of all available guard types
+     * that have been defined in app/config/auth.php
+     *
+     * @return array
+     **/
+    private function getGuardTypes()
+    {
+        $guards = config('auth.guards');
+
+        $returnable = [];
+        foreach ($guards as $key => $details) {
+            $returnable[$key] = $key;
+        }
+
+        return $returnable;
     }
 }
