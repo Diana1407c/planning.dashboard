@@ -30,13 +30,11 @@ export default {
     },
     mounted() {
         const outsideInput = document.querySelector('select[name="team_lead_id"]');
-        console.log(outsideInput.value);
         this.teamLeadId = outsideInput.value;
 
         outsideInput.addEventListener('input', (event) => {
             const newValue = event.target.value;
             const itemToAdd = this.engineers.find((item) => item.id === parseInt(newValue, 10));
-            console.log(itemToAdd)
             if (itemToAdd) {
                 const exists = this.selected.some((secondItem) => secondItem.id === parseInt(newValue, 10));
                 if (!exists) {

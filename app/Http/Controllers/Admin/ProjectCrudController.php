@@ -18,10 +18,7 @@ use Illuminate\Http\RedirectResponse;
 class ProjectCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -33,7 +30,6 @@ class ProjectCrudController extends CrudController
         CRUD::setModel(\App\Models\Project::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/project');
         CRUD::setEntityNameStrings('project', 'projects');
-        $this->crud->denyAccess(['create', 'delete']);
     }
 
     /**

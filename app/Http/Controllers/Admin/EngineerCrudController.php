@@ -22,10 +22,6 @@ use Illuminate\Http\RedirectResponse;
 class EngineerCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -37,7 +33,6 @@ class EngineerCrudController extends CrudController
         CRUD::setModel(\App\Models\Engineer::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/engineer');
         CRUD::setEntityNameStrings('engineer', 'engineers');
-        $this->crud->denyAccess(['create', 'delete', 'update']);
     }
 
     /**

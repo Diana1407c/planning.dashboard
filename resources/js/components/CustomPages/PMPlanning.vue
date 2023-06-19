@@ -161,9 +161,7 @@ export default {
                     week: this.filter.week
                 }}).then(response => {
                 this.table = response.data.table;
-            }).catch(error => {
-                console.error(error);
-            });
+            }).catch(() => {});
         },
 
         async getPrices(){
@@ -173,9 +171,7 @@ export default {
                     week: this.filter.week
                 }}).then(response => {
                 this.prices = response.data.prices;
-            }).catch(error => {
-                console.error(error);
-            });
+            }).catch(() => {});
         },
 
         plan(event, projectId, stackId){
