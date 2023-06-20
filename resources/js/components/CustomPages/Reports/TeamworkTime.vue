@@ -78,7 +78,7 @@
                 <th class="w-5 vertical-text text-center align-middle">Technology</th>
                 <th class="w-15 text-center align-middle">Engineer</th>
                 <th v-for="date in dates" class="text-center align-middle">{{ date.formatted }}</th>
-                <th class="w-15 text-center align-middle">Totals</th>
+                <th class="w-15 text-center align-middle shadow-column">Totals</th>
             </tr>
             </thead>
             <tbody>
@@ -96,21 +96,21 @@
                         <td class="w-15 text-center align-middle grand-totals-cell" v-html="parseFloat(grandTotals['engineers'][engineerId]).toFixed(2)"></td>
                     </tr>
                     <tr>
-                        <td class="text-center align-middle heading-tech-total">{{ technology(stackId) }} Total</td>
-                        <td v-for="date in dates"  :class="'total-tech-'+techId" class="text-center align-middle cell-tech-total">{{ logging?.[date.index]?.[stackId]?.[techId]?.['total_tech'] || 0 }}</td>
-                        <td class="w-15 text-center align-middle grand-totals-cell" v-html="parseFloat(grandTotals['tech'][techId]).toFixed(2)"></td>
+                        <td class="text-center align-middle heading-tech-total">{{ technology(techId) }} Total</td>
+                        <td v-for="date in dates" :class="'total-tech-'+techId" class="text-center align-middle cell-tech-total">{{ logging?.[date.index]?.[stackId]?.[techId]?.['total_tech'] || 0 }}</td>
+                        <td class="w-15 text-center align-middle cell-tech-total grand-totals-cell" v-html="parseFloat(grandTotals['tech'][techId]).toFixed(2)"></td>
                     </tr>
                 </template>
                 <tr>
                     <td class="text-center align-middle heading-stack-total" colspan="2">{{ stack(stackId) }} Total</td>
                     <td v-for="date in dates" :class="'total-stack-'+stackId" class="text-center align-middle cell-stack-total">{{ logging?.[date.index]?.[stackId]?.['total_stack'] || 0 }}</td>
-                    <td class="w-15 text-center align-middle grand-totals-cell" v-html="parseFloat(grandTotals['stack'][stackId]).toFixed(2)"></td>
+                    <td class="w-15 text-center align-middle cell-stack-total grand-totals-cell" v-html="parseFloat(grandTotals['stack'][stackId]).toFixed(2)"></td>
                 </tr>
             </template>
             <tr class="total-row">
                 <td class="text-center align-middle heading-total" colspan="3">Month Total</td>
                 <td v-for="date in dates" class="text-center align-middle cell-total">{{ logging?.[date.index]?.['total_month'] || 0 }}</td>
-                <td class="w-15 text-center align-middle grand-totals-cell" v-html="parseFloat(grandTotals['total']).toFixed(2)"></td>
+                <td class="w-15 text-center align-middle cell-total grand-totals-cell" v-html="parseFloat(grandTotals['total']).toFixed(2)"></td>
             </tr>
             </tbody>
         </table>

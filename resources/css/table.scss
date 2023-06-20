@@ -87,7 +87,12 @@ table td:hover{
 }
 
 .grand-totals-cell{
-    background: #e3aaae !important;
+    font-weight: bold;
+}
+
+.shadow-column, .grand-totals-cell {
+    box-shadow: inset -4px 0 5px -4px rgba(0, 0, 0, 0.5),
+                inset 4px 0 5px -4px rgba(0, 0, 0, 0.5);
 }
 
 
