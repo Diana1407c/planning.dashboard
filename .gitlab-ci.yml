@@ -61,13 +61,10 @@ deploy_dev_k8s:
   tags:
     - ebs
   script:
-    ## Test helm
-    - helm -h
     - echo "  === $CI_PROJECT_NAME - Start Deployment ===  "
     - cat "${envVars}" | envsubst > .env
     - devspace run deployment
     - devspace run check-deployment
-
 
 ########### production steps
 version_incrementing:
