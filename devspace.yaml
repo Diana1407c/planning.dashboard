@@ -19,23 +19,23 @@ dependencies:   # Project deployment dependencies
     path: k8s-deployment
   profile: ""
 
-dev:
-  logs:
-    showLast: 50
-    images:
-      - application
-  ports:
-  - imageName: application
-    namespace: "${K8S_APP_NAMESPACE}"
-    labelSelector:
-      app: ${PROJECT_NAME}
-      environment: ${K8S_ENV}
-    forward:
-    - port: 8081    # Port-Forwarding to container application
-      remotePort: ${K8S_CONTAINER_PORT}
-  open:
-  - url: http://localhost:8081
-#  sync:
+# dev:
+#   logs:
+#     showLast: 50
+#     images:
+#       - application
+#   ports:
+#   - imageName: application
+#     namespace: "${K8S_APP_NAMESPACE}"
+#     labelSelector:
+#       app: ${PROJECT_NAME}
+#       environment: ${K8S_ENV}
+#     forward:
+#     - port: 8081    # Port-Forwarding to container application
+#       remotePort: ${K8S_CONTAINER_PORT}
+#   open:
+#   - url: http://localhost:8081
+# #  sync:
 #  - imageName: application
 #    localSubPath: ./app
 #    containerPath: /usr/app/app
@@ -44,59 +44,6 @@ dev:
 #      environment: ${K8S_ENV}
 #    excludePaths:
 #    - node_modules/
-
-deployments:
-  - name: planning-nginx
-    helm:
-      chart:
-        name: nginx
-        version: 1.0.0
-    containers:
-      - name: planning-nginx-sidecar
-        image: sidecar-image:tag
-    volumes:
-      - localSubPath: /var/www/html
-        mountPath: /var/www/html
-      - localSubPath: ./nginx.conf
-        mountPath: /etc/nginx/conf.d/planning.conf
-    ports:
-      - port: 80
-        targetPort: 80
-    networks:
-      - planning-network
-  - name: planning-php
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - localSubPath: /var/www/html
-        mountPath: /var/www/html
-    networks:
-      - planning-network
-    links:
-      - planning-db
-  - name: planning-db
-    helm:
-      chart:
-        name: mariadb
-        version: 1.0.0
-    networks:
-      - planning-network
-    ports:
-      - port: 3306
-        targetPort: 3306
-    envFiles:
-      - path: ./.env
-    volumes:
-      - localSubPath: ./mysql_data
-        mountPath: /var/lib/mysql
-    command: ["mysqld", "--bind-address=0.0.0.0", "--slow-query-log", "--log-output=TABLE", "--log-queries-not-using-indexes=ON"]
-
-# Define Docker networks
-networks:
-  - name: planning-network
-    driver: bridge
-
 
 profiles:
 - name: build
