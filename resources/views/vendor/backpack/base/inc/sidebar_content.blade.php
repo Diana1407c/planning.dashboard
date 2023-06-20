@@ -2,7 +2,7 @@
 @if(backpack_user()->can('manage dashboard'))
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('dashboard') }}"><i class="la la-home nav-icon"></i> {{ trans('backpack::base.dashboard') }}</a></li>
 @endif
-@if(backpack_user()->can('manage technology'))
+@if(backpack_user()->can('manage project'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('project') }}"><i class="nav-icon la la-th-list"></i> Projects</a></li>
 @endif
 @if(backpack_user()->can('manage technology'))
@@ -20,21 +20,8 @@
 @if(backpack_user()->can('manage project_manager_planning'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('project_manager_planning') }}"><i class="nav-icon la la-history"></i> PM Planning</a></li>
 @endif
-@if(backpack_user()->can('manage authentication'))
-    <li class="nav-item nav-dropdown">
-        <a class="nav-link nav-dropdown-toggle" href="#"><i class="nav-icon la la-group"></i> Authentication</a>
-        <ul class="nav-dropdown-items">
-            @if(backpack_user()->can('manage users'))
-                <li class="nav-item"><a class="nav-link" href="{{ backpack_url('user') }}"><i class="nav-icon la la-user"></i> <span>Users</span></a></li>
-            @endif
-            @if(backpack_user()->can('manage roles'))
-                <li class="nav-item"><a class="nav-link" href="{{ backpack_url('role') }}"><i class="nav-icon la la-group"></i> <span>Roles</span></a></li>
-            @endif
-            @if(backpack_user()->can('manage permissions'))
-                <li class="nav-item"><a class="nav-link" href="{{ backpack_url('permission') }}"><i class="nav-icon la la-key"></i> <span>Permissions</span></a></li>
-            @endif
-        </ul>
-    </li>
+@if(backpack_user()->can('manage users'))
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('user') }}"><i class="nav-icon la la-user"></i> <span>Users</span></a></li>
 @endif
 @if(backpack_user()->can('manage reports'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('reports/comparison') }}"><i class="nav-icon la la-files-o"></i> Comparision Report</a></li>

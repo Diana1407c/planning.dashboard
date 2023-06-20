@@ -7,6 +7,7 @@ use App\Http\Requests\UserUpdateRequest as UpdateRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Widget;
+use App\Models\Role;
 
 /**
  * Class UserCrudController
@@ -23,8 +24,6 @@ class UserCrudController extends CrudController
         update as traitUpdate;
     }
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
      *
@@ -65,15 +64,7 @@ class UserCrudController extends CrudController
             'type' => 'select',
             'entity' => 'roles',
             'attribute' => 'name',
-            'model' => "Backpack\PermissionManager\app\Models\Role",
-        ]);
-        CRUD::addColumn([
-            'name' => 'permissions',
-            'type' => 'select_multiple',
-            'label' => 'Extra Permissions',
-            'entity' => 'permissions',
-            'attribute' => 'name',
-            'model' => "Backpack\PermissionManager\app\Models\Permission",
+            'model' => "App\Models\Role",
         ]);
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -160,32 +151,19 @@ class UserCrudController extends CrudController
             'type' => 'password',
         ]);
         CRUD::addField([
-            'label'             => 'User Role Permissions',
-            'field_unique_name' => 'user_role_permission',
-            'type'              => 'checklist_dependency',
-            'name'              => ['roles', 'permissions'],
-            'subfields'         => [
-                'primary' => [
-                    'label'            => 'Roles',
-                    'name'             => 'roles',
-                    'entity'           => 'roles',
-                    'entity_secondary' => 'permissions',
-                    'attribute'        => 'name',
-                    'model'            => "Backpack\PermissionManager\app\Models\Role",
-                    'pivot'            => true,
-                    'number_columns'   => 3,
-                ],
-                'secondary' => [
-                    'label'          => 'Permission',
-                    'name'           => 'permissions',
-                    'entity'         => 'permissions',
-                    'entity_primary' => 'roles',
-                    'attribute'      => 'name',
-                    'model'          => "Backpack\PermissionManager\app\Models\Permission",
-                    'pivot'          => true,
-                    'number_columns' => 3,
-                ],
-            ],
+            'label'      => 'Roles',
+            'type'       => 'select_multiple',
+            'name'       => 'roles',
+
+            'entity'     => 'roles',
+            'model'      => "App\Models\Role",
+            'attribute'  => 'name',
+            'allows_null'=> false,
+            'pivot'      => true,
+
+            'options'    => (function ($query) {
+                return $query->orderBy('name', 'ASC')->get();
+            }),
         ]);
     }
 }
