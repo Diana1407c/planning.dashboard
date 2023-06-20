@@ -6,7 +6,7 @@ services:
     container_name: planning-nginx
     volumes:
       - './../:/var/www/html'
-      - "./nginx.conf:/etc/nginx/conf.d/planning.conf"
+      - "./nginx.conf:/etc/nginx/conf.d/default.conf"
     ports:
       - "80:80"
     networks:
