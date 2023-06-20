@@ -34,6 +34,7 @@ Route::group([
         Route::group(['prefix' => 'reports'], function (){
             Route::get('comparison', 'ComparisonReportController@index')->name('page.comparison_report.index');
             Route::get('engineers', 'EngineerReportController@index')->name('page.engineer_report.index');
+            Route::get('teamwork-time', 'TeamworkTimeController@index')->name('page.teamwork_time.index');
         });
     });
 });

@@ -5,14 +5,20 @@ namespace App\Services;
 use App\Models\Engineer;
 use App\Services\Base\FilterBase;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class EngineerService
 {
     use FilterBase;
 
+    public static function withTeams(): Collection|array
+    {
+        $query = Engineer::query();
+
+        self::filterTeams($query);
+
+        return $query->get();
+    }
     public static function filter(array $filter): Collection|array
     {
         $query = Engineer::query();

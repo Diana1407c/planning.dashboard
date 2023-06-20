@@ -8,3 +8,4 @@
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('project_manager_planning') }}"><i class="nav-icon la la-history"></i> PM Planning</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('reports/comparison') }}"><i class="nav-icon la la-files-o"></i> Comparision Report</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('reports/engineers') }}"><i class="nav-icon la la-files-o"></i> Engineers Report</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('reports/teamwork-time') }}"><i class="nav-icon la la-files-o"></i> Teamwork Time</a></li>

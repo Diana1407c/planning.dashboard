@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\StackController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TeamLeadPlanningController;
+use App\Http\Controllers\Api\TeamworkController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -56,6 +57,8 @@ Route::group(['prefix' => 'reports'], function() {
     Route::get('comparison/detail/{project}', [ReportController::class, 'comparisonDetail']);
 
     Route::get('engineers', [EngineerController::class, 'index']);
+
+    Route::get('teamwork-time', [TeamworkController::class, 'index']);
 });
 
 

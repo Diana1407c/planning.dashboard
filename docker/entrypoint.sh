@@ -21,7 +21,14 @@ service supervisor start
 chgrp -R www-data storage bootstrap/cache
 chown www-data:www-data -R /var/www/html/storage/
 chown www-data:www-data -R /var/www/html/bootstrap/
+chown www-data:www-data -R /var/www/html/docker/mysql_data
 
 composer install
+npm install
+npm install vue@3.2.26
+
+php artisan backpack:install --no-interaction
+
+php artisan optimize:cl
 
 exec $@
