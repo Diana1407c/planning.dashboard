@@ -29,7 +29,7 @@ class SyncTeamworkEntriesCustomRangeCommand extends Command
     {
         try {
             $start = Carbon::parse($this->argument('start'));
-            $end = Carbon::parse($this->argument('start'));
+            $end = Carbon::parse($this->argument('end'));
         } catch (\Exception $exception){
             $this->comment('Could not parse the dates to Carbon date');
             return;

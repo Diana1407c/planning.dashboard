@@ -96,19 +96,19 @@
                         <td class="w-15 text-center align-middle grand-totals-cell" v-html="grandTotals['engineers'][engineerId]"></td>
                     </tr>
                     <tr>
-                        <td class="text-center align-middle heading-tech-total">Total</td>
+                        <td class="text-center align-middle heading-tech-total">{{ technology(stackId) }} Total</td>
                         <td v-for="date in dates"  :class="'total-tech-'+techId" class="text-center align-middle cell-tech-total">{{ logging?.[date.index]?.[stackId]?.[techId]?.['total_tech'] || 0 }}</td>
                         <td class="w-15 text-center align-middle grand-totals-cell" v-html="grandTotals['tech'][techId]"></td>
                     </tr>
                 </template>
                 <tr>
-                    <td class="text-center align-middle heading-stack-total" colspan="2">Total</td>
+                    <td class="text-center align-middle heading-stack-total" colspan="2">{{ stack(stackId) }} Total</td>
                     <td v-for="date in dates" :class="'total-stack-'+stackId" class="text-center align-middle cell-stack-total">{{ logging?.[date.index]?.[stackId]?.['total_stack'] || 0 }}</td>
                     <td class="w-15 text-center align-middle grand-totals-cell" v-html="grandTotals['stack'][stackId]"></td>
                 </tr>
             </template>
             <tr class="total-row">
-                <td class="text-center align-middle heading-total" colspan="3">Total</td>
+                <td class="text-center align-middle heading-total" colspan="3">Month Total</td>
                 <td v-for="date in dates" class="text-center align-middle cell-total">{{ logging?.[date.index]?.['total_month'] || 0 }}</td>
                 <td class="w-15 text-center align-middle grand-totals-cell" v-html="grandTotals['total']"></td>
             </tr>
