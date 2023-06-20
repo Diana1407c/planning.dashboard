@@ -85,7 +85,7 @@ class TeamworkService
         }
     }
 
-    public static function syncEngineer(int $id): void
+    public static function syncEngineer(int $id): bool
     {
         $engineer = (new TeamworkProxy())->getPerson($id);
         if($engineer){
@@ -96,7 +96,11 @@ class TeamworkService
                 ['id' => $id],
                 $data
             );
+
+            return true;
         }
+
+        return false;
     }
 
     public static function syncProjects(): void
@@ -127,12 +131,12 @@ class TeamworkService
                     $data
                 );
             } catch (\Exception $exception){
-                self::syncEngineer(intval($entry['engineer_id']));
-
-                TeamworkTime::query()->updateOrCreate(
-                    ['id' => $id],
-                    $data
-                );
+                if(self::syncEngineer(intval($entry['engineer_id']))){
+                    TeamworkTime::query()->updateOrCreate(
+                        ['id' => $id],
+                        $data
+                    );
+                }
             }
 
         }
