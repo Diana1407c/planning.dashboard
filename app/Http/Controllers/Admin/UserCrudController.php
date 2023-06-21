@@ -6,6 +6,7 @@ use App\Http\Requests\UserStoreRequest as StoreRequest;
 use App\Http\Requests\UserUpdateRequest as UpdateRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Http\RedirectResponse;
 
 /**
  * Class UserCrudController
@@ -157,12 +158,12 @@ class UserCrudController extends CrudController
         return redirect()->route('user.index');
     }
 
-    protected function update(UpdateRequest $request)
+    protected function update(UpdateRequest $request): RedirectResponse
     {
         $this->handlePasswordEncryption($request);
         $user = $this->crud->getCurrentEntry();
         $roles = $request->input('role', []);
         $user->roles()->sync($roles);
-        return redirect()->route('user.index');
+        return $this->crud->performSaveAction($this->crud->getCurrentEntry()->getKey());
     }
 }
