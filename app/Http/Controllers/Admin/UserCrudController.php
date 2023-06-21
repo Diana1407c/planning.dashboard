@@ -108,7 +108,6 @@ class UserCrudController extends CrudController
             'entity'     => 'roles',
             'model'      => "App\Models\Role",
             'attribute'  => 'name',
-            'allows_null'=> false,
             'pivot'      => true,
             'options'    => function ($query) {
                 return $query->orderBy('name', 'ASC')->get();
