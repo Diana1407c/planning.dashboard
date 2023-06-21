@@ -90,16 +90,24 @@ class UserCrudController extends CrudController
         CRUD::setValidation(UpdateRequest::class);
 
         $user = $this->crud->getCurrentEntry();
-        $currentRoleId = $user->roles->pluck('name')->first();
+        $currentRoleId = $user->roles->pluck('name')->toArray();
         $rolesList = \App\Models\Role::pluck('id')->toArray();
 
-
         CRUD::addField([
-            'label'     => 'Current Role',
-            'type'      => 'text',
-            'name'      => 'current_role',
-            'value'     => $currentRoleId,
-            'disabled'  => true,
+            'label'      => 'Current Role',
+            'type'       => 'select',
+            'name'       => 'current_role',
+            'entity'     => 'roles',
+            'model'      => "App\Models\Role",
+            'attribute'  => 'name',
+            'allows_null'=> false,
+            'pivot'      => true,
+            'options'    => function ($query)use($currentRoleId) {
+                return $query
+                    ->where('name',$currentRoleId)
+                    ->get();
+            },
+            'value'      => $rolesList,
         ]);
 
         CRUD::addField([
@@ -115,7 +123,6 @@ class UserCrudController extends CrudController
             },
             'value'      => $rolesList,
         ]);
-
     }
 
     protected function handlePasswordEncryption()
