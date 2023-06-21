@@ -24,7 +24,7 @@ configMapGenerator:
   - name: ${PROJECT_NAME}-nginx-container-configfile
     files:
       - k8s-deployment/configmap/nginx/default.conf
-      - k8s-deployment/configmap/nginx/media.conf
+      - docker/nginx.conf
 
 generatorOptions:
   disableNameSuffixHash: true
