@@ -30,6 +30,7 @@ class UserStoreRequest extends FormRequest
             'email'    => 'required|unique:'.config('permission.table_names.users', 'users').',email',
             'name'     => 'required',
             'password' => 'required|confirmed',
+            'role'    => 'required',
         ];
     }
 }

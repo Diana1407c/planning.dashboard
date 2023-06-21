@@ -30,6 +30,7 @@ class UserUpdateRequest extends FormRequest
             'email'    => 'required|unique:'.config('permission.table_names.users', 'users').',email,'.$id,
             'name'     => 'required',
             'password' => 'confirmed',
+            'role'    => 'required',
         ];
     }
 }

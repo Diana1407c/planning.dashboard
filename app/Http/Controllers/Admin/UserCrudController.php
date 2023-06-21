@@ -6,8 +6,6 @@ use App\Http\Requests\UserStoreRequest as StoreRequest;
 use App\Http\Requests\UserUpdateRequest as UpdateRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use Backpack\CRUD\app\Library\Widget;
-use App\Models\Role;
 
 /**
  * Class UserCrudController
@@ -17,12 +15,8 @@ use App\Models\Role;
 class UserCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation {
-        store as traitStore;
-    }
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation {
-        update as traitUpdate;
-    }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -39,22 +33,10 @@ class UserCrudController extends CrudController
     /**
      * Define what happens when the List operation is loaded.
      *
-     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
     protected function setupListOperation()
     {
-        $userCount = \App\Models\User::count();
-        Widget::add([
-            'type' => 'progress',
-            'class' => 'card border-0 text-white bg-primary',
-            'processClass' => 'progress-bar',
-            'value' => $userCount,
-            'description' => 'Registered users.',
-            'progress' => 100 * (int)$userCount / 1000,
-            'hint' => 1000 - $userCount . ' more until next milestone.',
-        ]);
-
         CRUD::column('name');
         CRUD::column('email');
         CRUD::column('created_at');
@@ -66,11 +48,6 @@ class UserCrudController extends CrudController
             'attribute' => 'name',
             'model' => "App\Models\Role",
         ]);
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']);
-         */
     }
 
     protected function setupShowOperation()
@@ -81,43 +58,64 @@ class UserCrudController extends CrudController
     /**
      * Define what happens when the Create operation is loaded.
      *
-     * @see https://backpackforlaravel.com/docs/crud-operation-create
      * @return void
      */
     protected function setupCreateOperation()
     {
         $this->addUserFields();
         CRUD::setValidation(StoreRequest::class);
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number']));
-         */
+        CRUD::addField([
+            'label'      => 'Role',
+            'type'       => 'select',
+            'name'       => 'role',
+            'entity'     => 'roles',
+            'model'      => "App\Models\Role",
+            'attribute'  => 'name',
+            'pivot'      => true,
+            'options'    => (function ($query) {
+                return $query->orderBy('name', 'ASC')->get();
+            }),
+        ]);
+
     }
     /**
      * Define what happens when the Update operation is loaded.
      *
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */
     protected function setupUpdateOperation()
     {
         $this->addUserFields();
         CRUD::setValidation(UpdateRequest::class);
-    }
 
-    public function store()
-    {
-        $this->handlePasswordEncryption();
+        $user = $this->crud->getCurrentEntry();
+        $currentRoleId = $user->roles->pluck('name')->first();
+        $rolesList = \App\Models\Role::pluck('id')->toArray();
 
-        return $this->traitStore();
-    }
 
-    public function update()
-    {
-        $this->handlePasswordEncryption();
+        CRUD::addField([
+            'label'     => 'Current Role',
+            'type'      => 'text',
+            'name'      => 'current_role',
+            'value'     => $currentRoleId,
+            'disabled'  => true,
+        ]);
 
-        return $this->traitUpdate();
+        CRUD::addField([
+            'label'      => 'Change/Maintain Role',
+            'type'       => 'select',
+            'name'       => 'role',
+            'entity'     => 'roles',
+            'model'      => "App\Models\Role",
+            'attribute'  => 'name',
+            'allows_null'=> false,
+            'pivot'      => true,
+            'options'    => function ($query) {
+                return $query->orderBy('name', 'ASC')->get();
+            },
+            'value'      => $rolesList,
+        ]);
+
     }
 
     protected function handlePasswordEncryption()
@@ -125,7 +123,6 @@ class UserCrudController extends CrudController
         $this->crud->setRequest($this->crud->validateRequest());
         $request = $this->crud->getRequest();
 
-        // Encrypt password if specified.
         if ($request->input('password')) {
             $request->request->set('password', bcrypt($request->input('password')));
         } else {
@@ -141,29 +138,32 @@ class UserCrudController extends CrudController
         CRUD::field('name');
         CRUD::field('email');
         CRUD::addField([
-            'name' => 'password',
-            'label' => 'Password',
-            'type' => 'password',
+            'name'      => 'password',
+            'label'     => 'Password',
+            'type'      => 'password',
         ]);
         CRUD::addField([
-            'name' => 'password_confirmation',
-            'label' => 'Password Confirmation',
-            'type' => 'password',
+            'name'      => 'password_confirmation',
+            'label'     => 'Password Confirmation',
+            'type'      => 'password',
         ]);
-        CRUD::addField([
-            'label'      => 'Roles',
-            'type'       => 'select_multiple',
-            'name'       => 'roles',
+    }
 
-            'entity'     => 'roles',
-            'model'      => "App\Models\Role",
-            'attribute'  => 'name',
-            'allows_null'=> false,
-            'pivot'      => true,
+    protected function store(StoreRequest $request)
+    {
+        $this->handlePasswordEncryption();
+        $user = $this->crud->create($request->except(['role']));
+        $roles = $request->input('role', []);
+        $user->roles()->sync($roles);
+        return redirect()->route('user.index');
+    }
 
-            'options'    => (function ($query) {
-                return $query->orderBy('name', 'ASC')->get();
-            }),
-        ]);
+    protected function update(UpdateRequest $request)
+    {
+        $this->handlePasswordEncryption($request);
+        $user = $this->crud->getCurrentEntry();
+        $roles = $request->input('role', []);
+        $user->roles()->sync($roles);
+        return redirect()->route('user.index');
     }
 }
