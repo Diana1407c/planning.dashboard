@@ -15,8 +15,6 @@ RUN apt-get update && \
     libx11-xcb1 libxss1 libgbm1 \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-RUN php artisan backpack:install
-
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /var/www/html
