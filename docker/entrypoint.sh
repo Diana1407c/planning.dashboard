@@ -26,6 +26,9 @@ chown www-data:www-data -R /var/www/html/bootstrap/
 chown www-data:www-data -R /var/www/html/public/uploads/
 # chown www-data:www-data -R /var/www/html/docker/mysql_data
 
+export COMPOSER_PROCESS_TIMEOUT=100000000
+
+
 composer install
 npm install
 npm install vue@3.2.26
