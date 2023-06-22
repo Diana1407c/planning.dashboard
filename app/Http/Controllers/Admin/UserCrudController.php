@@ -93,7 +93,7 @@ class UserCrudController extends CrudController
         $currentRole = $user->roles->first();
 
         CRUD::addField([
-            'label'      => 'Current Role',
+            'label'      => 'Role',
             'type'       => 'select',
             'name'       => 'role',
             'entity'     => 'roles',
