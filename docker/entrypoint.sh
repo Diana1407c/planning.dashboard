@@ -9,7 +9,7 @@ echo "SHELL=/bin/bash
 
 # This extra line makes it a valid cron" > crons.txt
 
-rm -rf vendor
+rm -rf vendor composer.lock
 
 crontab crons.txt
 
