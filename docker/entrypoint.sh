@@ -9,6 +9,8 @@ echo "SHELL=/bin/bash
 
 # This extra line makes it a valid cron" > crons.txt
 
+rm -rf vendor
+
 crontab crons.txt
 
 php artisan migrate --force
