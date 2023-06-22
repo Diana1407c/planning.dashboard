@@ -33,4 +33,4 @@ SHELL ["/bin/bash", "--login", "-c"]
 RUN apt-get install -y npm
 
 RUN chmod +x /usr/local/bin/dockerInit
-CMD ["/usr/local/bin/dockerInit" && "php-fpm","-F"]
+CMD ["/usr/local/bin/dockerInit"] && ["php-fpm","-F"]
