@@ -90,28 +90,10 @@ class UserCrudController extends CrudController
         CRUD::setValidation(UpdateRequest::class);
 
         $user = $this->crud->getCurrentEntry();
-        $currentRoleId = $user->roles->pluck('name')->toArray();
-        $rolesList = \App\Models\Role::pluck('id')->toArray();
+        $currentRole = $user->roles->first();
 
         CRUD::addField([
             'label'      => 'Current Role',
-            'type'       => 'select',
-            'name'       => 'current_role',
-            'entity'     => 'roles',
-            'model'      => "App\Models\Role",
-            'attribute'  => 'name',
-            'allows_null'=> false,
-            'pivot'      => true,
-            'options'    => function ($query)use($currentRoleId) {
-                return $query
-                    ->where('name',$currentRoleId)
-                    ->get();
-            },
-            'value'      => $rolesList,
-        ]);
-
-        CRUD::addField([
-            'label'      => 'Change/Maintain Role',
             'type'       => 'select',
             'name'       => 'role',
             'entity'     => 'roles',
@@ -121,7 +103,7 @@ class UserCrudController extends CrudController
             'options'    => function ($query) {
                 return $query->orderBy('name', 'ASC')->get();
             },
-            'value'      => $rolesList,
+            'value'      => $currentRole->id,
         ]);
     }
 
