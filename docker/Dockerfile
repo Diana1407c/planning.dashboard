@@ -15,7 +15,6 @@ RUN apt-get update && \
     libx11-xcb1 libxss1 libgbm1 \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /var/www/html
@@ -33,4 +32,4 @@ SHELL ["/bin/bash", "--login", "-c"]
 RUN apt-get install -y npm
 
 RUN chmod +x /usr/local/bin/dockerInit
-CMD ["/usr/local/bin/dockerInit"] && ["php-fpm","-F"]
+CMD ["/usr/local/bin/dockerInit","php-fpm","-F"]

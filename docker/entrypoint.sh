@@ -23,6 +23,7 @@ service supervisor start
 chgrp -R www-data storage bootstrap/cache
 chown www-data:www-data -R /var/www/html/storage/
 chown www-data:www-data -R /var/www/html/bootstrap/
+chown www-data:www-data -R /var/www/html/public/uploads/
 # chown www-data:www-data -R /var/www/html/docker/mysql_data
 
 composer install
