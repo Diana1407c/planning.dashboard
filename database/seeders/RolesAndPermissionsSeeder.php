@@ -33,22 +33,17 @@ class RolesAndPermissionsSeeder extends Seeder
         ];
 
         foreach ($roles as $role) {
-            $roleInstance = Role::create([
-                'name' => $role,
-                'guard_name' => 'web',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $roleInstance = Role::query()->updateOrCreate([
+                'name' => $role],
+            ['guard_name' => 'web']
+            );
 
             foreach ($permissions as $permissionName => $allowedRoles) {
                 if (in_array($role, $allowedRoles)) {
                     $permission = Permission::firstOrCreate([
                         'name' => $permissionName,
                         'guard_name' => 'web',
-                        'created_at' => now(),
-                        'updated_at' => now(),                    
                     ]);
-
                     $roleInstance->givePermissionTo($permission);
                 }
             }
