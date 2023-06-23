@@ -11,9 +11,9 @@ patchesStrategicMerge:  ## Additional kubernetes deployment objects patches (obj
   - k8s-deployment/overlays/security/secret-image-repository.yml
   - k8s-deployment/overlays/security/ebs-platform-secret-image-repository.yml
   - k8s-deployment/overlays/environments/app-env-variables-file.yml
-  - k8s-deployment/overlays/storage/volume-dynamic-claim-mount.yml
-  - k8s-deployment/overlays/deployment/pod-with-nginx-container.yml
-  - k8s-deployment/overlays/storage/volume-claim-mount-to-nginx.yml
+  # - k8s-deployment/overlays/storage/volume-dynamic-claim-mount.yml
+  # - k8s-deployment/overlays/deployment/pod-with-nginx-container.yml
+  # - k8s-deployment/overlays/storage/volume-claim-mount-to-nginx.yml
   - k8s-deployment/overlays/ingress-controller/ingress-path-to-nginx-container.yml
   - k8s-deployment/overlays/ingress-controller/ingress-client-max-mody-size.yml
   - k8s-deployment/overlays/ingress-controller/ingress-annotations-cors.yml 
