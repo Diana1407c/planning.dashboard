@@ -41,7 +41,7 @@ return [
     // ---------
 
     // Show "Getting Started with Backpack" info block?
-    'show_getting_started' => env('APP_ENV') == 'local',
+    'show_getting_started' => false,
 
     // ------
     // STYLES
@@ -288,7 +288,7 @@ return [
 
     // The guard that protects the Backpack admin panel.
     // If null, the config.auth.defaults.guard value will be used.
-    'guard' => 'backpack',
+    'guard' => 'web',
 
     // The password reset configuration for Backpack.
     // If null, the config.auth.defaults.passwords value will be used.
