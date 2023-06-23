@@ -9,7 +9,6 @@ RUN apt-get update && \
     libxml2-dev \
     zip \
     unzip \
-    redis \
     cron \
     supervisor \
     libx11-xcb1 libxss1 libgbm1 \

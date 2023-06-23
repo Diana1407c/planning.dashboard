@@ -15,7 +15,6 @@ php artisan migrate --force
 php artisan optimize
 
 service cron start
-service redis-server start
 service supervisor start
 
 chgrp -R www-data storage bootstrap/cache
