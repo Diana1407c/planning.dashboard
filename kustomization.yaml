@@ -16,7 +16,10 @@ patchesStrategicMerge:  ## Additional kubernetes deployment objects patches (obj
   # - k8s-deployment/overlays/storage/volume-claim-mount-to-nginx.yml
   - k8s-deployment/overlays/ingress-controller/ingress-path-to-nginx-container.yml
   - k8s-deployment/overlays/ingress-controller/ingress-client-max-mody-size.yml
-  - k8s-deployment/overlays/ingress-controller/ingress-annotations-cors.yml 
+  - k8s-deployment/overlays/ingress-controller/ingress-annotations-cors.yml
+  - k8s-deployment/overlays/deployment/resources-cpu.yml
+  - k8s-deployment/overlays/deployment/resources-ram.yml
+
 
 configMapGenerator:
   - name: ${PROJECT_NAME}-app-env-variables-file
