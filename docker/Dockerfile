@@ -1,4 +1,4 @@
-FROM php:8.1-fpm-bullseye
+FROM php:8.1-apache-bullseye
 
 RUN apt-get update && \
     apt-get install -y \
@@ -19,10 +19,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 WORKDIR /var/www/html
 COPY . /var/www/html/
 
-COPY ./docker/entrypoint.sh /usr/local/bin/dockerInit
+COPY ./entrypoint.sh /usr/local/bin/dockerInit
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs=16.*
 
 RUN chmod +x /usr/local/bin/dockerInit
-CMD ["/usr/local/bin/dockerInit","php-fpm","-F"]
+CMD ["/usr/local/bin/dockerInit","apache2-foreground"]
