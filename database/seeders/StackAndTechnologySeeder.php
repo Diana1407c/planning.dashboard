@@ -48,7 +48,7 @@ class StackAndTechnologySeeder extends Seeder
         ];
 
         foreach ($stackTechnologies as $stackName => $technologies) {
-            $stack = Stack::where('name', $stackName)->firstOrFail();
+            $stack = Stack::where('name', $stackName)->firstOrCreate();
 
             foreach ($technologies as $technologyName) {
                 Technology::updateOrCreate([
