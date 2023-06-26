@@ -19,7 +19,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 WORKDIR /var/www/html
 COPY . /var/www/html/
 
-COPY ./entrypoint.sh /usr/local/bin/dockerInit
+COPY ./docker/entrypoint.sh /usr/local/bin/dockerInit
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs=16.*
