@@ -4,9 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Stack;
 use App\Models\Technology;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+
 
 class StackAndTechnologySeeder extends Seeder
 {
