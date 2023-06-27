@@ -6,6 +6,7 @@ use App\Models\Stack;
 use App\Models\Technology;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class StackAndTechnologySeeder extends Seeder
 {
@@ -14,24 +15,14 @@ class StackAndTechnologySeeder extends Seeder
      */
     public function run(): void
     {
-        $stacks = [
-            'Backend',
-            'Frontend',
-            'Mobile',
-            'Analysis',
-        ];
-
-        foreach ($stacks as $stackName) {
-            Stack::updateOrCreate(['name' => $stackName]);
-        }
         $stackTechnologies = [
-            'Backend' => [
+            'Back-end' => [
                 'Python',
                 'PHP',
                 'Java',
                 '.NET',
             ],
-            'Frontend' => [
+            'Front-end' => [
                 'React',
             ],
             'Mobile' => [
@@ -39,7 +30,7 @@ class StackAndTechnologySeeder extends Seeder
                 'Flutter',
                 'Android',
             ],
-            'Analysis' => [
+            'Analytics' => [
                 'BA',
                 'DevOps',
                 'Design',
@@ -48,7 +39,7 @@ class StackAndTechnologySeeder extends Seeder
         ];
 
         foreach ($stackTechnologies as $stackName => $technologies) {
-            $stack = Stack::where('name', $stackName)->firstOrCreate();
+            $stack = Stack::updateOrCreate(['name' => $stackName]);
 
             foreach ($technologies as $technologyName) {
                 Technology::updateOrCreate([
