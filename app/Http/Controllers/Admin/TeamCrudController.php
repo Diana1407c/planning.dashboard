@@ -167,7 +167,7 @@ class TeamCrudController extends CrudController
     {
         $team = Team::query()->create($request->validated());
 
-        $membersIds = explode('|', $request->get('members', []));
+        $membersIds = explode('|', $request->get('members',));
         if (!in_array($team->team_lead_id, $membersIds)) {
             $membersIds[] = $team->team_lead_id;
         }
@@ -182,7 +182,7 @@ class TeamCrudController extends CrudController
         $team = Team::find($request->get('id'));
         $team->update($request->validated());
 
-        $membersIds = explode('|', $request->get('members', []));
+        $membersIds = explode('|', $request->get('members',));
         if (!in_array($team->team_lead_id, $membersIds)) {
             $membersIds[] = $team->team_lead_id;
         }
