@@ -30,18 +30,18 @@ services:
     depends_on:
       - planning-db
 
-  planning-db:
-    container_name: planning-db
-    image: mariadb:10.5.12
-    networks:
-      - planning
-    ports :
-      - "3306:3306"
-    env_file:
-      - "./../.env"
-    volumes:
-      - "./mysql_data:/var/lib/mysql"
-    command: mysqld --bind-address=0.0.0.0 --slow-query-log --log-output=TABLE --log-queries-not-using-indexes=ON
+  # planning-db:
+  #   container_name: planning-db
+  #   image: mariadb:10.5.12
+  #   networks:
+  #     - planning
+  #   ports :
+  #     - "3306:3306"
+  #   env_file:
+  #     - "./../.env"
+  #   volumes:
+  #     - "./mysql_data:/var/lib/mysql"
+  #   command: mysqld --bind-address=0.0.0.0 --slow-query-log --log-output=TABLE --log-queries-not-using-indexes=ON
 #Docker Networks
 networks:
   planning:
