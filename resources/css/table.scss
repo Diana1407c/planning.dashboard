@@ -2,158 +2,99 @@
     width: auto !important;
 }
 
-.planning-table .header-team-name, .planning-table .cell-team-name{
-    max-width: 50px !important;
+.planning-table, .planning-table th{
+    border: 1px solid rgba(0,40,100,.12) !important;
 }
 
-.planning-table .header-member-name, .planning-table .cell-member-name{
-    max-width: 160px !important;
+.w-5{
+    min-width: 50px !important;
+    width: 50px !important;
 }
 
-.planning-table .header-project-name, .planning-table .cell-project-name{
-    max-width: 100px !important;
+.w-10{
+    min-width: 100px !important;
+    width: 100px !important;
+}
+
+.w-8{
+    min-width: 80px !important;
+    width: 80px !important;
+}
+
+.w-15{
+    min-width: 150px !important;
+    width: 150px !important;
+}
+
+.w-20{
+    min-width: 200px !important;
+    width: 200px !important;
+}
+
+.cell-p{
+    padding: 6px 10px !important;
 }
 
 .vertical-text {
-  writing-mode: vertical-rl;
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
   text-orientation: mixed;
   white-space: nowrap;
-}
-
-.cell-table{
-    padding: 8px 0 !important;
 }
 
 table td:hover{
     cursor: default;
 }
 
-.sub-table{
-    margin: 0 !important;
-    background-color: #9282ed !important;
-    color: #fff !important;
-    td {
-        background-color: #9282ed !important;
-    }
+.date-th{
+    min-width: 130px !important;
+    width: 130px !important;
 }
 
-.planning-badge{
-    min-width: 50px;
-    border-radius: 10px;
-    padding: 2px 8px;
-    border: 1px solid #d9e2ef !important;
-    background-color: #d9e2ef;
-    color: #1b2a4e;
+.plan-type-cell{
+    min-width: 64px !important;
+    width: 64px !important;
 }
 
-.badge-total{
-    background-color: #829289;
-    color: #fff;
+.hours-pm{
+    border-right: 1px solid rgba(0,40,100,.12) !important;
 }
 
-.badge-clickable{
-    cursor: pointer !important;
+.hours-compare-td, .hours-compare-td div {
+  transition: box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.hours-compare-td:hover {
+  background-color: #9c92d1;
+  box-shadow: inset 0 0 2px 3px rgba(0, 0, 0, 0.3);
+}
+
+.hours-compare-td{
     position: relative;
 }
 
-.add-planning-btn{
-    width: 75%;
-    max-width: 200px;
-    border-radius: 10px;
-    padding: 2px 10px !important;
+.heading-stack-total, .cell-stack-total{
+    background: #beedb2 !important;
 }
 
-.expanded-row:hover{
-    background-color: transparent !important;
-    color: #fff !important;
+.heading-tech-total, .cell-tech-total{
+    background: #dbd4ad !important;
 }
 
-.sub-table tr:hover{
-    color: #fff !important;
+.heading-total, .cell-total{
+    background: #84a0ad !important;
 }
 
-.expandable-row{
-    cursor: pointer !important;
+.grand-totals-cell{
+    font-weight: bold;
 }
 
-.main-modal{
-    max-height: 600px;
-    overflow: auto;
+.shadow-column, .grand-totals-cell {
+    box-shadow: inset -4px 0 5px -4px rgba(0, 0, 0, 0.5),
+                inset 4px 0 5px -4px rgba(0, 0, 0, 0.5);
 }
 
-.main-modal::-webkit-scrollbar {
-  display: none;
-}
 
-.main-modal {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
 
-.content-modal{
-    min-width: 600px;
-}
 
-.info-text{
-    font-weight: 300px;
-    color: gray;
-    font-size: 12px;
-}
-
-.filter-box{
-    border-bottom: 1px solid #9282ed;
-}
-
-.filter-planning-wrapper{
-    padding: 0 8px !important;
-}
-
-.add-planning-btn{
-    background-color: #42ba96 !important;
-    border-color: #42ba96 !important;
-    transition: box-shadow 0.3s ease;
-    position: relative;
-}
-
-.add-planning-btn:hover{
-    border: 1px solid #369e7f !important;
-}
-
-.add-planning-btn:active{
-    border: 1px solid #2b8c6f !important;
-}
-
-.badge-clickable:hover{
-    border: 1px solid #BEBEBE !important;
-}
-
-.badge-clickable:active{
-    border: 1px solid #B8B8B8 !important;
-}
-
-.add-planning-btn:hover:after, .add-planning-btn:active:after, .badge-clickable:hover:after, .badge-clickable:active:after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  pointer-events: none;
-}
-
-.add-planning-btn:hover:after{
-  box-shadow: inset 0 0 10px 5px #369e7f;
-}
-
-.add-planning-btn:active:after {
-  box-shadow: inset 0 0 10px 5px #2b8c6f;
-}
-
-.badge-clickable:hover:after{
-  box-shadow: inset 0 0 7px 3px #BEBEBE;
-}
-
-.badge-clickable:active:after{
-  box-shadow: inset 0 0 7px 3px #B8B8B8;
-}

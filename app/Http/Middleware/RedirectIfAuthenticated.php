@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Providers\RouteServiceProvider;
-use App\Services\Security\JWTAuth;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +17,7 @@ class RedirectIfAuthenticated
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        if (JWTAuth::user()) {
+        if (Auth::user()) {
             return redirect(RouteServiceProvider::HOME);
         }
 

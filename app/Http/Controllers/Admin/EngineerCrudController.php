@@ -3,10 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\EngineerRequest;
+use App\Jobs\SyncTeamworkEngineers;
 use App\Models\Team;
 use App\Models\User;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\CRUD\app\Library\Widget;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 
 /**
  * Class EngineerCrudController
@@ -16,10 +22,6 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 class EngineerCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -31,7 +33,6 @@ class EngineerCrudController extends CrudController
         CRUD::setModel(\App\Models\Engineer::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/engineer');
         CRUD::setEntityNameStrings('engineer', 'engineers');
-        $this->crud->denyAccess(['create', 'delete', 'update']);
     }
 
     /**
@@ -41,6 +42,12 @@ class EngineerCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        Widget::add([
+            'type'    => 'button',
+            'label'    => 'Sync Engineers',
+            'route'    => $this->crud->route.'/sync',
+        ]);
+
         CRUD::column('first_name');
         CRUD::column('last_name');
         CRUD::column('email');
@@ -61,5 +68,12 @@ class EngineerCrudController extends CrudController
             'attribute' => 'name',
             'model' => User::class
         ]);
+    }
+
+    public function sync(): Application|\Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|RedirectResponse
+    {
+        SyncTeamworkEngineers::dispatch();
+
+        return redirect($this->crud->route);
     }
 }

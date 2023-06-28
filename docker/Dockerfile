@@ -4,6 +4,7 @@ RUN apt-get update && \
     apt-get install -y \
     git \
     curl \
+    cron \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
@@ -20,6 +21,7 @@ WORKDIR /var/www/html
 COPY . /var/www/html/
 
 COPY ./docker/entrypoint.sh /usr/local/bin/dockerInit
+COPY ./docker/supervisor.conf /etc/supervisor/conf.d/supervisord.conf
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs=16.*

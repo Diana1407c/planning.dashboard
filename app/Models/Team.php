@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use stdClass;
 
 /**
  * @property integer $id
  * @property string $name
  * @property integer $team_lead_id
+ * @property integer $technology_id
  * @property StdClass $members
  * @property Engineer $teamLead
  * @property Technology $technology
