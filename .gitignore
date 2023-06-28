@@ -23,6 +23,8 @@ yarn-error.log
 /public/mix-manifest.json
 /package-lock.json
 /composer.lock
+crons.txt
+/local_docker/mysql_data
 
 # add do project .gitignore file
 .env*
