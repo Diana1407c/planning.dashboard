@@ -25,3 +25,9 @@ yarn-error.log
 /composer.lock
 crons.txt
 /local_docker/mysql_data
+
+# add do project .gitignore file
+.env*
+.devspace/
+k8s-deployment
+
