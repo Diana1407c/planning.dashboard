@@ -17,7 +17,7 @@ services:
       - planning-php
       - planning-db
   planning-php:
-    container_name: planning-php
+    container_name: REPOSITORY
     build:
       context: .
       dockerfile: Dockerfile
