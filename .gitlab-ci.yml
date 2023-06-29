@@ -15,7 +15,7 @@ variables:
 ############## build
 build:
   stage: build
-  environment: $CI_COMMIT_BRANCH
+  environment: development
   image:
     name: docker:18-git
   tags:
