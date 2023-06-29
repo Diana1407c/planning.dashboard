@@ -15,7 +15,7 @@ services:
           - planning.local
     depends_on:
       - planning-php
-      - planning-db
+
   planning-php:
     container_name: REPOSITORY
     build:
@@ -25,11 +25,6 @@ services:
       - './../:/var/www/html'
     networks:
       - planning
-    links:
-      - planning-db
-    depends_on:
-      - planning-db
-
   # planning-db:
   #   container_name: planning-db
   #   image: mariadb:10.5.12
