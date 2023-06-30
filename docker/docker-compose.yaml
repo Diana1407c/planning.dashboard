@@ -17,7 +17,8 @@ services:
   #     - planning-php
 
   planning-php:
-    container_name: REPOSITORY
+    container_name: planning-php
+    image: REPOSITORY
     volumes:
       - './../:/var/www/html'
     networks:
