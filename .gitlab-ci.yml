@@ -64,6 +64,7 @@ delete_image:
     IMAGE_TAG: $CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:$DOCKER_IMAGE_TAG
     REG_SHA256: ade837fc5224acd8c34732bf54a94f579b47851cc6a7fd5899a98386b782e228
     REG_VERSION: 0.16.1
+  when: manual
   only:
     - branches
   except:
