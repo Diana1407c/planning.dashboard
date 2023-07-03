@@ -68,4 +68,4 @@ delete_image:
   only:
     - branches
   except:
-    - main
+    - k8s_deployment
