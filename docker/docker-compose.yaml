@@ -21,8 +21,10 @@ services:
     image: REPOSITORY
     ports:
       - ${DOCKER_APP_EXP_PORT}:8000/tcp
-    volumes:
-      - './../:/var/www/html'
+#    volumes:
+#      - './../:/var/www/html'
+    volumes: #appvolume
+      - /var/lib/data/planning_dashboard/storage:/var/www/html/storage
     networks:
       - planning
   # planning-db:

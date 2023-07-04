@@ -11,8 +11,6 @@ RUN apt-get update && \
     zip \
     unzip \
     supervisor \
-    cron \
-    supervisor \
     libx11-xcb1 libxss1 libgbm1 \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
