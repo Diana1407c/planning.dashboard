@@ -1,128 +1,71 @@
 ---
 stages:
-  - build:version_incrementing
   - build
   - deploy
+  - clean
 
 services:
   - docker:dind
 
 variables:
-  DOCKER_TLS_CERTDIR: ""
+  DOCKER_TLS_CERTDIR: ''
   DOCKER_DRIVER: overlay2
-  DOCKER_REPO_IMAGE: "$CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME"
-  DOCKER_REPOSITORY: "$CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME"
-  DOCKER_IMAGE_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
-  K8S_DOCKER_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
+  DOCKER_IMAGE_TAG: '0.$CI_PIPELINE_IID$envVersTag'
+  # DOCKER_IMAGE_TAG: '0.231'
 
-image:
-  name: $CI_REGISTRY/ebs-iaas/k8s-deployment:ci-cd-tools-v02
-
-before_script:
-  - echo "  === Sync Git Module - K8S-Deployment ===  "
-  - git submodule deinit --all -f
-  - git submodule sync
-  - git submodule update --init
-  - git submodule add -b production --force ../../../ebs-iaas/k8s-deployment.git
-  - git submodule update --recursive --remote &&  ls k8s*
-
-########### non production jobs
+############## build
 build:
   stage: build
   environment: development
-  variables:
-    DOCKER_IMAGE_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
-    K8S_DOCKER_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
-  only:
-    refs:
-      - k8s_deployment
-    variables:
-      - $CI_REGISTRY  =~ /gitlab.devebs.net/
+  image:
+    name: docker:18-git
   tags:
     - ebs
+  only:
+    refs:
+      - development
+      - k8s_deployment
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - echo test
-    - echo "  === $CI_PROJECT_NAME - Start Build Dockerfile ===  "
-    - cat "${envVars}" | envsubst > .env
-    - devspace run build
-  # cache:
-  #   key: "planning-dashboard-image"
-  #   paths: [/var/lib/docker/]
+    - cp $envVars .env
+    - docker build -t "$CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:$DOCKER_IMAGE_TAG" -f docker/Dockerfile .
+    - docker images
+    - docker tag $CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:$DOCKER_IMAGE_TAG $CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:latest
+    - docker images
+    - docker push $CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:$DOCKER_IMAGE_TAG
 
-deploy_dev_k8s:
+###---------------------- Deploy development ----------------####
+
+deploy_dev:
   stage: deploy
   environment: development
-  variables:
-    DOCKER_IMAGE_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
-    K8S_DOCKER_TAG: "${VersMajor}.${VersMinor}.${CI_PIPELINE_IID}-$CI_COMMIT_REF_NAME"
-  dependencies: [build]
+  image: gitlab.devebs.net:4567/templates/images/tools:docker-git-portainer-stack-utils-01
+  tags:
+    - ebs
   only:
     refs:
+      - development
       - k8s_deployment
-    variables:
-      - $CI_REGISTRY  =~ /gitlab.devebs.net/
-  tags:
-    - ebs
   script:
-    - echo "  === $CI_PROJECT_NAME - Start Deployment ===  "
-    - cat "${envVars}" | envsubst > .env
-    - devspace run deployment
-    - devspace run check-deployment
+     - sed -i "s|REPOSITORY|$CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:$DOCKER_IMAGE_TAG|g"  ./docker/docker-compose.yaml
+     - bash docker/deployPortainer.sh
 
-########### production steps
-version_incrementing:
-  stage: build:version_incrementing
-  only:
-    refs:
-#      - master
-      - production
-    variables:
-      - $CI_REGISTRY  =~ /gitlab.devebs.net/
-  tags:
-    - ebs
+delete_image:
+  before_script:
+    - curl --fail --show-error --location "https://github.com/genuinetools/reg/releases/download/v$REG_VERSION/reg-linux-amd64" --output ./reg
+    - echo "$REG_SHA256  ./reg" | sha256sum -c -
+    - chmod a+x ./reg
+  image: curlimages/curl:7.86.0
   script:
-    - echo "  === Incrementing VersMinor ===  "
-    - bash k8s-deployment/version.sh  --variable=VersMinor
-
-build_production:
-  stage: build
-  environment: production
-  dependencies: [version_incrementing]
+    - ./reg rm -d --auth-url $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $IMAGE_TAG
+  stage: clean
   variables:
-    DOCKER_IMAGE_TAG: "${VersMajor}.${VersMinor}-prod"
-    K8S_DOCKER_TAG: "${VersMajor}.${VersMinor}-prod"
+    IMAGE_TAG: $CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:$DOCKER_IMAGE_TAG
+    REG_SHA256: ade837fc5224acd8c34732bf54a94f579b47851cc6a7fd5899a98386b782e228
+    REG_VERSION: 0.16.1
+  when: manual
   only:
-    refs:
-#      - master
-      - production
-    variables:
-      - $CI_REGISTRY  =~ /gitlab.devebs.net/
-  tags:
-    - ebs
-  script:
-    - echo "  === $CI_PROJECT_NAME - Start Build Dockerfile ===  "
-    - cat "${envVars}" | envsubst > .env
-    - devspace run build
-
-deploy_production:
-  stage: deploy
-  environment: production
-  variables:
-    DOCKER_IMAGE_TAG: "${VersMajor}.${VersMinor}-prod"
-    K8S_DOCKER_TAG: "${VersMajor}.${VersMinor}-prod"
-  dependencies: [build_production]
-  only:
-    refs:
-#      - master
-      - production
-    variables:
-      - $CI_REGISTRY  =~ /gitlab.devebs.net/
-  tags:
-    - ebs
-  script:
-    - echo "  === $CI_PROJECT_NAME - Start Deployment ===  "
-    - cat "${envVars}" | envsubst > .env
-    - devspace run deployment
-    - export rollBack=true
-    - devspace run check-deployment
-
+    - branches
+  except:
+    - k8s_deployment
