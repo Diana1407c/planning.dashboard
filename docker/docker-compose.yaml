@@ -19,10 +19,33 @@ services:
   planning-php:
     container_name: planning-php
     image: REPOSITORY
+    environment:
+      APP_NAME: "${APP_NAME}"
+      APP_ENV: "${APP_ENV}"
+      APP_KEY: "${APP_KEY}"
+      APP_DEBUG: "${APP_DEBUG}"
+      APP_URL: "${APP_URL}"
+      ASSET_URL: "${ASSET_URL}"
+      LOG_CHANNEL: "${LOG_CHANNEL}"
+      DB_CONNECTION: "${DB_CONNECTION}"
+      DB_HOST: "${DB_HOST}"
+      DB_PORT: "${DB_PORT}"
+      DB_DATABASE: "${DB_DATABASE}"
+      DB_USERNAME: "${DB_USERNAME}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      BROADCAST_DRIVER: "${BROADCAST_DRIVER}"
+      CACHE_DRIVER: "${CACHE_DRIVER}"
+      FILESYSTEM_DISK: "${FILESYSTEM_DISK}"
+      QUEUE_CONNECTION: "${QUEUE_CONNECTION}"
+      SESSION_DRIVER: "${SESSION_DRIVER}"
+      SESSION_LIFETIME: "${SESSION_LIFETIME}"
+      MEMCACHED_HOST: "${MEMCACHED_HOST}"
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+      REDIS_PORT: "${REDIS_PORT}"
     ports:
       - ${DOCKER_APP_EXP_PORT}:80/tcp
-    environment:
-#    volumes:
+    #    volumes:
 #      - './../:/var/www/html'
     volumes: #appvolume
       - /var/lib/data/planning_dashboard/storage:/var/www/html/storage
