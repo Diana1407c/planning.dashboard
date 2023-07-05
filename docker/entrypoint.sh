@@ -12,7 +12,6 @@ echo "SHELL=/bin/bash
 crontab crons.txt
 
 php artisan migrate --force
-php artisan optimize
 
 service cron start
 service supervisor start
