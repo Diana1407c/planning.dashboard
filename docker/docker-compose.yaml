@@ -20,7 +20,7 @@ services:
     container_name: planning-php
     image: REPOSITORY
     ports:
-      - ${DOCKER_APP_EXP_PORT}:8000/tcp
+      - ${DOCKER_APP_EXP_PORT}:80/tcp
 #    volumes:
 #      - './../:/var/www/html'
     volumes: #appvolume
