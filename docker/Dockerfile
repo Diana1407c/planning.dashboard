@@ -41,12 +41,12 @@ COPY ./docker/entrypoint.sh /usr/local/bin/dockerInit
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs=16.*
 
-RUN export COMPOSER_PROCESS_TIMEOUT=100000000
+#RUN export COMPOSER_PROCESS_TIMEOUT=100000000
 
 
-RUN composer install
-RUN npm install
-RUN npm install vue@3.2.26
+#RUN composer install
+#RUN npm install
+#RUN npm install vue@3.2.26
 #RUN php artisan backpack:install --no-interaction
 
 RUN chmod +x /usr/local/bin/dockerInit

@@ -1,7 +1,7 @@
 import os
 from copy import deepcopy
 
-DOCKER_PATH_YML = 'docker/docker-compose.yml'
+DOCKER_PATH_YML = 'docker/docker-compose.yaml'
 APP_ENV = os.environ.get("envVars")  # get epxorted app env
 
 with open(DOCKER_PATH_YML, "r") as f:  # to get all the lines into a list
