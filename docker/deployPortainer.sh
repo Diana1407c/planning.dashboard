@@ -38,8 +38,10 @@ function prepare_deploy_envvars (){
 function deploy_stack (){
   deployment_info_message "Prepare environment variables file (print some of them) ..."
   composeFile="$PWD/docker/docker-compose.yaml"
+  prepareENV="$PWD/docker/prepareEnv.py"
   if [[ -f $composeFile ]]; then
     echo " File found - $composeFile"
+    python3 $prepareENV
     cat $composeFile
   else
     deployment_failed_message " File $composeFile does not found"
