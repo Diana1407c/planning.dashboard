@@ -30,6 +30,6 @@ chown www-data:www-data -R /var/www/html/bootstrap/
 #npm install
 #npm install vue@3.2.26
 #
-#php artisan backpack:install --no-interaction
+php artisan backpack:install --no-interaction
 
 php artisan optimize:cl
