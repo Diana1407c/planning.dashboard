@@ -97,6 +97,12 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+        'backpack' => [
+            'provider'  => 'backpack',
+            'table'     => 'password_reset_tokens',
+            'expire'    => config('backpack.base.password_recovery_token_expiration', 60),
+            'throttle'  => config('backpack.base.password_recovery_throttle_notifications'),
+        ],
     ],
 
     /*

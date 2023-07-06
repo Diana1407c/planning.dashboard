@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Admin\TeamLeadPlanningController;
 use Illuminate\Support\Facades\Route;
-
 // --------------------------
 // Custom Backpack Routes
 // --------------------------
