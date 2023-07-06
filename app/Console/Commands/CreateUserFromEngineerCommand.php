@@ -54,17 +54,11 @@ class CreateUserFromEngineerCommand extends Command
         }
 
         $user = $userService->createUserFromEngineer($engineer, $email, $role);
-        if (!$user) {
-            $this->info('Failed to create the user.');
-            return;
-        }
-
-        $result = $userService->created($user);
-
-        if ($result['success']) {
-            $this->info('The user was created successfully and received a password reset notification.');
-        } else {
-            $this->info('User unreceived a password reset notification.');
+        if ($user) {
+            $result = $userService->created($user);
+            if ($result['success']) {
+                $this->info('The user was created successfully and received a password reset notification.');
+            }
         }
     }
 }

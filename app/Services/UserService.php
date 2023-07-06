@@ -5,7 +5,8 @@ namespace App\Services;
 use App\Models\Engineer;
 use App\Models\Role;
 use App\Models\User;
-use App\Notifications\MyWelcomeNotification;
+use App\Notifications\SetPasswordNotification;
+use Illuminate\Support\Facades\Password;
 
 /**
  * Class UserService.
@@ -33,8 +34,8 @@ class UserService
     }
     public function created(User $user)
     {
-        $validUntil= now()->addDay();
-        $user->notify(new MyWelcomeNotification($validUntil));
+        $token = Password::broker()->createToken($user);
+        $user->notify(new SetPasswordNotification($token));
         return ['success' => true];
     }
 }

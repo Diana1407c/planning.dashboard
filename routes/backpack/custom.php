@@ -2,8 +2,6 @@
 
 use App\Http\Controllers\Admin\TeamLeadPlanningController;
 use Illuminate\Support\Facades\Route;
-use Spatie\WelcomeNotification\WelcomesNewUsers;
-use App\Http\Controllers\Admin\MailWelcomeController;
 // --------------------------
 // Custom Backpack Routes
 // --------------------------
@@ -54,8 +52,3 @@ Route::group([
         Route::crud('user', 'UserCrudController');
     });
 });
-
-    Route::group(['middleware' => ['web', WelcomesNewUsers::class,]], function () {
-        Route::get('welcome/{user}', [MailWelcomeController::class, 'showWelcomeForm'])->name('welcome');
-        Route::post('welcome/{user}', [MailWelcomeController::class, 'savePassword']);
-    });
