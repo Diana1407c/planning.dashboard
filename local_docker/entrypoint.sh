@@ -15,16 +15,13 @@ php artisan migrate --force
 php artisan optimize
 
 service cron start
+service redis-server start
 service supervisor start
 
 chgrp -R www-data storage bootstrap/cache
 chown www-data:www-data -R /var/www/html/storage/
 chown www-data:www-data -R /var/www/html/bootstrap/
-#chown www-data:www-data -R /var/www/html/public/uploads/
-# chown www-data:www-data -R /var/www/html/docker/mysql_data
-
-export COMPOSER_PROCESS_TIMEOUT=100000000
-
+chown www-data:www-data -R /var/www/html/docker/mysql_data
 
 composer install
 npm install

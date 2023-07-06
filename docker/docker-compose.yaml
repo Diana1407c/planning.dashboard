@@ -1,47 +1,44 @@
 version: '3'
 
 services:
-  planning-nginx:
-    image: nginx:latest
-    container_name: planning-nginx
-    volumes:
-      - './../:/var/www/html'
-      - "./nginx.conf:/etc/nginx/conf.d/planning.conf"
-    ports:
-      - "80:80"
-    networks:
-      planning:
-        aliases:
-          - planning.local
-    depends_on:
-      - planning-php
-      - planning-db
+  # planning-nginx:
+  #   image: nginx:latest
+  #   container_name: planning-nginx
+  #   volumes:
+  #     - './../:/var/www/html'
+  #     - "./nginx.conf:/etc/nginx/conf.d/default.conf"
+  #   ports:
+  #     - "80:80"
+  #   networks:
+  #     planning:
+  #       aliases:
+  #         - planning.local
+  #   depends_on:
+  #     - planning-php
+
   planning-php:
     container_name: planning-php
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - './../:/var/www/html'
+    image: REPOSITORY
+    ports:
+      - ${DOCKER_APP_EXP_PORT}:8000/tcp
+#    volumes:
+#      - './../:/var/www/html'
+    volumes: #appvolume
+      - /var/lib/data/planning_dashboard/storage:/var/www/html/storage
     networks:
       - planning
-    links:
-      - planning-db
-    depends_on:
-      - planning-db
-
-  planning-db:
-    container_name: planning-db
-    image: mariadb:10.5.12
-    networks:
-      - planning
-    ports :
-      - "3306:3306"
-    env_file:
-      - "./../.env"
-    volumes:
-      - "./mysql_data:/var/lib/mysql"
-    command: mysqld --bind-address=0.0.0.0 --slow-query-log --log-output=TABLE --log-queries-not-using-indexes=ON
+  # planning-db:
+  #   container_name: planning-db
+  #   image: mariadb:10.5.12
+  #   networks:
+  #     - planning
+  #   ports :
+  #     - "3306:3306"
+  #   env_file:
+  #     - "./../.env"
+  #   volumes:
+  #     - "./mysql_data:/var/lib/mysql"
+  #   command: mysqld --bind-address=0.0.0.0 --slow-query-log --log-output=TABLE --log-queries-not-using-indexes=ON
 #Docker Networks
 networks:
   planning:

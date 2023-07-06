@@ -1,26 +1,71 @@
+---
 stages:
-  - merge
+  - build
+  - deploy
+  - clean
 
-check_merge_approve:
-  image: docker:20
-  stage: merge
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: always
+services:
+  - docker:dind
+
+variables:
+  DOCKER_TLS_CERTDIR: ''
+  DOCKER_DRIVER: overlay2
+  DOCKER_IMAGE_TAG: '0.$CI_PIPELINE_IID$envVersTag'
+  # DOCKER_IMAGE_TAG: '0.231'
+
+############## build
+build:
+  stage: build
+  environment: development
+  image:
+    name: docker:18-git
   tags:
     - ebs
+  only:
+    refs:
+      - development
+      - k8s_deployment
   before_script:
-    - echo $CI_MERGE_REQUEST_IID
-    - apk add curl jq
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - |
-      MERGE_REQUEST_AUTHOR=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" https://gitlab.devebs.net/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID | jq ".author.username")
-      APPROVERS=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" https://gitlab.devebs.net/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/approvals | jq ".approved_by[].user.username" | jq "del(. | select(. == $MERGE_REQUEST_AUTHOR))" | jq '. | select(. != null )')
-      echo "Author $MERGE_REQUEST_AUTHOR"
-      if [[ "$APPROVERS" ]]; then
-        echo 'Approved'
-        echo -e "Approvers:\n$APPROVERS"
-      else
-        echo 'Merge should be approved'
-        exit 1
-      fi
+    - cp $envVars .env
+    - docker build -t "$CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:$DOCKER_IMAGE_TAG" -f docker/Dockerfile .
+    - docker images
+    - docker tag $CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:$DOCKER_IMAGE_TAG $CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:latest
+    - docker images
+    - docker push $CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:$DOCKER_IMAGE_TAG
+
+###---------------------- Deploy development ----------------####
+
+deploy_dev:
+  stage: deploy
+  environment: development
+  image: gitlab.devebs.net:4567/templates/images/tools:docker-git-portainer-stack-utils-01
+  tags:
+    - ebs
+  only:
+    refs:
+      - development
+      - k8s_deployment
+  script:
+     - sed -i "s|REPOSITORY|$CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:$DOCKER_IMAGE_TAG|g"  ./docker/docker-compose.yaml
+     - bash docker/deployPortainer.sh
+
+delete_image:
+  before_script:
+    - curl --fail --show-error --location "https://github.com/genuinetools/reg/releases/download/v$REG_VERSION/reg-linux-amd64" --output ./reg
+    - echo "$REG_SHA256  ./reg" | sha256sum -c -
+    - chmod a+x ./reg
+  image: curlimages/curl:7.86.0
+  script:
+    - ./reg rm -d --auth-url $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $IMAGE_TAG
+  stage: clean
+  variables:
+    IMAGE_TAG: $CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:$DOCKER_IMAGE_TAG
+    REG_SHA256: ade837fc5224acd8c34732bf54a94f579b47851cc6a7fd5899a98386b782e228
+    REG_VERSION: 0.16.1
+  when: manual
+  only:
+    - branches
+  except:
+    - k8s_deployment

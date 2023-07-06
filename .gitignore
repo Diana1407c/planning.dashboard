@@ -17,7 +17,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-/docker/mysql_data
 /public/fonts
 /public/js
 /public/packages
@@ -25,3 +24,10 @@ yarn-error.log
 /package-lock.json
 /composer.lock
 crons.txt
+/local_docker/mysql_data
+
+# add do project .gitignore file
+.env*
+.devspace/
+k8s-deployment
+
