@@ -31,3 +31,5 @@ npm install vue@3.2.26
 php artisan backpack:install --no-interaction
 
 php artisan optimize:cl
+
+exec $@
