@@ -46,6 +46,7 @@ RUN export COMPOSER_PROCESS_TIMEOUT=100000000
 RUN composer install
 RUN npm install
 RUN npm install vue@3.2.26
+RUN npm run prod
 RUN php artisan backpack:install --no-interaction
 
 RUN chmod +x /usr/local/bin/dockerInit
