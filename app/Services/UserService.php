@@ -32,7 +32,7 @@ class UserService
 
         return $user;
     }
-    public function created(User $user)
+    public function sendNotification(User $user)
     {
         $token = Password::broker()->createToken($user);
         $user->notify(new SetPasswordNotification($token));
