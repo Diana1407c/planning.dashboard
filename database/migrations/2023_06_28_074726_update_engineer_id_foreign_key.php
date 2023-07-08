@@ -12,12 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('teams', function (Blueprint $table) {
-            $table->dropForeign('teams_team_lead_id_foreign');
-            $table->dropColumn('team_lead_id');
-        });
-        Schema::table('teams', function (Blueprint $table) {
-            $table->unsignedBigInteger('team_lead_id')->nullable();
-            $table->foreign('team_lead_id')->references('id')->on('teams')->onDelete('set null');
+            $table->dropForeign(['team_lead_id']);
+            $table->unsignedBigInteger('team_lead_id')->nullable()->change();
+            $table->foreign('team_lead_id')->references('id')->on('engineers')->onDelete('set null');
         });
     }
 
