@@ -46,14 +46,7 @@ function deploy_stack (){
   else
     deployment_failed_message " File $composeFile does not found"
   fi
-  if [[ -f .env ]]; then
-    echo " Found file .env"
-    cat .env | grep -v "PASS" | grep "DOCKER\|PORTAINER\|ENVIRONMENT"
-    docker run -t --rm  --env-file $PWD/.env  -v $PWD/.env:/env \
-      -v $composeFile:/docker-compose.yaml git2.devebs.net:4567/templates/images/tools:docker-git-portainer-stack-utils-01 \
-      psu stack deploy
-    check_exit_code "function deploy_stack failed local"
-  elif [[ -f ${envVars} ]]; then
+  if [[ -f ${envVars} ]]; then
     echo " Found envVars CI  variables file, creting .env file ..."
     echo "DOCKER_IMAGE_TAG=$DOCKER_IMAGE_TAG" >> ${envVars}
     cat ${envVars} | grep -v "PASS" | grep "DOCKER_IMAGE_TAG\|PORTAINER\|ENVIRONMENT"
@@ -62,6 +55,13 @@ function deploy_stack (){
     env | grep -v "PASS" | grep "DOCKER\|PORTAINER\|ENVIRONMENT"
     psu stack deploy
     check_exit_code "function deploy_stack failed"
+  elif [[ -f .env ]]; then
+      echo " Found file .env"
+      cat .env | grep -v "PASS" | grep "DOCKER\|PORTAINER\|ENVIRONMENT"
+      docker run -t --rm  --env-file $PWD/.env  -v $PWD/.env:/env \
+        -v $composeFile:/docker-compose.yaml git2.devebs.net:4567/templates/images/tools:docker-git-portainer-stack-utils-01 \
+        psu stack deploy
+      check_exit_code "function deploy_stack failed local"
   else
     deployment_failed_message " File .env or envVars CI  variables file does not found"
   fi
