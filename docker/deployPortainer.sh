@@ -41,6 +41,7 @@ function deploy_stack (){
   prepareENV="$PWD/docker/prepareEnv.py"
   if [[ -f $composeFile ]]; then
     echo " File found - $composeFile"
+    python3 $prepareENV
     cat $composeFile
   else
     deployment_failed_message " File $composeFile does not found"
