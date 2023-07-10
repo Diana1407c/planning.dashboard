@@ -2,6 +2,8 @@
 
 cd /var/www/html/
 
+printenv >> .env
+
 touch /var/log/cron.log
 chmod 777 /var/log/cron.log
 echo "SHELL=/bin/bash
