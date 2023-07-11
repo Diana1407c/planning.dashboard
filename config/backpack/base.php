@@ -24,7 +24,7 @@ return [
     // ----
 
     // Project name. Shown in the window title.
-    'project_name' => 'Backpack Admin Panel',
+    'project_name' => 'EBS Planning Dashboard',
 
     // When clicking on the admin panel's top-left logo/name,
     // where should the user be redirected?
@@ -49,7 +49,7 @@ return [
 
     // CSS files that are loaded in all pages, using Laravel's asset() helper
     'styles' => [
-        'packages/backpack/base/css/bundle.css', // has primary color electric purple (backpack default)
+        'css/custom-bundle.css', // has primary color electric purple (backpack default)
         // 'packages/backpack/base/css/blue-bundle.css', // has primary color blue
 
         // Here's what's inside the bundle:
@@ -85,7 +85,7 @@ return [
     // ------
 
     // Menu logo. You can replace this with an <img> tag if you have a logo.
-    'project_logo'   => '<b>Back</b>pack',
+    'project_logo'   => '<b>EBS</b>',
 
     // Show / hide breadcrumbs on admin panel pages.
     'breadcrumbs' => true,

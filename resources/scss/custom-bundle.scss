@@ -1,0 +1,38 @@
+@import "~@digitallyhappy/backstrap/src/scss/_backstrap_colors";
+$primary:       #508c2d !default; // <--- For eg. This will make all buttons and texts black instead of purple
+$secondary:     $gray-300 !default;
+$success:       #508c2d !default;
+$info:          #508c2d !default;
+$warning:       $yellow !default;
+$danger:        $red !default;
+$light:         $gray-200 !default;
+$dark:          $black !default;
+
+$hover-color: rgba(105, 171, 239, 0.12);
+$border-color: rgba(0, 40, 100, 0.12);
+$muted-bg-color: rgba(0, 0, 0, 0.02);
+
+$theme-colors: () !default;
+$theme-colors: map-merge(
+        (
+            "primary":    $primary,
+            "default":    $secondary,
+            "secondary":  $secondary,
+            "success":    $success,
+            "info":       $info,
+            "notice":     $info,
+            "warning":    $warning,
+            "danger":     $danger,
+            "error":      $danger,
+            "light":      $light,
+            "dark":       $dark
+        ),
+        $theme-colors
+);
+
+@import "~@digitallyhappy/backstrap/src/scss/_backstrap_miscellaneous";
+@import "~@coreui/coreui/scss/coreui";
+@import "~@digitallyhappy/backstrap/src/scss/_custom";
+@import "~@digitallyhappy/backstrap/src/scss/_noty";
+@import "~animate.css/source/_base";
+@import "~noty/src/noty";
