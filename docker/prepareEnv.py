@@ -36,7 +36,7 @@ def addEnv():  # function that writes environment variables from the system to d
                 #REMOVE COMMENTS
                 print(line)
                 variable = line.split('=')
-                docker_variables.append(f'      {variable[0]}: ' + '"${' + variable[0] + '}"')
+                docker_variables.append(f'      {variable[0]}: ' + '"${' + variable[0] + '}"\n')
                 env_file_variables.append(f'{variable[0]}=' + '"' + variable[1] + '"')
 
         docker_variables = set(docker_variables)
@@ -44,7 +44,7 @@ def addEnv():  # function that writes environment variables from the system to d
         with open('.env2', "w+") as f:
             f.writelines('\n'.join(env_file_variables))
 
-        envVars = '\n'.join(docker_variables)
+        envVars = ''.join(docker_variables)
         keyword = '    environment:\n'
         with open(DOCKER_PATH_YML, "r+") as f:
             lines = f.readlines()
