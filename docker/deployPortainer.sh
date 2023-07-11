@@ -29,6 +29,7 @@ function prepare_deploy_envvars (){
   while read LINE || [ -n "$LINE" ]; do
     if [[ ${LINE} != "" && ${LINE} != '#'* ]]; then
       lineVar=$(echo $LINE | envsubst)
+      echo lineVar >> "$PWD/.env"
       export ${lineVar}
     fi
   done < ${envVars}
