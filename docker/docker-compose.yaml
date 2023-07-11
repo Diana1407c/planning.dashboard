@@ -3,6 +3,7 @@ services:
   planning-php:
     container_name: planning-php
     image: REPOSITORY
+    environment:
     ports:
       - ${DOCKER_APP_EXP_PORT}:80/tcp
     volumes: #appvolume
