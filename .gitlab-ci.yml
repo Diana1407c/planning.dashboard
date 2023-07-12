@@ -50,9 +50,6 @@ deploy_dev:
   script:
      - sed -i "s|REPOSITORY|$CI_REGISTRY/$CI_PROJECT_PATH/$CI_COMMIT_REF_NAME:$DOCKER_IMAGE_TAG|g"  ./docker/docker-compose.yaml
      - bash docker/deployPortainer.sh
-     - echo $envVars >> .env
-     - cp ${envVars} .env
-     - cp $envVars .env
 
 delete_image:
   before_script:
