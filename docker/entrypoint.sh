@@ -2,7 +2,8 @@
 
 cd /var/www/html/
 
-php artisan command:export-system-variables
+cp tmp_env .env
+rm tmp_env
 
 touch /var/log/cron.log
 chmod 777 /var/log/cron.log

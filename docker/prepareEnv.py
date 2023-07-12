@@ -41,7 +41,7 @@ def addEnv():  # function that writes environment variables from the system to d
 
         docker_variables = set(docker_variables)
         env_file_variables = set(env_file_variables)
-        with open('.env2', "w+") as f:
+        with open('tmp_env', "w+") as f:
             f.writelines('\n'.join(env_file_variables))
 
         envVars = ''.join(docker_variables)
