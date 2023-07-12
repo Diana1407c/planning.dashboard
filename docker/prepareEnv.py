@@ -24,7 +24,6 @@ def getEnvIndex():  # gets the index for environment filed
 
 def addEnv():  # function that writes environment variables from the system to docker-compose file
     with open(APP_ENV, 'r') as file:
-        env_file_variables = []
         docker_variables = []
         for line in file:
             line = line.strip() #removes all blank spaces between lines
@@ -37,13 +36,8 @@ def addEnv():  # function that writes environment variables from the system to d
                 print(line)
                 variable = line.split('=')
                 docker_variables.append(f'      {variable[0]}: ' + '"${' + variable[0] + '}"\n')
-                env_file_variables.append(f'{variable[0]}=' + '"' + variable[1] + '"')
 
         docker_variables = set(docker_variables)
-        env_file_variables = set(env_file_variables)
-        with open('tmp_env', "w+") as f:
-            f.writelines('\n'.join(env_file_variables))
-
         envVars = ''.join(docker_variables)
         keyword = '    environment:\n'
         with open(DOCKER_PATH_YML, "r+") as f:

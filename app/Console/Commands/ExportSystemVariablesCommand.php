@@ -38,17 +38,9 @@ class ExportSystemVariablesCommand extends Command
      */
     public function handle(): void
     {
-        $file = File::get(base_path('docker/docker-compose.yaml'));
-        $fileLines = explode(PHP_EOL, $file);
+        $variableNames = File::get(base_path('.env.example'));
+        $variableNames = explode(PHP_EOL, $variableNames);
 
-        $variableNames = [];
-        foreach ($fileLines as $line){
-            preg_match('/"\${(?P<var_name>.*)}"/', $line, $matches);
-            if ($matches && isset($matches['var_name'])) {
-                $variableNames[] = $matches['var_name'];
-            }
-
-        }
         $variables = [];
 
         foreach ($variableNames as $variableName) {
@@ -63,6 +55,6 @@ class ExportSystemVariablesCommand extends Command
             }
         }
 
-        File::put(base_path('.env.test'), implode(PHP_EOL, $variables));
+        File::put(base_path('.env'), implode(PHP_EOL, $variables));
     }
 }
