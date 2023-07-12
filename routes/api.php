@@ -58,10 +58,13 @@ Route::group(['middleware' => array_merge(
 
     Route::group(['prefix' => 'reports', 'middleware' => ['permission:manage reports']], function() {
         Route::get('comparison', [ReportController::class, 'comparison']);
+        Route::get('comparison/export', [ReportController::class, 'export']);
         Route::get('comparison/detail/{project}', [ReportController::class, 'comparisonDetail']);
 
         Route::get('engineers', [EngineerController::class, 'index']);
+        Route::get('engineers/export', [EngineerController::class, 'export']);
 
         Route::get('teamwork-time', [TeamworkController::class, 'index']);
+        Route::get('teamwork-time/export', [TeamworkController::class, 'export']);
     });
 });

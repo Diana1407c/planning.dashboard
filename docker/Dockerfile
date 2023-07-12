@@ -8,11 +8,15 @@ RUN apt-get update && \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
     zip \
     unzip \
+    redis \
     supervisor \
-    libx11-xcb1 libxss1 libgbm1 \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    libx11-xcb1 libxss1 libgbm1
+
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install zip
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 

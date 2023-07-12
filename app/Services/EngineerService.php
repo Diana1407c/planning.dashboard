@@ -5,11 +5,24 @@ namespace App\Services;
 use App\Models\Engineer;
 use App\Services\Base\FilterBase;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 class EngineerService
 {
     use FilterBase;
+
+    public static function applyFilters(Request $request): Collection|array
+    {
+        return self::filter([
+            'team_ids' => $request->get('team_ids'),
+            'project_ids' => $request->get('project_ids'),
+            'dates' => DateService::rangeToWeeks($request->get('start_date'), $request->get('end_date')),
+            'with_planning' => $request->get('with_planning'),
+            'min_hours' => $request->get('min_hours'),
+            'max_hours' => $request->get('max_hours'),
+        ]);
+    }
 
     public static function withTeams(): Collection|array
     {

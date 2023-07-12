@@ -47,11 +47,14 @@
         <div class="col-3">
             <VueDatePicker v-model="filter.date" :disabled="!filter.withPlanning" multi-calendars multi-calendars-solo range @update:model-value="getEngineers"/>
         </div>
-        <div class="col-3">
+        <div class="col-2">
             <input v-model="filter.min_hours" :disabled="filter.withPlanning !== 'with'" class="form-control" placeholder="min planned hours" @blur="getEngineers">
         </div>
-        <div class="col-3">
+        <div class="col-2">
             <input v-model="filter.max_hours" :disabled="filter.withPlanning !== 'with'" class="form-control" placeholder="max planned hours" @blur="getEngineers">
+        </div>
+        <div class="col-2">
+            <button type="button" class="btn btn-primary w-100" @click="exportEngineers"><i class="fa-solid fa-download"></i> Export</button>
         </div>
     </div>
     <div class="d-flex box-filter-separator">
@@ -140,6 +143,29 @@ export default {
                 }}).then((response) => {
                     this.lastWithPlanning = this.filter.withPlanning
                     this.engineers = response.data.data
+            }).catch(() => {})
+        },
+
+        async exportEngineers(){
+            await axios.get('reports/engineers/export', {
+                responseType: "blob",
+                params: {
+                    team_ids: this.filter.teams.map(obj => obj.id),
+                    project_ids: this.filter.projects.map(obj => obj.id),
+                    start_date: this.filter.date ? this.filter.date[0] : null,
+                    end_date: this.filter.date ? this.filter.date[1] : null,
+                    with_planning: this.filter.withPlanning,
+                    min_hours: this.filter.min_hours,
+                    max_hours: this.filter.max_hours
+                }
+            }).then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'engineers.xlsx'); // Specify the filename you want to save the file as
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }).catch(() => {})
         }
     }
