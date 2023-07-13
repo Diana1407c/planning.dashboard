@@ -38,6 +38,7 @@ RUN apt-get install -y nodejs=16.*
 
 RUN export COMPOSER_PROCESS_TIMEOUT=100000000
 
+RUN chown $(whoami) .
 RUN composer install
 RUN npm install
 RUN npm install vue@3.2.26

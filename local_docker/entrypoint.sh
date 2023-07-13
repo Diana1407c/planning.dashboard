@@ -23,6 +23,7 @@ chown www-data:www-data -R /var/www/html/storage/
 chown www-data:www-data -R /var/www/html/bootstrap/
 chown www-data:www-data -R /var/www/html/docker/mysql_data
 
+chown $(whoami) .
 composer install
 npm install
 npm install vue@3.2.26
