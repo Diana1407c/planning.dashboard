@@ -2,11 +2,16 @@
 
 namespace App\Exports;
 
+use App\Http\Resources\EngineerExportResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class EngineersExport implements FromCollection, WithHeadings
+class EngineersExport implements FromCollection, WithHeadings, WithStyles
 {
     protected Collection $engineers;
 
@@ -16,25 +21,31 @@ class EngineersExport implements FromCollection, WithHeadings
     }
 
     /**
-     * @return Collection
+     * @return AnonymousResourceCollection
      */
-    public function collection(): Collection
+    public function collection(): AnonymousResourceCollection
     {
-        $this->engineers->each(function ($item){
-            $item['hours'] = collect($item->toArray()['team_lead_plannings'])->sum('hours');
-            $item->makeHidden(['id', 'team_id', 'user_id', 'created_at', 'updated_at', 'team_lead_plannings']);
-        });
-        return $this->engineers;
+        return EngineerExportResource::collection($this->engineers);
     }
 
     public function headings(): array
     {
         return [
-            'first_name',
-            'last_name',
-            'email',
-            'username',
-            'hours'
+            'Full name',
+            'Email',
+            'Team',
+            'Hours'
         ];
+    }
+
+    public function styles(Worksheet $sheet): void
+    {
+        $sheet->getStyle('1')->getFont()->setBold(true);
+        $sheet->getStyle('1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('D')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getColumnDimension('A')->setWidth(20);
+        $sheet->getColumnDimension('B')->setWidth(40);
+        $sheet->getColumnDimension('C')->setWidth(15);
+        $sheet->getColumnDimension('D')->setWidth(10);
     }
 }
