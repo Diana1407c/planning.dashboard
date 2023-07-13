@@ -25,7 +25,7 @@ yarn-error.log
 /composer.lock
 crons.txt
 /local_docker/mysql_data
-
+/public/css
 # add do project .gitignore file
 .env*
 .devspace/
