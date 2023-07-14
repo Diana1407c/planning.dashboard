@@ -1,5 +1,5 @@
 @import "~@digitallyhappy/backstrap/src/scss/_backstrap_colors";
-$primary:       #508c2d !default; // <--- For eg. This will make all buttons and texts black instead of purple
+$primary:       #508c2d !default;
 $secondary:     $gray-300 !default;
 $success:       #508c2d !default;
 $info:          #508c2d !default;
@@ -36,3 +36,8 @@ $theme-colors: map-merge(
 @import "~@digitallyhappy/backstrap/src/scss/_noty";
 @import "~animate.css/source/_base";
 @import "~noty/src/noty";
+
+#datatable_search_stack{
+    display: flex !important;
+    justify-content: end !important;
+}
