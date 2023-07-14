@@ -5,7 +5,7 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}" /> {{-- Encrypted CSRF token for Laravel, in order for Ajax requests to work --}}
     <title>{{ isset($title) ? $title.' :: '.config('backpack.base.project_name') : config('backpack.base.project_name') }}</title>
-    <link rel="icon" href="images/ebs_icon.ico" sizes="32x32" />
+    <link rel="icon" href="{{ asset('images/ebs_icon.ico') }}" sizes="32x32" />
 
     @yield('before_styles')
     @stack('before_styles')
