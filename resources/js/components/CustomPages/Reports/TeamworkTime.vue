@@ -56,15 +56,18 @@
                 </template>
             </multiselect>
         </div>
-        <div class="pb-1 col-md-6 col-sm-6 col-12">
+        <div class="pb-1 col-md-5 col-sm-6 col-12">
             <select v-model="filter.type" class="form-control" @change="getLogging">
                 <option :value="null">All hours</option>
                 <option :value="'billable'" selected>billable</option>
                 <option :value="'non_billable'" selected>Non-billable</option>
             </select>
         </div>
-        <div class="pb-1 col-md-6 col-sm-12 col-12">
+        <div class="pb-1 col-md-5 col-sm-12 col-12">
             <VueDatePicker v-model="filter.dates" multi-calendars range :format="rangeDisplay" @update:model-value="getLogging"/>
+        </div>
+        <div class="pb-1 col-md-2 col-sm-12 col-12">
+            <button type="button" class="btn btn-primary w-100" @click="exportLogging"><i class="fa-solid fa-download"></i> Export</button>
         </div>
     </div>
     <div class="d-flex box-filter-separator">
@@ -191,6 +194,28 @@ export default {
                 this.logging = response.data.logging
                 this.grandTotals = response.data.grandTotals
                 this.loaded = true;
+            }).catch(() => {})
+        },
+
+        async exportLogging(){
+            await axios.get('reports/teamwork-time/export', {
+                responseType: "blob",
+                params: {
+                    engineer_ids: this.filter.engineers.map(obj => obj.id),
+                    stack_ids: this.filter.stacks.map(obj => obj.id),
+                    technology_ids: this.filter.technologies.map(obj => obj.id),
+                    start_date: this.filter.dates?.[0] || null,
+                    end_date: this.filter.dates?.[1] || null,
+                    type: this.filter.type
+                }
+            }).then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'teamwork.xlsx');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }).catch(() => {})
         },
 
