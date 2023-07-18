@@ -44,6 +44,11 @@ class Engineer extends Model
         return $this->first_name.' '.$this->last_name;
     }
 
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
     public function teamworkTime(): HasMany
     {
         return $this->HasMany(TeamworkTime::class);
@@ -52,5 +57,10 @@ class Engineer extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function level()
+    {
+        return $this->belongsTo(Level::class);
     }
 }

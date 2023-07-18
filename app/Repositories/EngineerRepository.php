@@ -18,6 +18,11 @@ class EngineerRepository
         return Engineer::query()->whereNull('team_id')->get();
     }
 
+    public static function withoutLevel(): Collection|array
+    {
+        return Engineer::query()->whereNull('level_id')->get();
+    }
+
     public static function team(int $team_id)
     {
         return Engineer::query()->where('team_id', $team_id)->get();

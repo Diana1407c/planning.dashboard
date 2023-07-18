@@ -11,6 +11,9 @@
 @if(backpack_user()->can('manage engineer'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('engineer') }}"><i class="nav-icon la la-user"></i> Engineers</a></li>
 @endif
+@if(backpack_user()->can('manage levels'))
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('level') }}"><i class="nav-icon la la-user-check"></i> <span>Engineers Level</span></a></li>
+@endif
 @if(backpack_user()->can('manage team'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('team') }}"><i class="nav-icon la la-group"></i> Teams</a></li>
 @endif

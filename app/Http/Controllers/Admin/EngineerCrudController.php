@@ -54,6 +54,14 @@ class EngineerCrudController extends CrudController
         CRUD::column('username');
 
         CRUD::addColumn([
+            'label' => 'Level',
+            'name'  => 'level_id',
+            'entity' => 'level',
+            'attribute' => 'name',
+            'model' => Level::class
+        ]);
+
+        CRUD::addColumn([
             'label' => 'Team',
             'name'  => 'team_id',
             'entity' => 'team',
@@ -68,6 +76,7 @@ class EngineerCrudController extends CrudController
             'attribute' => 'name',
             'model' => User::class
         ]);
+
     }
 
     public function sync(): Application|\Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|RedirectResponse
