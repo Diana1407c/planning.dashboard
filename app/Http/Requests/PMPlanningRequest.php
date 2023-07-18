@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\PlannedHour;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PMPlanningRequest extends FormRequest
@@ -23,9 +24,13 @@ class PMPlanningRequest extends FormRequest
     {
         return [
             'project_id' => 'required|integer',
-            'stack_id' => 'required|integer',
+            'technology_id' => 'required|integer',
             'year' => 'required|integer',
-            'week' => 'required|integer',
+            'period_type' => 'required|in:' . implode(',', [
+                    PlannedHour::WEEK_PERIOD_TYPE,
+                    PlannedHour::MONTH_PERIOD_TYPE,
+                ]),
+            'period_number' => 'required|integer',
             'hours' => 'required|integer'
         ];
     }

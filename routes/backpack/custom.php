@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\TeamLeadPlanningController;
 use Illuminate\Support\Facades\Route;
 // --------------------------
 // Custom Backpack Routes
@@ -36,10 +35,11 @@ Route::group([
 
     Route::group(['middleware' => 'inertia:inertia'], function (){
         Route::group(['middleware' => ['permission:manage team_lead_planning']], function () {
-            Route::get('team_lead_planning', 'TeamLeadPlanningController@index')->name('page.team_lead_planning.index');
+            Route::get('weekly_team_lead_planning', 'PlannedHoursController@tlWeekly')->name('page.weekly_team_lead_planning.index');
+            Route::get('monthly_team_lead_planning', 'PlannedHoursController@tlMonthly')->name('page.monthly_team_lead_planning.index');
         });
         Route::group(['middleware' => ['permission:manage project_manager_planning']], function () {
-            Route::get('project_manager_planning', 'ProjectManagerPlanningController@index')->name('page.project_manager.index');
+            Route::get('monthly_project_manager_planning', 'PlannedHoursController@pmMonthly')->name('page.monthly_project_manager.index');
         });
 
         Route::group(['prefix' => 'reports', 'middleware' => ['permission:manage reports']], function () {

@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
+use App\Http\Requests\Planning\PlanningFilterInterface;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 class ProjectService
 {
-    public static function filter(Request $request): Collection|array
+    public static function filter(Request|PlanningFilterInterface $request): Collection|array
     {
         $query = Project::query();
 

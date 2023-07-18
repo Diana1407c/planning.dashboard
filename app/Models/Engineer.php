@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * @property integer $id
@@ -32,6 +33,11 @@ class Engineer extends Model
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
+    }
+
+    public function plannedHours(): MorphMany
+    {
+        return $this->morphMany(PlannedHour::class, 'planable');
     }
 
     public function teamLeadPlannings(): HasMany

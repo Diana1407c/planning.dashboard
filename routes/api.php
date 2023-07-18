@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\EngineerController;
+use App\Http\Controllers\Api\PlannedHourController;
 use App\Http\Controllers\Api\PMPricesController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ProjectManagerPlanningController;
@@ -42,13 +43,15 @@ Route::group(['middleware' => array_merge(
 
 
     Route::group(['prefix' => 'tl-planning', 'middleware' => ['permission:manage team_lead_planning']], function() {
-        Route::get('', [TeamLeadPlanningController::class, 'index']);
-        Route::post('', [TeamLeadPlanningController::class, 'storeOrUpdate']);
+        Route::get('weekly', [PlannedHourController::class, 'tlWeekly']);
+        Route::get('monthly', [PlannedHourController::class, 'tlMonthly']);
+        Route::post('', [PlannedHourController::class, 'tlStore']);
     });
 
     Route::group(['prefix' => 'pm-planning', 'middleware' => ['permission:manage project_manager_planning']], function() {
-        Route::get('', [ProjectManagerPlanningController::class, 'index']);
-        Route::post('', [ProjectManagerPlanningController::class, 'storeOrUpdate']);
+        Route::get('weekly', [PlannedHourController::class, 'pmWeekly']);
+        Route::get('monthly', [PlannedHourController::class, 'pmMonthly']);
+        Route::post('', [PlannedHourController::class, 'pmStore']);
     });
 
     Route::group(['prefix' => 'pm-prices', 'middleware' => ['permission:manage project_manager_planning']], function() {

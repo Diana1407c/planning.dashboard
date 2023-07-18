@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\Team;
-use App\Observers\TeamObserver;
+use App\Models\Engineer;
+use App\Models\PlannedHour;
+use App\Models\Technology;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,5 +28,12 @@ class AppServiceProvider extends ServiceProvider
             $this->app['request']->server->set('HTTPS', 'on');
             URL::forceScheme('https'); // Force HTTPS
         }
+
+        Relation::morphMap([
+            'technology' => Technology::class,
+            'engineer' => Engineer::class,
+//            PlannedHour::TECHNOLOGY_TYPE => Technology::class,
+//            PlannedHour::ENGINEER_TYPE => Engineer::class,
+        ]);
     }
 }
