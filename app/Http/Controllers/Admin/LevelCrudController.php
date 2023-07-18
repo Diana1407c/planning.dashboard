@@ -44,15 +44,12 @@ class LevelCrudController extends CrudController
             'attribute' =>'fullName',
             'model' => Engineer::class,
         ]);
-
         CRUD::addColumn([
             'label' => 'Level',
             'name'  => 'name',
 
         ]);
-
         CRUD::column('performance');
-
     }
 
     protected function setupCreateOperation()
@@ -64,16 +61,13 @@ class LevelCrudController extends CrudController
             $select .= '<option value="'. $engineer->id .'">'.$engineer->fullName().' - '. $engineer->email .'</option>';
         }
         $select .= '</select>';
-
         CRUD::addField([
             'label' => "Engineer",
             'name'  => 'engineer_id',
             'type'  => 'custom_html',
             'value' => $select
         ]);
-
         $this->addLevelFields();
-
         CRUD::setValidation(LevelRequest::class);
     }
 
@@ -85,7 +79,6 @@ class LevelCrudController extends CrudController
             'type' => 'enum',
             'options' => ['junior' => 'Junior', 'middle' => 'Middle', 'senior' => 'Senior']
         ]);
-
         CRUD::addField([
             'name' => 'performance',
             'label' => 'Performance',
@@ -122,7 +115,6 @@ class LevelCrudController extends CrudController
             'type' => 'custom_html',
             'value' => $customField,
         ]);
-
         $this->addLevelFields();
     }
 }

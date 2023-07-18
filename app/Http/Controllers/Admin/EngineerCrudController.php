@@ -76,7 +76,6 @@ class EngineerCrudController extends CrudController
             'attribute' => 'name',
             'model' => User::class
         ]);
-
     }
 
     public function sync(): Application|\Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|RedirectResponse
