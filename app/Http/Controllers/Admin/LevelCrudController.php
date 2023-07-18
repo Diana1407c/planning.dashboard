@@ -21,6 +21,7 @@ class LevelCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -37,39 +38,18 @@ class LevelCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::addColumn([
-            'label' => 'Engineer',
-            'name'  => 'engineer_id',
-            'type' => 'select',
-            'entity' => 'engineer',
-            'attribute' =>'fullName',
-            'model' => Engineer::class,
-        ]);
-        CRUD::addColumn([
             'label' => 'Level',
-            'name'  => 'name',
+            'name' => 'name',
 
         ]);
         CRUD::addColumn([
             'label' => 'Performance(%)',
-            'name'  => 'performance',
+            'name' => 'performance',
         ]);
     }
 
     protected function setupCreateOperation()
     {
-        $withoutLevel = ShortEngineersResource::collection(EngineerRepository::withoutLevel());
-
-        $select = '<label>Engineer</label><select name="engineer_id" class="form-control">';
-        foreach ($withoutLevel as $engineer){
-            $select .= '<option value="'. $engineer->id .'">'.$engineer->fullName().' - '. $engineer->email .'</option>';
-        }
-        $select .= '</select>';
-        CRUD::addField([
-            'label' => "Engineer",
-            'name'  => 'engineer_id',
-            'type'  => 'custom_html',
-            'value' => $select
-        ]);
         $this->addLevelFields();
         CRUD::setValidation(LevelRequest::class);
     }
@@ -79,8 +59,6 @@ class LevelCrudController extends CrudController
         CRUD::addField([
             'name' => 'name',
             'label' => 'Level',
-            'type' => 'enum',
-            'options' => ['junior' => 'Junior', 'middle' => 'Middle', 'senior' => 'Senior']
         ]);
         CRUD::addField([
             'name' => 'performance',
@@ -94,30 +72,8 @@ class LevelCrudController extends CrudController
         ]);
     }
 
-    public function store(LevelRequest $request): View
-    {
-        $level = $this->crud->create($request->validated());
-        $engineerId = $request->input('engineer_id');
-
-        $engineer = Engineer::find($engineerId);
-        $engineer->level_id = $level->id;
-        $engineer->save();
-
-        return view($this->crud->getCreateView(), $this->data+['crud' => $this->crud]);
-    }
-
     protected function setupUpdateOperation()
     {
-        $currentEngineer = $this->crud->getCurrentEntry()->engineer_id;
-        $engineer = Engineer::find($currentEngineer);
-
-        $customField = '<label>Engineer</label><input type="text" value="' . $engineer->fullName() . '" class="form-control" disabled>';
-
-        CRUD::addField([
-            'name' => 'engineer',
-            'type' => 'custom_html',
-            'value' => $customField,
-        ]);
-        $this->addLevelFields();
+        $this->setupCreateOperation();
     }
 }

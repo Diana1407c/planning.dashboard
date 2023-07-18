@@ -18,7 +18,7 @@ class Level extends Model
     use CrudTrait;
     use HasFactory;
 
-    protected $fillable = ['name','performance','engineer_id'];
+    protected $fillable = ['name','performance'];
 
     public function engineer()
     {

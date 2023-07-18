@@ -13,15 +13,9 @@ return new class extends Migration
     {
         Schema::create('levels', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('engineer_id')->unique();
-            $table->enum('name', ['junior', 'middle', 'senior']);
+            $table->string('name')->unique();
             $table->tinyInteger('performance')->comment('Performance in percentage');
             $table->timestamps();
-
-            $table->foreign('engineer_id')
-                ->references('id')
-                ->on('engineers')
-                ->onDelete('cascade');
         });
     }
 

@@ -25,7 +25,6 @@ class LevelRequest extends FormRequest
     public function rules()
     {
         return [
-            'engineer_id' => 'required',
             'name' => 'required',
             'performance' => 'required|integer'
         ];
