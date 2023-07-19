@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $id
  * @property string $name
  * @property string $performance
- * @property integer $engineer_id
  * @property Engineer $level_id
  */
 class Level extends Model
