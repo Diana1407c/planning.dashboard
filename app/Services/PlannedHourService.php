@@ -2,14 +2,12 @@
 
 namespace App\Services;
 
-use App\Http\Requests\Planning\PlanningFilterInterface;
 use App\Models\PlannedHour;
 
 class PlannedHourService
 {
-    public function hoursByFilter(PlanningFilterInterface $filterRequest)
+    public function hoursByFilter(array $filter)
     {
-        $filter = $filterRequest->filter();
         $query = PlannedHour::query();
 
         if (!empty($filter['year'])) {
@@ -33,5 +31,16 @@ class PlannedHourService
         }
 
         return $query->get();
+    }
+
+    public function storeHours(array $attributes, array $values): void
+    {
+        if ($values['hours'] == 0) {
+            PlannedHour::where($attributes)->delete();
+
+            return;
+        }
+
+        PlannedHour::query()->updateOrCreate($attributes, $values);
     }
 }

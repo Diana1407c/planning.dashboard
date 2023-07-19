@@ -9,12 +9,12 @@ use Illuminate\Support\Collection;
 
 class ProjectService
 {
-    public static function filter(Request|PlanningFilterInterface $request): Collection|array
+    public static function filter(Request|PlanningFilterInterface|array $filter): Collection|array
     {
         $query = Project::query();
 
-        if($project_ids = $request->get('project_ids')){
-            $query->whereIn('id', $project_ids);
+        if (!empty($filter['project_ids'])) {
+            $query->whereIn('id', $filter['project_ids']);
         }
 
         return $query->get();

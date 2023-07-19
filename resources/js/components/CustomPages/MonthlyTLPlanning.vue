@@ -63,18 +63,31 @@
             <tr>
                 <th class="w-5 vertical-text text-center align-middle">Team</th>
                 <th class="w-20 text-center align-middle">Members</th>
+                <th class="w-8 vertical-text text-center align-middle">Total</th>
                 <th class="w-8 vertical-text text-center align-middle" v-for="project in projects">{{ project.name }}</th>
             </tr>
             </thead>
             <tbody>
             <template v-for="team in teams" :key="team.id">
                 <tr>
-                    <td class="vertical-text w-5 text-center align-middle" :rowspan="team.members.length+1">{{ team.name }}</td>
+                    <td class="vertical-text w-5 text-center align-middle" :rowspan="team.members.length+2">{{ team.name }}</td>
+                </tr>
+                <tr>
+                    <td class="w-20 align-middle cell-p">{{ team.technology.name }}</td>
+                    <td class="w-8 align-middle text-center cell-p">
+                        {{ table['technologies'][team.technology.id]['total']['planned_tl'] }} /
+                        {{ table['technologies'][team.technology.id]['total']['planned_pm'] }}
+                    </td>
+                    <td class="w-8 align-middle text-center cell-p" v-for="project in projects">
+                        {{ table['technologies'][team.technology.id][project.id]['planned_tl'] }} /
+                        {{ table['technologies'][team.technology.id][project.id]['planned_pm'] }}
+                    </td>
                 </tr>
                 <tr v-for="member in team.members">
                     <td class="w-20 align-middle cell-p">{{ member.name }}</td>
+                    <td class="w-8 align-middle text-center cell-p">{{ table['engineers'][member.id]['total'] }}</td>
                     <td class="w-8 align-middle cell-p" v-for="project in projects">
-                        <input type="number" class="form-control text-center no-arrows" :value="table[member.id][project.id]" @blur="plan($event, member.id, project.id)">
+                        <input type="number" class="form-control text-center no-arrows" :value="table['engineers'][member.id][project.id]" @blur="plan($event, member.id, project.id)">
                     </td>
                 </tr>
             </template>
@@ -176,10 +189,10 @@ export default {
 
         plan(event, engineerId, projectId){
             if(!event.target.value){
-                event.target.value = this.table[engineerId][projectId]
+                event.target.value = this.table['engineers'][engineerId][projectId]
             }
 
-            if(Number(event.target.value) === this.table[engineerId][projectId]){
+            if(Number(event.target.value) === this.table['engineers'][engineerId][projectId]){
                 return;
             }
 
@@ -191,7 +204,8 @@ export default {
                 year: this.filter.year,
                 hours: event.target.value
             }).then((response) => {
-                this.table[engineerId][projectId] = Number(response.data.hours)
+                this.table = response.data.table
+                //this.table[engineerId][projectId] = Number(response.data.hours)
                 this.$notify(response.data.message);
             });
         },

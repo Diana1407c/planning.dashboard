@@ -48,7 +48,7 @@
             <button :disabled="!loaded" type="button" class="btn btn-primary date-change-button" @click="handleDateInput(false)"><i class="fa-solid fa-arrow-left"></i> Previous</button>
         </div>
         <div class="col-4 d-flex justify-content-center align-items-center">
-            <div class="week-inscription">{{ month_name }} {{ this.filter.year }}</div>
+            <div class="week-inscription">{{ start_week }} - {{ end_week }}</div>
         </div>
         <div class="col-4 d-flex justify-content-end">
             <button :disabled="!loaded" type="button" class="btn btn-primary date-change-button" @click="handleDateInput(true)">Next <i class="fa-solid fa-arrow-right"></i></button>
@@ -90,7 +90,7 @@
                 <button type="button" class="btn btn-primary date-change-button" @click="handleDateInput(false)"><i class="fa-solid fa-arrow-left"></i> Previous</button>
             </div>
             <div class="col-4 d-flex justify-content-center align-items-center">
-                <div class="week-inscription">{{ month_name }} {{ this.filter.year }}</div>
+                <div class="week-inscription">{{ start_week }} - {{ end_week }}</div>
             </div>
             <div class="col-4 d-flex justify-content-end">
                 <button type="button" class="btn btn-primary date-change-button" @click="handleDateInput(true)">Next <i class="fa-solid fa-arrow-right"></i></button>
@@ -108,7 +108,7 @@ const { getWeek } = require('date-fns');
 import VueMultiselect from 'vue-multiselect';
 
 export default {
-    name: "MonthlyTLPlanning",
+    name: "WeeklyTLPlanning",
     layout: (h, page) => h(Layout, [page]),
     props: {
         allTeams: Object,
@@ -119,11 +119,12 @@ export default {
             projects: [],
             teams: [],
             table: [],
-            month_name: null,
+            start_week: null,
+            end_week: null,
             filter: {
                 team_ids: [],
                 project_ids: [],
-                month: null,
+                week: null,
                 year: null
             },
             loaded: false
@@ -131,16 +132,16 @@ export default {
     },
     components: {VueMultiselect},
     async mounted() {
-        const storedObject = localStorage.getItem("filter-tl-monthly");
+        const storedObject = localStorage.getItem("filter-tl");
         if (storedObject) {
             this.filter = JSON.parse(storedObject);
         }
-        await this.setNextMonth()
+        await this.setNextWeek()
         await this.getData()
     },
     methods: {
         async getData(){
-            localStorage.setItem("filter-tl-monthly", JSON.stringify(this.filter));
+            localStorage.setItem("filter-tl", JSON.stringify(this.filter));
             await this.getProjects()
             await this.getTeams()
             await this.getPlannings()
@@ -164,11 +165,11 @@ export default {
         },
 
         async getPlannings(){
-            await axios.get('tl-planning/monthly', {params: {
+            await axios.get('tl-planning/weekly', {params: {
                     team_ids: this.filter.team_ids.map(obj => obj.id),
                     project_ids: this.filter.project_ids.map(obj => obj.id),
                     year: this.filter.year,
-                    period_number: this.filter.month
+                    period_number: this.filter.week
                 }}).then(response => {
                 this.table = response.data.table;
             }).catch(() => {});
@@ -186,53 +187,62 @@ export default {
             axios.post('tl-planning', {
                 project_id: projectId,
                 engineer_id: engineerId,
-                period_type: 'month',
-                period_number: this.filter.month,
+                period_type: 'week',
+                period_number: this.filter.week,
                 year: this.filter.year,
                 hours: event.target.value
             }).then((response) => {
-                this.table[engineerId][projectId] = Number(response.data.hours)
+                this.table = response.data.table;
                 this.$notify(response.data.message);
             });
         },
 
-        async setNextMonth(){
-            let now = new Date();
-            if (now.getMonth() === 11) {
-                this.filter.month = 1
-                this.filter.year = now.getFullYear() + 1
-            } else {
-                this.filter.month = now.getMonth() + 2
-                this.filter.year = now.getFullYear()
+        async setNextWeek(){
+            let nextWeekStart = new Date();
+            nextWeekStart.setDate(nextWeekStart.getDate() + ((8 - nextWeekStart.getDay()) % 7));
+
+            this.filter.week = getWeek(nextWeekStart, { weekStartsOn: 1 })
+            this.filter.year = nextWeekStart.getFullYear()
+            await this.getWeekRange()
+        },
+
+        async  getWeekRange() {
+            let startDate = new Date(this.filter.year, 0, 1 + (this.filter.week - 1) * 7);
+            let endDate = new Date(startDate.getTime() + 6 * 24 * 60 * 60 * 1000);
+
+            let monday = startDate.getDate() - startDate.getDay() + 1;
+            startDate.setDate(monday);
+
+            let sunday = endDate.getDate() - endDate.getDay() + 7;
+            endDate.setDate(sunday);
+
+
+            this.start_week = startDate.toLocaleString('en-US', { month: 'long' })+' '+startDate.getDate();
+            if(endDate.getFullYear() !== startDate.getFullYear()){
+                this.start_week += ', '+startDate.getFullYear()
             }
-
-            await this.setMonthName()
+            this.end_week = endDate.toLocaleString('en-US', { month: 'long' })+' '+endDate.getDate()+', '+endDate.getFullYear();
         },
 
-        async setMonthName() {
-            let date = new Date(this.filter.year, this.filter.month - 1, 1);
-            this.month_name = date.toLocaleString('en-US', { month: 'long' });
-        },
-
-        async handleDateInput(nextMonth){
+        async handleDateInput(nextWeek){
             this.loaded = false;
-            if(nextMonth) {
-                if(this.filter.month === 12){
-                    this.filter.month = 1
+            if(nextWeek){
+                if(this.filter.week === 52){
+                    this.filter.week = 1
                     this.filter.year += 1
                 } else {
-                    this.filter.month += 1
+                    this.filter.week += 1
                 }
             } else {
-                if(this.filter.month === 1){
-                    this.filter.month = 12
+                if(this.filter.week === 1){
+                    this.filter.week = 52
                     this.filter.year -= 1
                 } else {
-                    this.filter.month -= 1
+                    this.filter.week -= 1
                 }
             }
 
-            await this.setMonthName()
+            await this.getWeekRange()
             await this.getData()
             this.loaded = true;
         },

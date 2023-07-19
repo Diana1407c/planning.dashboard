@@ -174,7 +174,7 @@ export default {
                 year: this.filter.year,
                 hours: event.target.value
             }).then((response) => {
-                this.table[projectId][technologyId] = Number(response.data.hours)
+                this.table = response.data.table
                 this.$notify(response.data.message);
             });
         },

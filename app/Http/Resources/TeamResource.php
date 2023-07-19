@@ -19,7 +19,7 @@ class TeamResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'technology' => $this->technology->name,
+            'technology' => TechnologyResource::make($this->technology)->toArray($request),
             'team_lead' => [
                 'id' => $this->teamLead->id,
                 'email' => $this->teamLead->email,
