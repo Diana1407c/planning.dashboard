@@ -104,6 +104,8 @@ class EngineerCrudController extends CrudController
         CRUD::field('username');
 
         $engineer = $this->crud->getCurrentEntry();
+        $teamName = $engineer->team ? $engineer->team->name : '-';
+        $userName = $engineer->user ? $engineer->user->name : '-';
 
         CRUD::addField([
             'name' => 'level_id',
@@ -132,7 +134,7 @@ class EngineerCrudController extends CrudController
             'label' => 'Team ',
             'type' => 'text',
             'model' => Team::class,
-            'value' => $engineer->team->name,
+            'value' => $engineer->team_id ? $engineer->team->name : '-',
             'attributes' => [
                 'readonly' => true,
             ],
@@ -143,7 +145,7 @@ class EngineerCrudController extends CrudController
             'label' => 'Related user ',
             'type' => 'text',
             'model' => User::class,
-            'value' => $engineer->user->name,
+            'value' => $engineer->user_id ? $engineer->user->name : '-',
             'attributes' => [
                 'readonly' => true,
             ],
