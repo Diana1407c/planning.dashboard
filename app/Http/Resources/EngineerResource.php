@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Engineer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -28,9 +27,9 @@ class EngineerResource extends JsonResource
 
     protected function plannings(): array
     {
-        $plannings['total'] = $this->teamLeadPlannings->sum('hours');
+        $plannings['total'] = $this->plannedHours->sum('hours');
 
-        $plannings['details'] = $this->teamLeadPlannings->groupBy('project_id')
+        $plannings['details'] = $this->plannedHours->groupBy('project_id')
             ->map(function ($groupedItems) {
                 return [
                     'project' => $groupedItems->first()->project->name,

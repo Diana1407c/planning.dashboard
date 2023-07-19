@@ -17,7 +17,7 @@ class EngineerExportResource extends JsonResource
             'name' => $this->fullName(),
             'email' => $this->email,
             'team_name' => $this->team->name,
-            'hours' => $this->teamLeadPlannings->sum('hours')
+            'hours' => $this->plannedHours->sum('hours')
         ];
     }
 }

@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\EngineerController;
 use App\Http\Controllers\Api\PlannedHourController;
-use App\Http\Controllers\Api\PMPricesController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\StackController;

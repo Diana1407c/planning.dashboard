@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
@@ -38,11 +37,6 @@ class Engineer extends Model
     public function plannedHours(): MorphMany
     {
         return $this->morphMany(PlannedHour::class, 'planable');
-    }
-
-    public function teamLeadPlannings(): HasMany
-    {
-        return $this->HasMany(TLPlanning::class);
     }
 
     public function fullName(): string

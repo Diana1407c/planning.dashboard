@@ -26,8 +26,15 @@ return new class extends Migration
                 ->on('projects')
                 ->onDelete('cascade');
 
+            $table->index(['planable_type', 'planable_id']);
+            $table->index(['period_type', 'year', 'period_number']);
+
             $table->timestamps();
         });
+
+        Schema::dropIfExists('pm_planning_prices');
+        Schema::dropIfExists('team_lead_planning');
+        Schema::dropIfExists('project_manager_planning');
     }
 
     /**

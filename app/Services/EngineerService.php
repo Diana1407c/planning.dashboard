@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Engineer;
+use App\Models\PlannedHour;
 use App\Services\Base\FilterBase;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -17,7 +19,8 @@ class EngineerService
         return self::filter([
             'team_ids' => $request->get('team_ids'),
             'project_ids' => $request->get('project_ids'),
-            'dates' => DateService::rangeToWeeks($request->get('start_date'), $request->get('end_date')),
+            'start_date' => $request->get('start_date'),
+            'end_date' => $request->get('end_date'),
             'with_planning' => $request->get('with_planning'),
             'min_hours' => $request->get('min_hours'),
             'max_hours' => $request->get('max_hours'),
@@ -32,55 +35,84 @@ class EngineerService
 
         return $query->get();
     }
+
     public static function filter(array $filter): Collection|array
     {
-        $query = Engineer::query();
+        $query = Engineer::query()
+            ->with(['plannedHours' => function($query) use ($filter) {
+                self::plannedHoursQuery($query, $filter);
+            }]);
 
         self::filterTeams($query, $filter['team_ids']);
 
-        if(isset($filter['with_planning'])){
+        if (isset($filter['with_planning'])) {
             self::filterPlanning($query, $filter);
-        } else {
-            $query->with('teamLeadPlannings');
         }
 
-        return $query->get();
+        return $query->groupBy('engineers.id')->get();
     }
 
-    private static function filterTeams(Builder &$query, mixed $team_ids = []): void
+    private static function filterTeams(Builder $query, mixed $team_ids = []): void
     {
-        if($team_ids){
+        if ($team_ids) {
             $query->whereIn('team_id', $team_ids);
         } else {
             $query->whereNotNull('team_id');
         }
     }
 
-    private static function filterPlanning(Builder &$query, array $filter): void
+    private static function filterPlanning(Builder $query, array $filter): void
     {
-        if($filter['with_planning'] == 'with'){
-            $query->withWhereHas('teamLeadPlannings', function ($plannings) use($filter){
-                self::filterRange($plannings, $filter['dates']);
-                self::filterProject($plannings, $filter['project_ids']);
+        $plannedHoursQuery = PlannedHour::query()
+            ->where('planable_type', PlannedHour::ENGINEER_TYPE)
+            ->where('period_type', PlannedHour::MONTH_PERIOD_TYPE);
+
+        self::plannedHoursQuery($plannedHoursQuery, $filter);
+
+        if (!empty($filter['min_hours'])) {
+            $plannedHoursQuery->havingRaw('SUM(hours) >= ?', [$filter['min_hours']]);
+        }
+
+        if (!empty($filter['max_hours'])) {
+            $plannedHoursQuery->havingRaw('SUM(hours) <= ?', [$filter['max_hours']]);
+        }
+
+        $engineersIds = $plannedHoursQuery->groupBy('planable_id')->pluck('planable_id');
+
+        if ($filter['with_planning'] == 'with') {
+            $query->whereIn('id', $engineersIds);
+
+            return;
+        }
+
+        $query->whereNotIn('id', $engineersIds);
+    }
+
+    private static function plannedHoursQuery($query, array $filter): void
+    {
+        if (!empty($filter['project_ids'])) {
+            $query->whereIn('project_id', $filter['project_ids']);
+        }
+
+        if (!empty($filter['start_date'])) {
+            $date = Carbon::parse($filter['start_date']);
+
+            $query->where(function (Builder $query) use ($date) {
+                $query->where(function (Builder $query) use ($date) {
+                    $query->where('year', '=', $date->year)
+                        ->where('period_number', '>=', $date->month);
+                })->orWhere('year', '>', $date->year);
             });
+        }
 
-            if($filter['min_hours'] || $filter['max_hours']){
-                $query->whereHas('teamLeadPlannings', function ($plannings) use($filter){
-                    self::filterProject($plannings, $filter['project_ids']);
-                    $plannings->groupBy('engineer_id');
-                    if($filter['min_hours']){
-                        $plannings->havingRaw('SUM(hours) > ?', [$filter['min_hours']]);
-                    }
+        if (!empty($filter['end_date'])) {
+            $date = Carbon::parse($filter['end_date']);
 
-                    if($filter['max_hours']){
-                        $plannings->havingRaw('SUM(hours) < ?', [$filter['max_hours']]);
-                    }
-                });
-            }
-        } else {
-            $query->whereDoesntHave('teamLeadPlannings', function ($plannings) use($filter) {
-                self::filterRange($plannings, $filter['dates']);
-                self::filterProject($plannings, $filter['project_ids']);
+            $query->where(function (Builder $query) use ($date) {
+                $query->where(function (Builder $query) use ($date) {
+                    $query->where('year', '=', $date->year)
+                        ->where('period_number', '<=', $date->month);
+                })->orWhere('year', '<', $date->year);
             });
         }
     }
