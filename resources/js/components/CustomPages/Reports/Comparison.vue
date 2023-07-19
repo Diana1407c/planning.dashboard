@@ -3,10 +3,10 @@
         <hr class="col-12 separator-filter">
     </div>
     <div class="row">
-        <div class="col-5">
+        <div class="col-4">
             <VueDatePicker v-model="filter.date" multi-calendars multi-calendars-solo range @update:model-value="getReport"/>
         </div>
-        <div class="col-5">
+        <div class="col-4">
             <multiselect
                 v-model="filter.project_ids"
                 :options="allProjects"
@@ -22,6 +22,12 @@
                     <span @click="handleDiselect" class="multiselect__option diselect_all"><span>Diselect All</span></span>
                 </template>
             </multiselect>
+        </div>
+        <div class="col-2">
+            <select v-model="filter.period_type" class="form-control" @change="getReport">
+                <option value="week">Weekly</option>
+                <option value="month">Monthly</option>
+            </select>
         </div>
         <div class="col-2">
             <button type="button" class="btn btn-primary w-100" @click="exportComparison"><i class="fa-solid fa-download"></i> Export</button>
