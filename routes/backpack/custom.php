@@ -40,6 +40,7 @@ Route::group([
         });
         Route::group(['middleware' => ['permission:manage project_manager_planning']], function () {
             Route::get('monthly_project_manager_planning', 'PlannedHoursController@pmMonthly')->name('page.monthly_project_manager.index');
+            Route::get('weekly_project_manager_planning', 'PlannedHoursController@pmWeekly')->name('page.weekly_project_manager.index');
         });
 
         Route::group(['prefix' => 'reports', 'middleware' => ['permission:manage reports']], function () {

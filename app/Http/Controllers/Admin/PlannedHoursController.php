@@ -60,4 +60,18 @@ class PlannedHoursController extends Controller
             ],
         ]);
     }
+
+    public function pmWeekly(Request $request)
+    {
+        return Inertia::render('WeeklyPMPlanning',[
+            'technologies' => TechnologyResource::collection(Technology::all())->toArray($request),
+            'allProjects' => ShortProjectResource::collection(Project::all())->toArray($request),
+        ])->withViewData([
+            'title' => 'Weekly Project Manager Planning',
+            'breadcrumbs' => [
+                trans('backpack::crud.admin') => backpack_url('dashboard'),
+                'WeeklyProjectManagerPlanning' => false,
+            ],
+        ]);
+    }
 }

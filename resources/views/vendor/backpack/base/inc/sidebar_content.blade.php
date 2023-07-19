@@ -15,11 +15,13 @@
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('team') }}"><i class="nav-icon la la-group"></i> Teams</a></li>
 @endif
 @if(backpack_user()->can('manage team_lead_planning'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('weekly_team_lead_planning') }}"><i class="nav-icon la la-history"></i> Weekly TL Planning</a></li>
+
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('monthly_team_lead_planning') }}"><i class="nav-icon la la-history"></i> Monthly TL Planning</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('weekly_team_lead_planning') }}"><i class="nav-icon la la-history"></i> Weekly TL Planning</a></li>
 @endif
 @if(backpack_user()->can('manage project_manager_planning'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('monthly_project_manager_planning') }}"><i class="nav-icon la la-history"></i> PM Planning</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('monthly_project_manager_planning') }}"><i class="nav-icon la la-history"></i> Monthly PM Planning</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('weekly_project_manager_planning') }}"><i class="nav-icon la la-history"></i> Weekly PM Planning</a></li>
 @endif
 @if(backpack_user()->can('manage users'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('user') }}"><i class="nav-icon la la-user"></i> <span>Users</span></a></li>

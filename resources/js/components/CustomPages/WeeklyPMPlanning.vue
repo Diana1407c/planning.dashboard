@@ -44,7 +44,7 @@
         <tr>
             <th class="w-5 vertical-text text-center align-middle">State</th>
             <th class="w-20 text-center align-middle">Projects</th>
-            <th class="w-8 vertical-text text-center align-middle" v-for="stack in stacks">{{ stack.name }}</th>
+            <th class="w-8 vertical-text text-center align-middle" v-for="technology in technologies">{{ technology.name }}</th>
         </tr>
         </thead>
         <tbody>
@@ -58,8 +58,8 @@
             </tr>
             <tr v-for="project in projects">
                 <td class="w-20 align-middle cell-p">{{ project.name }}</td>
-                <td class="w-8 align-middle cell-p" v-for="stack in stacks">
-                    <input type="number" class="form-control text-center no-arrows" :value="table[project.id][stack.id]" @blur="plan($event, project.id, stack.id)">
+                <td class="w-8 align-middle cell-p" v-for="technology in technologies">
+                    <input type="number" class="form-control text-center no-arrows" :value="table[project.id][technology.id]" @blur="plan($event, project.id, technology.id)">
                 </td>
             </tr>
         </template>
@@ -95,10 +95,10 @@ import { useNotification } from "@kyvg/vue3-notification";
 const { notify } = useNotification()
 
 export default {
-    name: "TLPlanning",
+    name: "WeeklyPMPlanning",
     layout: (h, page) => h(Layout, [page]),
     props: {
-        stacks: Object,
+        technologies: Object,
         allProjects: Object
     },
     data(){
@@ -108,7 +108,6 @@ export default {
             start_week: null,
             end_week: null,
             filter: {
-                stack_ids: [],
                 project_ids: [],
                 week: null,
                 year: null
@@ -118,7 +117,7 @@ export default {
     },
     components: {Multiselect},
     async mounted() {
-        const storedObject = localStorage.getItem("filter-pm");
+        const storedObject = localStorage.getItem("filter-pm-weekly");
         if (storedObject) {
             this.filter = JSON.parse(storedObject);
         }
@@ -127,7 +126,7 @@ export default {
     },
     methods: {
         async getData(){
-            localStorage.setItem("filter-pm", JSON.stringify(this.filter));
+            localStorage.setItem("filter-pm-weekly", JSON.stringify(this.filter));
             await this.getProjects()
             await this.getPlannings()
             this.loaded = true;
@@ -149,33 +148,34 @@ export default {
         },
 
         async getPlannings(){
-            await axios.get('pm-planning', {params: {
+            await axios.get('pm-planning/weekly', {params: {
                     project_ids: this.filter.project_ids.map(obj => obj.id),
                     year: this.filter.year,
-                    week: this.filter.week
+                    period_number: this.filter.week
                 }}).then(response => {
                 this.table = response.data.table;
             }).catch(() => {});
         },
 
-        plan(event, projectId, stackId){
+        plan(event, projectId, technologyId){
             if(!event.target.value){
-                event.target.value = this.table[projectId][stackId]
+                event.target.value = this.table[projectId][technologyId]
                 return;
             }
 
-            if(Number(event.target.value) === this.table[projectId][stackId]){
+            if(Number(event.target.value) === this.table[projectId][technologyId]){
                 return;
             }
 
             axios.post('pm-planning', {
                 project_id: projectId,
-                stack_id: stackId,
-                week: this.filter.week,
+                technology_id: technologyId,
+                period_type: 'week',
+                period_number: this.filter.week,
                 year: this.filter.year,
                 hours: event.target.value
             }).then((response) => {
-                this.table[projectId][stackId] = Number(response.data.hours)
+                this.table = response.data.table;
                 this.$notify(response.data.message);
             });
         },
