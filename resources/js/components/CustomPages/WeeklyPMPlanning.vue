@@ -44,7 +44,6 @@
         <tr>
             <th class="w-5 vertical-text text-center align-middle">State</th>
             <th class="w-20 text-center align-middle">Projects</th>
-            <th class="w-10 text-center align-middle">Cost (€)</th>
             <th class="w-8 vertical-text text-center align-middle" v-for="stack in stacks">{{ stack.name }}</th>
         </tr>
         </thead>
@@ -59,9 +58,6 @@
             </tr>
             <tr v-for="project in projects">
                 <td class="w-20 align-middle cell-p">{{ project.name }}</td>
-                <td class="w-10 align-middle cell-p">
-                    <input type="number" class="form-control text-center no-arrows" :value="prices[project.id]" @blur="changePrice($event, project.id)"/>
-                </td>
                 <td class="w-8 align-middle cell-p" v-for="stack in stacks">
                     <input type="number" class="form-control text-center no-arrows" :value="table[project.id][stack.id]" @blur="plan($event, project.id, stack.id)">
                 </td>
@@ -109,7 +105,6 @@ export default {
         return {
             groupedProjects: [],
             table: [],
-            prices: [],
             start_week: null,
             end_week: null,
             filter: {
@@ -135,7 +130,6 @@ export default {
             localStorage.setItem("filter-pm", JSON.stringify(this.filter));
             await this.getProjects()
             await this.getPlannings()
-            await this.getPrices()
             this.loaded = true;
         },
 
@@ -164,16 +158,6 @@ export default {
             }).catch(() => {});
         },
 
-        async getPrices(){
-            await axios.get('pm-prices', {params: {
-                    project_ids: this.filter.project_ids.map(obj => obj.id),
-                    year: this.filter.year,
-                    week: this.filter.week
-                }}).then(response => {
-                this.prices = response.data.prices;
-            }).catch(() => {});
-        },
-
         plan(event, projectId, stackId){
             if(!event.target.value){
                 event.target.value = this.table[projectId][stackId]
@@ -192,27 +176,6 @@ export default {
                 hours: event.target.value
             }).then((response) => {
                 this.table[projectId][stackId] = Number(response.data.hours)
-                this.$notify(response.data.message);
-            });
-        },
-
-        changePrice(event, projectId){
-            if(!event.target.value){
-                event.target.value = this.prices[projectId]
-                return;
-            }
-
-            if(Number(event.target.value) === this.prices[projectId]){
-                return;
-            }
-
-            axios.post('pm-prices', {
-                project_id: projectId,
-                week: this.filter.week,
-                year: this.filter.year,
-                cost: event.target.value
-            }).then((response) => {
-                this.prices[projectId] = Number(response.data.price)
                 this.$notify(response.data.message);
             });
         },

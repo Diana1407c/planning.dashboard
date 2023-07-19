@@ -4,11 +4,9 @@ use App\Http\Controllers\Api\EngineerController;
 use App\Http\Controllers\Api\PlannedHourController;
 use App\Http\Controllers\Api\PMPricesController;
 use App\Http\Controllers\Api\ProjectController;
-use App\Http\Controllers\Api\ProjectManagerPlanningController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\StackController;
 use App\Http\Controllers\Api\TeamController;
-use App\Http\Controllers\Api\TeamLeadPlanningController;
 use App\Http\Controllers\Api\TeamworkController;
 use Illuminate\Support\Facades\Route;
 
@@ -52,11 +50,6 @@ Route::group(['middleware' => array_merge(
         Route::get('weekly', [PlannedHourController::class, 'pmWeekly']);
         Route::get('monthly', [PlannedHourController::class, 'pmMonthly']);
         Route::post('', [PlannedHourController::class, 'pmStore']);
-    });
-
-    Route::group(['prefix' => 'pm-prices', 'middleware' => ['permission:manage project_manager_planning']], function() {
-        Route::get('', [PMPricesController::class, 'index']);
-        Route::post('', [PMPricesController::class, 'storeOrUpdate']);
     });
 
     Route::group(['prefix' => 'reports', 'middleware' => ['permission:manage reports']], function() {
