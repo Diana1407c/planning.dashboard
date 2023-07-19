@@ -156,7 +156,7 @@ class EngineerCrudController extends CrudController
     public function update(EngineerRequest $request): RedirectResponse
     {
         $engineer = $this->crud->getCurrentEntry();
-        $engineer->update($request->except(['level_id', 'performance']));
+        $engineer->update($request->except(['level_id', 'performance','team_id','user_id']));
         $engineer->level_id = $request->input('level_id');
         $engineer->performance = $request->input('performance');
         $engineer->save();
