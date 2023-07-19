@@ -64,7 +64,7 @@ class LevelCrudController extends CrudController
         ]);
         CRUD::addField([
             'name' => 'performance',
-            'label' => 'Performance',
+            'label' => 'Performance(%)',
             'type' => 'number',
             'attributes' => [
                 'min' => 0,
