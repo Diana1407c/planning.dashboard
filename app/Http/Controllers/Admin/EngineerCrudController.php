@@ -52,7 +52,6 @@ class EngineerCrudController extends CrudController
         CRUD::column('last_name');
         CRUD::column('email');
         CRUD::column('username');
-
         CRUD::addColumn([
             'label' => 'Level',
             'name'  => 'level_id',
@@ -63,7 +62,7 @@ class EngineerCrudController extends CrudController
 
         CRUD::addColumn([
             'label' => 'Performance(%)',
-            'name' => 'performance',
+            'name'  => 'performance',
             'type' => 'model_function',
             'function_name' => 'displayPerformance',
         ]);
@@ -125,6 +124,28 @@ class EngineerCrudController extends CrudController
                 'min' => 0,
                 'max' => 100,
                 'step' => 1,
+            ],
+        ]);
+
+        CRUD::addField([
+            'name' => 'team_id',
+            'label' => 'Team ',
+            'type' => 'text',
+            'model' => Team::class,
+            'value' => $engineer->team->name,
+            'attributes' => [
+                'readonly' => true,
+            ],
+        ]);
+
+        CRUD::addField([
+            'name' => 'user_id',
+            'label' => 'Related user ',
+            'type' => 'text',
+            'model' => User::class,
+            'value' => $engineer->user->name,
+            'attributes' => [
+                'readonly' => true,
             ],
         ]);
 
