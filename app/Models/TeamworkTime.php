@@ -9,7 +9,7 @@ class TeamworkTime extends Model
 {
     protected $table = 'teamwork_time';
     protected $fillable = [
-        'id', 'engineer_id', 'hours', 'date', 'billable'
+        'id', 'engineer_id', 'hours', 'date', 'billable', 'project_id'
     ];
 
     public function engineer(): BelongsTo

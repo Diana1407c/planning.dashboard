@@ -63,7 +63,7 @@
             <tr>
                 <th class="w-5 vertical-text text-center align-middle">Team</th>
                 <th class="w-20 text-center align-middle">Members</th>
-                <th class="w-8 vertical-text text-center align-middle">Total</th>
+                <th class="w-8 vertical-text text-center align-middle heading-tech-total">Total</th>
                 <th class="w-8 vertical-text text-center align-middle" v-for="project in projects">{{ project.name }}</th>
             </tr>
             </thead>
@@ -74,18 +74,16 @@
                 </tr>
                 <tr>
                     <td class="w-20 align-middle cell-p">{{ team.technology.name }}</td>
-                    <td class="w-8 align-middle text-center cell-p">
-                        {{ table['technologies'][team.technology.id]['total']['planned_tl'] }} /
-                        {{ table['technologies'][team.technology.id]['total']['planned_pm'] }}
+                    <td class="w-8 align-middle text-center cell-p heading-tech-total">
+                        {{ table['technologies'][team.technology.id]['total']['planned_tl'] }}/{{ table['technologies'][team.technology.id]['total']['planned_pm'] }}
                     </td>
                     <td class="w-8 align-middle text-center cell-p" v-for="project in projects">
-                        {{ table['technologies'][team.technology.id][project.id]['planned_tl'] }} /
-                        {{ table['technologies'][team.technology.id][project.id]['planned_pm'] }}
+                        {{ table['technologies'][team.technology.id][project.id]['planned_tl'] }}/{{ table['technologies'][team.technology.id][project.id]['planned_pm'] }}
                     </td>
                 </tr>
                 <tr v-for="member in team.members">
                     <td class="w-20 align-middle cell-p">{{ member.name }}</td>
-                    <td class="w-8 align-middle text-center cell-p">{{ table['engineers'][member.id]['total'] }}</td>
+                    <td class="w-8 align-middle text-center cell-p heading-tech-total">{{ table['engineers'][member.id]['total'] }}</td>
                     <td class="w-8 align-middle cell-p" v-for="project in projects">
                         <input type="number" class="form-control text-center no-arrows" :value="table['engineers'][member.id][project.id]" @blur="plan($event, member.id, project.id)">
                     </td>

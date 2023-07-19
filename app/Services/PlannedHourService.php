@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\PlannedHour;
+use Carbon\Carbon;
 
 class PlannedHourService
 {
@@ -42,5 +43,54 @@ class PlannedHourService
         }
 
         PlannedHour::query()->updateOrCreate($attributes, $values);
+    }
+
+    public function groupedHoursByFilter(array $filter)
+    {
+        $query = PlannedHour::query()->select([
+            'project_id',
+            'planable_type',
+            'year',
+            'period_number',
+        ])->selectRaw('SUM(hours) as sum_hours');
+
+        if (!empty($filter['from_year'])) {
+            $query->where('year', '>=', $filter['from_year']);
+        }
+
+        if (!empty($filter['from_year']) && !empty($filter['from_period_number'])) {
+            $query->where(function ($q) use ($filter) {
+                $q->where(function ($qYear) use ($filter) {
+                    $qYear->where('year', '=', $filter['from_year'])
+                        ->where('period_number', '>=', $filter['from_period_number']);
+                })->orWhere('year', '>', $filter['from_year']);
+            });
+        }
+
+        if (!empty($filter['to_year']) && !empty($filter['to_period_number'])) {
+            $query->where(function ($q) use ($filter) {
+                $q->where(function ($qYear) use ($filter) {
+                    $qYear->where('year', '=', $filter['to_year'])
+                        ->where('period_number', '<=', $filter['to_period_number']);
+                })->orWhere('year', '<', $filter['to_year']);
+            });
+        }
+
+        if (!empty($filter['period_type'])) {
+            $query->where('period_type', $filter['period_type']);
+        }
+
+        if (!empty($filter['projects_ids'])) {
+            $query->whereIn('project_id', $filter['projects_ids']);
+        }
+
+        $query->groupBy([
+            'project_id',
+            'planable_type',
+            'year',
+            'period_number',
+        ]);
+
+        return $query->get();
     }
 }

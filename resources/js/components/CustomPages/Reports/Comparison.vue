@@ -12,7 +12,7 @@
                 :options="allProjects"
                 :close-on-select="true"
                 :clear-on-select="false"
-                placeholder="Select teams"
+                placeholder="Select projects"
                 label="name"
                 :multiple="true"
                 track-by="name"
@@ -36,24 +36,25 @@
             <tr>
                 <th colspan="2" rowspan="2" class="w-20 text-center align-middle">Projects</th>
                 <template v-for="(date, index) in dates">
-                    <th colspan="2" class="date-th text-center align-middle">{{ date }}</th>
+                    <th colspan="3" class="date-th text-center align-middle">{{ date }}</th>
                 </template>
             </tr>
             <tr>
                 <template v-for="date in dates">
                     <th class="plan-type-cell text-center align-middle">PM</th>
                     <th class="plan-type-cell text-center align-middle">TL</th>
+                    <th class="plan-type-cell text-center align-middle">TM</th>
                 </template>
             </tr>
             </thead>
             <tbody>
             <tr v-for="project in projects">
                 <td colspan="2" class="align-middle cell-p">{{ project.name }}</td>
-
                 <template v-for="(date, index) in dates">
-                    <td colspan="2" class="hours-compare-td date-th text-center align-middle p-0" @click="openModal(project, date, index)">
-                        <div class="d-inline-block hours-pm plan-type-cell text-center align-middle cell-p">{{ report[project.id][index]['PM'] }}</div>
-                        <div class="d-inline-block hours-tl plan-type-cell text-center align-middle cell-p">{{ report[project.id][index]['TL'] }}</div>
+                    <td colspan="3" class="hours-compare-td date-th text-center align-middle p-0" @click="openModal(project, date, index)">
+                        <div class="d-inline-block hours-pm plan-type-cell text-center align-middle d-table-cell">{{ report[project.id][index]['PM'] }}</div>
+                        <div class="d-inline-block hours-tl plan-type-cell text-center align-middle d-table-cell">{{ report[project.id][index]['TL'] }}</div>
+                        <div class="d-inline-block hours-tm plan-type-cell text-center align-middle d-table-cell">{{ report[project.id][index]['TM'] }}</div>
                     </td>
                 </template>
             </tr>
@@ -79,7 +80,8 @@ export default {
             report: [],
             filter: {
                 project_ids: [],
-                date: [new Date()]
+                date: [new Date()],
+                period_type: 'month'
             },
             detailOpened: false,
             projectModal: null,
@@ -115,6 +117,7 @@ export default {
                     project_ids: this.filter.project_ids.map(obj => obj.id),
                     start_date: this.filter.date[0],
                     end_date: this.filter.date[1],
+                    period_type: this.filter.period_type
                 }}).then((response) => {
                 this.dates = response.data.dates
                 this.projects = response.data.projects
@@ -130,6 +133,7 @@ export default {
                     project_ids: this.filter.project_ids.map(obj => obj.id),
                     start_date: this.filter.date[0],
                     end_date: this.filter.date[1],
+                    period_type: this.filter.period_type
                 }
             }).then((response) => {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
