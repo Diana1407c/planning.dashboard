@@ -20,28 +20,28 @@ class PlannedHourController extends Controller
 {
     public function tlWeekly(WeeklyTLPlanningFilterRequest $request)
     {
-        $matrix = TLWeeklyPlannedHoursMatrix::init($request->filter());
+        $matrix = new TLWeeklyPlannedHoursMatrix($request->filter());
 
         return response()->json(['table' => $matrix->matrix()]);
     }
 
     public function tlMonthly(MonthlyTLPlanningFilterRequest $request)
     {
-        $matrix = TLMonthlyPlannedHoursMatrix::init($request->filter());
+        $matrix = new TLMonthlyPlannedHoursMatrix($request->filter());
 
         return response()->json(['table' => $matrix->matrix()]);
     }
 
     public function pmWeekly(WeeklyPMPlanningFilterRequest $request)
     {
-        $matrix = PMMonthlyPlannedHoursMatrix::init($request->filter());
+        $matrix = new PMMonthlyPlannedHoursMatrix($request->filter());
 
         return response()->json(['table' => $matrix->matrix()]);
     }
 
     public function pmMonthly(MonthlyPMPlanningFilterRequest $request)
     {
-        $matrix = PMMonthlyPlannedHoursMatrix::init($request->filter());
+        $matrix = new PMMonthlyPlannedHoursMatrix($request->filter());
 
         return response()->json(['table' => $matrix->matrix()]);
     }
@@ -64,7 +64,7 @@ class PlannedHourController extends Controller
             'period_number' => $request->get('period_number'),
         ];
 
-        $matrix = $request->get('period_type') == PlannedHour::MONTH_PERIOD_TYPE ? TLMonthlyPlannedHoursMatrix::init($filter) : TLWeeklyPlannedHoursMatrix::init($filter);
+        $matrix = $request->get('period_type') == PlannedHour::MONTH_PERIOD_TYPE ? new TLMonthlyPlannedHoursMatrix($filter) : new TLWeeklyPlannedHoursMatrix($filter);
 
         return response()->json([
             'message' => 'Successfully changed',
@@ -83,7 +83,7 @@ class PlannedHourController extends Controller
             'period_number' => $request->get('period_number'),
         ], ['hours' => $request->get('hours')]);
 
-        $matrix = PMMonthlyPlannedHoursMatrix::init([
+        $matrix = new PMMonthlyPlannedHoursMatrix([
             'planable_type' => PlannedHour::TECHNOLOGY_TYPE,
             'year' => $request->get('year'),
             'period_type' => $request->get('period_type'),

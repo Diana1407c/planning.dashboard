@@ -15,6 +15,7 @@ class PlannedHoursMatrix
 
     public function __construct(protected array $filter)
     {
+        $this->initProjects();
     }
 
     public function initProjects(): void
