@@ -3,6 +3,7 @@
 namespace App\Services\Teamwork;
 
 use App\Models\Engineer;
+use App\Models\PlannedHour;
 use App\Models\Project;
 use App\Models\TeamworkTime;
 use Carbon\Carbon;
@@ -27,42 +28,42 @@ class TeamworkService
             ->join('stacks', 'stacks.id', '=', 'technologies.stack_id')
             ->groupBy(['stacks.id', 'technologies.id', 'engineers.id', 'engineers.first_name', 'engineers.last_name', 'year', 'month']);
 
-        if($filters['type'] == 'billable'){
+        if ($filters['type'] == 'billable') {
             $query->where('teamwork_time.billable', true);
-        } else if($filters['type'] == 'non_billable') {
+        } else if ($filters['type'] == 'non_billable') {
             $query->where('teamwork_time.billable', false);
         }
 
-        if($filters['engineer_ids']){
+        if ($filters['engineer_ids']) {
             $query->whereIn('engineers.id', $filters['engineer_ids']);
         }
 
-        if($filters['technology_ids']){
+        if ($filters['technology_ids']) {
             $query->whereIn('technologies.id', $filters['technology_ids']);
         }
 
-        if($filters['stack_ids']){
+        if ($filters['stack_ids']) {
             $query->whereIn('stacks.id', $filters['stack_ids']);
         }
 
-        if($range = $filters['range']){
-            if(isset($range['start_month'])){
-                $query->where(function($subQuery) use($range){
-                    $subQuery->where(function($andQuery) use($range){
-                        $andQuery->whereRaw('MONTH(teamwork_time.date) >= '.$range['start_month'])
-                            ->whereRaw('YEAR(teamwork_time.date) = '.$range['start_year']);
+        if ($range = $filters['range']) {
+            if (isset($range['start_month'])) {
+                $query->where(function ($subQuery) use ($range) {
+                    $subQuery->where(function ($andQuery) use ($range) {
+                        $andQuery->whereRaw('MONTH(teamwork_time.date) >= ' . $range['start_month'])
+                            ->whereRaw('YEAR(teamwork_time.date) = ' . $range['start_year']);
                     });
-                    $subQuery->orWhereRaw("YEAR(teamwork_time.date) > ".$range['start_year']);
+                    $subQuery->orWhereRaw("YEAR(teamwork_time.date) > " . $range['start_year']);
                 });
             }
 
-            if(isset($range['end_month'])){
-                $query->where(function($subQuery) use($range){
-                    $subQuery->where(function($andQuery) use($range){
-                        $andQuery->whereRaw('MONTH(teamwork_time.date) <= '.$range['end_month'])
-                            ->whereRaw('YEAR(teamwork_time.date) = '.$range['end_year']);
+            if (isset($range['end_month'])) {
+                $query->where(function ($subQuery) use ($range) {
+                    $subQuery->where(function ($andQuery) use ($range) {
+                        $andQuery->whereRaw('MONTH(teamwork_time.date) <= ' . $range['end_month'])
+                            ->whereRaw('YEAR(teamwork_time.date) = ' . $range['end_year']);
                     });
-                    $subQuery->orWhereRaw('YEAR(teamwork_time.date) < '.$range['end_year']);
+                    $subQuery->orWhereRaw('YEAR(teamwork_time.date) < ' . $range['end_year']);
                 });
             }
         }
@@ -88,11 +89,29 @@ class TeamworkService
     public static function syncEngineer(int $id): bool
     {
         $engineer = (new TeamworkProxy())->getPerson($id);
-        if($engineer){
+        if ($engineer) {
             $id = $engineer['id'];
             $data = array_diff_key($engineer, ['id' => '']);
 
             Engineer::query()->updateOrCreate(
+                ['id' => $id],
+                $data
+            );
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function syncProject(int $id): bool
+    {
+        $project = (new TeamworkProxy())->getProject($id);
+        if ($project) {
+            $id = $project['id'];
+            $data = array_diff_key($project, ['id' => '']);
+
+            Project::query()->updateOrCreate(
                 ['id' => $id],
                 $data
             );
@@ -130,8 +149,8 @@ class TeamworkService
                     ['id' => $id],
                     $data
                 );
-            } catch (\Exception $exception){
-                if(self::syncEngineer(intval($entry['engineer_id']))){
+            } catch (\Exception $exception) {
+                if (self::syncEngineer(intval($entry['engineer_id'])) && self::syncProject(intval($entry['project_id']))) {
                     TeamworkTime::query()->updateOrCreate(
                         ['id' => $id],
                         $data
@@ -140,5 +159,41 @@ class TeamworkService
             }
 
         }
+    }
+
+    public static function groupedHours(array $filters, string $periodType): Collection|array
+    {
+        $query = TeamworkTime::query()
+            ->select([
+                'project_id',
+            ])
+            ->selectRaw('SUM(hours) as sum_hours')
+            ->selectRaw('YEAR(date) as year');
+
+        if ($periodType == PlannedHour::WEEK_PERIOD_TYPE) {
+            $query->selectRaw('WEEK(date) as period_number');
+        } else {
+            $query->selectRaw('MONTH(date) as period_number');
+        }
+
+        if (!empty($filters['projects_ids'])) {
+            $query->whereIn('project_id', $filters['projects_ids']);
+        }
+
+        if (!empty($filters['from_date'])) {
+            $query->where('date', '>=', $filters['from_date']);
+        }
+
+        if (!empty($filters['end_date'])) {
+            $query->where('date', '<=', $filters['end_date']);
+        }
+
+        $query->groupBy([
+            'project_id',
+            'year',
+            'period_number',
+        ]);
+
+        return $query->get();
     }
 }

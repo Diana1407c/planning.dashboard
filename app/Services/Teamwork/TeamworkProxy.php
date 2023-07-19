@@ -32,6 +32,23 @@ class TeamworkProxy
         }
     }
 
+    public function getProject(int $id): ?array
+    {
+        try {
+            $results = $this->api->getProject($id);
+            if($teamworkProject = $results['project']){
+                return [
+                    'id' => $teamworkProject['id'],
+                    'name' => $teamworkProject['name'],
+                ];
+            }
+
+            return null;
+        } catch (\Exception|GuzzleException $exception) {
+            return null;
+        }
+    }
+
     public function getPeople(): ?array
     {
         try {
@@ -86,6 +103,7 @@ class TeamworkProxy
                     $entries[] = [
                         'id' => $entry['id'],
                         'engineer_id' => $entry['person-id'],
+                        'project_id' => $entry['project-id'],
                         'hours' => $entry['hoursDecimal'],
                         'date' => Carbon::parse($entry['date'])->toDate(),
                         'billable' => filter_var($entry['isbillable'],FILTER_VALIDATE_BOOLEAN)

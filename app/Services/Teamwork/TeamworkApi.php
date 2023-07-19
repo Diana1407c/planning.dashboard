@@ -77,6 +77,15 @@ class TeamworkApi
         return json_decode($response->getBody()->getContents(), true);
     }
 
+    public function getProject(int $id): array
+    {
+        $response = $this->client->get($this->url("/projects/$id.json"), [
+            'headers' => $this->headers()
+        ]);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
     /**
      * @return string[]
      */
