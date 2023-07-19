@@ -26,7 +26,7 @@ class Engineer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id', 'first_name', 'last_name', 'email', 'username', 'team_id', 'user_id'
+        'id', 'first_name', 'last_name', 'email', 'username', 'level_id', 'performance', 'team_id', 'user_id'
     ];
 
     public function team(): BelongsTo
@@ -57,5 +57,18 @@ class Engineer extends Model
     public function level()
     {
         return $this->belongsTo(Level::class);
+    }
+
+    public function displayPerformance(): string
+    {
+        if (!empty($this->performance)) {
+            return $this->performance . '%';
+        }
+
+        if ($this->level) {
+            return $this->level->performance . '%';
+        }
+
+        return '-';
     }
 }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('engineers', function (Blueprint $table) {
             $table->unsignedBigInteger('level_id')->nullable()->after('username');
-
+            $table->tinyInteger('performance')->nullable()->after('level_id');;
             $table->foreign('level_id')
                 ->references('id')
                 ->on('levels')
@@ -29,6 +29,7 @@ return new class extends Migration
         Schema::table('engineers', function (Blueprint $table) {
             $table->dropForeign(['level_id']);
             $table->dropColumn('level_id');
+            $table->dropColumn('performance');
         });
     }
 };

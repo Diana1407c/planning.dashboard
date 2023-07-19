@@ -24,4 +24,9 @@ class Level extends Model
     {
         return $this->belongsTo(Engineer::class);
     }
+
+    public function displayPerformance(): string
+    {
+        return $this->performance . '%';
+    }
 }

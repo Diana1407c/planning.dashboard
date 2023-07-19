@@ -45,6 +45,8 @@ class LevelCrudController extends CrudController
         CRUD::addColumn([
             'label' => 'Performance(%)',
             'name' => 'performance',
+            'type' => 'model_function',
+            'function_name' => 'displayPerformance',
         ]);
     }
 

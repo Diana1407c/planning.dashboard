@@ -4,13 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\EngineerRequest;
 use App\Jobs\SyncTeamworkEngineers;
+use App\Models\Level;
 use App\Models\Team;
 use App\Models\User;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Widget;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 
@@ -22,6 +21,7 @@ use Illuminate\Http\RedirectResponse;
 class EngineerCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -62,6 +62,13 @@ class EngineerCrudController extends CrudController
         ]);
 
         CRUD::addColumn([
+            'label' => 'Performance(%)',
+            'name' => 'performance',
+            'type' => 'model_function',
+            'function_name' => 'displayPerformance',
+        ]);
+
+        CRUD::addColumn([
             'label' => 'Team',
             'name'  => 'team_id',
             'entity' => 'team',
@@ -83,5 +90,54 @@ class EngineerCrudController extends CrudController
         SyncTeamworkEngineers::dispatch();
 
         return redirect($this->crud->route);
+    }
+    protected function setupUpdateOperation()
+    {
+        $this->addLevelFields();
+        CRUD::setValidation(EngineerRequest::class);
+    }
+
+    protected function addLevelFields()
+    {
+        CRUD::field('first_name');
+        CRUD::field('last_name');
+        CRUD::field('email');
+        CRUD::field('username');
+
+        $engineer = $this->crud->getCurrentEntry();
+
+        CRUD::addField([
+            'name' => 'level_id',
+            'label' => 'Level',
+            'type' => 'select',
+            'entity' => 'level',
+            'attribute' => 'name',
+            'model' => Level::class,
+            'value' => $engineer->level_id,
+
+        ]);
+
+        CRUD::addField([
+            'name' => 'performance',
+            'label' => 'Individual performance(%)',
+            'type' => 'number',
+            'attributes' => [
+                'min' => 0,
+                'max' => 100,
+                'step' => 1,
+            ],
+        ]);
+
+        CRUD::setValidation(EngineerRequest::class);
+    }
+    public function update(EngineerRequest $request): RedirectResponse
+    {
+        $engineer = $this->crud->getCurrentEntry();
+        $engineer->update($request->except(['level_id', 'performance']));
+        $engineer->level_id = $request->input('level_id');
+        $engineer->performance = $request->input('performance');
+        $engineer->save();
+
+        return $this->crud->performSaveAction($this->crud->getCurrentEntry()->getKey());
     }
 }
