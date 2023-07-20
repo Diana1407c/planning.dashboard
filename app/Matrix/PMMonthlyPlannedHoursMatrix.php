@@ -23,6 +23,7 @@ class PMMonthlyPlannedHoursMatrix extends PlannedHoursMatrix
                         ->where('planable_id', $technology->id)
                         ->first()->hours ?? 0;
             }
+            $data[$project->id]['total'] = $this->pmHours->where('project_id', $project->id)->sum('hours');
         }
 
         return $data;
