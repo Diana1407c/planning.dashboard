@@ -85,7 +85,7 @@
                     <td class="w-20 align-middle cell-p">{{ member.name }}</td>
                     <td class="w-8 align-middle text-center cell-p heading-tech-total">{{ table['engineers'][member.id]['total'] }}</td>
                     <td class="w-8 align-middle cell-p" v-for="project in projects">
-                        <input type="number" class="form-control text-center no-arrows" :value="table['engineers'][member.id][project.id]" @blur="plan($event, member.id, project.id)">
+                        <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table['engineers'][member.id][project.id]" @blur="plan($event, member.id, project.id)">
                     </td>
                 </tr>
             </template>
@@ -181,9 +181,10 @@ export default {
                     team_ids: this.filter.team_ids.map(obj => obj.id),
                     project_ids: this.filter.project_ids.map(obj => obj.id),
                     year: this.filter.year,
-                    period_number: this.filter.month
+                    period_number: this.filter.month,
                 }}).then(response => {
                 this.table = response.data.table;
+                this.can_edit = response.data.can_edit
             }).catch(() => {});
         },
 
@@ -205,8 +206,6 @@ export default {
                 hours: event.target.value
             }).then((response) => {
                 this.table = response.data.table
-                this.can_edit = response.data.can_edit
-                //this.table[engineerId][projectId] = Number(response.data.hours)
                 this.$notify(response.data.message);
             }).catch((error) => {
                 let messages = errorMessages(error.response);

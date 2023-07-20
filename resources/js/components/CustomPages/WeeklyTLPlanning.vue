@@ -74,7 +74,7 @@
                 <tr v-for="member in team.members">
                     <td class="w-20 align-middle cell-p">{{ member.name }}</td>
                     <td class="w-8 align-middle cell-p" v-for="project in projects">
-                        <input type="number" class="form-control text-center no-arrows" :value="table[member.id][project.id]" @blur="plan($event, member.id, project.id)">
+                        <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table[member.id][project.id]" @blur="plan($event, member.id, project.id)">
                     </td>
                 </tr>
             </template>
@@ -120,6 +120,7 @@ export default {
             projects: [],
             teams: [],
             table: [],
+            can_edit: true,
             start_week: null,
             end_week: null,
             filter: {
@@ -173,6 +174,7 @@ export default {
                     period_number: this.filter.week
                 }}).then(response => {
                 this.table = response.data.table;
+                this.can_edit = response.data.can_edit
             }).catch(() => {});
         },
 

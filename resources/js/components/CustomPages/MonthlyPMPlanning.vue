@@ -59,7 +59,7 @@
             <tr v-for="project in projects">
                 <td class="w-20 align-middle cell-p">{{ project.name }}</td>
                 <td class="w-8 align-middle cell-p" v-for="technology in technologies">
-                    <input type="number" class="form-control text-center no-arrows" :value="table[project.id][technology.id]" @blur="plan($event, project.id, technology.id)">
+                    <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table[project.id][technology.id]" @blur="plan($event, project.id, technology.id)">
                 </td>
             </tr>
         </template>
@@ -105,6 +105,7 @@ export default {
         return {
             groupedProjects: [],
             table: [],
+            can_edit: true,
             prices: [],
             month_name: null,
             filter: {
@@ -154,6 +155,7 @@ export default {
                     period_number: this.filter.month
                 }}).then(response => {
                 this.table = response.data.table;
+                this.can_edit = response.data.can_edit
             }).catch(() => {});
         },
 
