@@ -93,4 +93,18 @@ class PlannedHourService
 
         return $query->get();
     }
+
+    public function canEditPeriodByFilter(array $filter): bool
+    {
+        return $this->canEditPeriod((int)$filter['year'], (int)$filter['period_number'], $filter['period_type']);
+    }
+
+    public function canEditPeriod(int $year, int $periodNumber, string $periodType): bool
+    {
+        if ($periodType == PlannedHour::WEEK_PERIOD_TYPE) {
+            return Carbon::now()->setISODate($year, $periodNumber)->startOfWeek()->gt(Carbon::now());
+        }
+
+        return Carbon::now()->setYear($year)->setMonth($periodNumber)->startOfMonth()->gt(Carbon::now());
+    }
 }

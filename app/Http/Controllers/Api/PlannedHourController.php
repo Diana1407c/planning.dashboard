@@ -48,6 +48,12 @@ class PlannedHourController extends Controller
 
     public function tlStore(PlannedHourService $plannedHourService, TLPlanningRequest $request): JsonResponse
     {
+        if (!$plannedHourService->canEditPeriodByFilter($request->only(['year', 'period_type', 'period_number']))) {
+            return response()->json([
+                'message' => 'This period cannot be edited',
+            ], 422);
+        }
+
         $plannedHourService->storeHours([
             'planable_type' => PlannedHour::ENGINEER_TYPE,
             'project_id' => $request->get('project_id'),
@@ -74,6 +80,12 @@ class PlannedHourController extends Controller
 
     public function pmStore(PlannedHourService $plannedHourService, PMPlanningRequest $request): JsonResponse
     {
+        if (!$plannedHourService->canEditPeriodByFilter($request->only(['year', 'period_type', 'period_number']))) {
+            return response()->json([
+                'message' => 'This period cannot be edited',
+            ], 422);
+        }
+
         $plannedHourService->storeHours([
             'planable_type' => PlannedHour::TECHNOLOGY_TYPE,
             'project_id' => $request->get('project_id'),

@@ -5,46 +5,9 @@ namespace App\Services;
 use App\Http\Requests\TeamworkRequest;
 use App\Http\Resources\TeamworkTimeResource;
 use App\Services\Teamwork\TeamworkService;
-use Illuminate\Http\Request;
 
 class ReportService
 {
-    public static function comparisonData(Request $request): array
-    {
-        $projects = ProjectService::filter($request);
-        $dates = DateService::rangeToWeeks($request->get('start_date'), $request->get('end_date'));
-        $datesArray = DateService::weeksDateArray($dates);
-
-        $PMPlannings = PMPlanningService::sumHoursByProjectAndDate(['range' => $dates]);
-        $TLPlannings = TLPlanningService::sumHoursByProjectAndDate(['range' => $dates]);
-
-        $rawDates = [];
-        $report = [];
-        foreach ($datesArray as $date){
-            $rawDates[$date['index']] = $date['formatted'];
-
-            foreach ($projects as $project) {
-                $report[$project->id][$date['index']]['PM']
-                    = intval($PMPlannings->where('project_id', $project->id)
-                    ->where('year', $date['year'])
-                    ->where('week', $date['week'])
-                    ->value('sum_hours')) ?? 0;
-
-                $report[$project->id][$date['index']]['TL']
-                    = intval($TLPlannings->where('project_id', $project->id)
-                    ->where('year', $date['year'])
-                    ->where('week', $date['week'])
-                    ->value('sum_hours')) ?? 0;
-            }
-        }
-
-        return [
-            'dates' => $rawDates,
-            'projects' => $projects,
-            'report' => $report
-        ];
-    }
-
     public static function teamworkData(TeamworkRequest $request): array
     {
         $filters = $request->filters();
