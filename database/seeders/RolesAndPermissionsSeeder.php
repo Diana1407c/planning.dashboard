@@ -30,6 +30,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage project_manager_planning' => ['admin', 'project_manager'],
             'manage users' => ['admin', 'project_manager'],
             'manage reports' => ['admin', 'project_manager', 'accountant'],
+            'manage levels' => ['admin', 'project_manager'],
         ];
 
         foreach ($roles as $role) {

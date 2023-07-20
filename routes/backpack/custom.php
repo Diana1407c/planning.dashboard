@@ -52,4 +52,8 @@ Route::group([
     Route::group(['middleware' => ['permission:manage users']], function () {
         Route::crud('user', 'UserCrudController');
     });
+
+    Route::group(['middleware' => ['permission:manage levels']], function () {
+        Route::crud('level', 'LevelCrudController');
+    });
 });
