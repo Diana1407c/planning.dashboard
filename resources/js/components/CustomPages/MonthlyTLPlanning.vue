@@ -117,6 +117,7 @@
 import Layout from "./../Layout.vue";
 const { getWeek } = require('date-fns');
 import VueMultiselect from 'vue-multiselect';
+import errorMessages from "../../helpers";
 
 export default {
     name: "MonthlyTLPlanning",
@@ -130,6 +131,7 @@ export default {
             projects: [],
             teams: [],
             table: [],
+            can_edit: true,
             month_name: null,
             filter: {
                 team_ids: [],
@@ -203,8 +205,15 @@ export default {
                 hours: event.target.value
             }).then((response) => {
                 this.table = response.data.table
+                this.can_edit = response.data.can_edit
                 //this.table[engineerId][projectId] = Number(response.data.hours)
                 this.$notify(response.data.message);
+            }).catch((error) => {
+                let messages = errorMessages(error.response);
+                this.$notify({
+                    text: messages.join('<br>'),
+                    type: "error",
+                });
             });
         },
 

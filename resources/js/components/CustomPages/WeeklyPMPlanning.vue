@@ -91,6 +91,7 @@ import Layout from "./../Layout.vue";
 import Multiselect from 'vue-multiselect';
 const { getWeek } = require('date-fns');
 import { useNotification } from "@kyvg/vue3-notification";
+import errorMessages from "../../helpers";
 
 const { notify } = useNotification()
 
@@ -177,6 +178,12 @@ export default {
             }).then((response) => {
                 this.table = response.data.table;
                 this.$notify(response.data.message);
+            }).catch((error) => {
+                let messages = errorMessages(error.response);
+                this.$notify({
+                    text: messages.join('<br>'),
+                    type: "error",
+                });
             });
         },
 

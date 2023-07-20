@@ -106,6 +106,7 @@
 import Layout from "./../Layout.vue";
 const { getWeek } = require('date-fns');
 import VueMultiselect from 'vue-multiselect';
+import errorMessages from "../../helpers";
 
 export default {
     name: "WeeklyTLPlanning",
@@ -194,6 +195,12 @@ export default {
             }).then((response) => {
                 this.table = response.data.table;
                 this.$notify(response.data.message);
+            }).catch((error) => {
+                let messages = errorMessages(error.response);
+                this.$notify({
+                    text: messages.join('<br>'),
+                    type: "error",
+                });
             });
         },
 

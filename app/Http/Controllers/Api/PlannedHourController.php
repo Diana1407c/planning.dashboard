@@ -18,43 +18,58 @@ use Illuminate\Http\JsonResponse;
 
 class PlannedHourController extends Controller
 {
+    public function __construct(protected PlannedHourService $plannedHourService)
+    {}
+
     public function tlWeekly(WeeklyTLPlanningFilterRequest $request)
     {
         $matrix = new TLWeeklyPlannedHoursMatrix($request->filter());
 
-        return response()->json(['table' => $matrix->matrix()]);
+        return response()->json([
+            'table' => $matrix->matrix(),
+            'can_edit' => $this->plannedHourService->canEditPeriodByFilter($request->filter()),
+        ]);
     }
 
     public function tlMonthly(MonthlyTLPlanningFilterRequest $request)
     {
         $matrix = new TLMonthlyPlannedHoursMatrix($request->filter());
 
-        return response()->json(['table' => $matrix->matrix()]);
+        return response()->json([
+            'table' => $matrix->matrix(),
+            'can_edit' => $this->plannedHourService->canEditPeriodByFilter($request->filter()),
+        ]);
     }
 
     public function pmWeekly(WeeklyPMPlanningFilterRequest $request)
     {
         $matrix = new PMMonthlyPlannedHoursMatrix($request->filter());
 
-        return response()->json(['table' => $matrix->matrix()]);
+        return response()->json([
+            'table' => $matrix->matrix(),
+            'can_edit' => $this->plannedHourService->canEditPeriodByFilter($request->filter()),
+        ]);
     }
 
     public function pmMonthly(MonthlyPMPlanningFilterRequest $request)
     {
         $matrix = new PMMonthlyPlannedHoursMatrix($request->filter());
 
-        return response()->json(['table' => $matrix->matrix()]);
+        return response()->json([
+            'table' => $matrix->matrix(),
+            'can_edit' => $this->plannedHourService->canEditPeriodByFilter($request->filter()),
+        ]);
     }
 
-    public function tlStore(PlannedHourService $plannedHourService, TLPlanningRequest $request): JsonResponse
+    public function tlStore(TLPlanningRequest $request): JsonResponse
     {
-        if (!$plannedHourService->canEditPeriodByFilter($request->only(['year', 'period_type', 'period_number']))) {
+        if (!$this->plannedHourService->canEditPeriodByFilter($request->only(['year', 'period_type', 'period_number']))) {
             return response()->json([
                 'message' => 'This period cannot be edited',
-            ], 422);
+            ], 400);
         }
 
-        $plannedHourService->storeHours([
+        $this->plannedHourService->storeHours([
             'planable_type' => PlannedHour::ENGINEER_TYPE,
             'project_id' => $request->get('project_id'),
             'planable_id' => $request->get('engineer_id'),
@@ -78,15 +93,15 @@ class PlannedHourController extends Controller
         ]);
     }
 
-    public function pmStore(PlannedHourService $plannedHourService, PMPlanningRequest $request): JsonResponse
+    public function pmStore(PMPlanningRequest $request): JsonResponse
     {
-        if (!$plannedHourService->canEditPeriodByFilter($request->only(['year', 'period_type', 'period_number']))) {
+        if (!$this->plannedHourService->canEditPeriodByFilter($request->only(['year', 'period_type', 'period_number']))) {
             return response()->json([
                 'message' => 'This period cannot be edited',
-            ], 422);
+            ], 400);
         }
 
-        $plannedHourService->storeHours([
+        $this->plannedHourService->storeHours([
             'planable_type' => PlannedHour::TECHNOLOGY_TYPE,
             'project_id' => $request->get('project_id'),
             'planable_id' => $request->get('technology_id'),
