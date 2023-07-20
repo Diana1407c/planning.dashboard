@@ -72,7 +72,7 @@
                 <tr>
                     <td class="vertical-text w-5 text-center align-middle" :rowspan="team.members.length+2">{{ team.name }}</td>
                 </tr>
-                <tr>
+                <tr class="evidence-bg-1">
                     <td class="w-20 align-middle cell-p">{{ team.technology.name }}</td>
                     <td class="w-8 align-middle text-center cell-p heading-tech-total">
                         {{ table['technologies'][team.technology.id]['total']['planned_tl'] }}/{{ table['technologies'][team.technology.id]['total']['planned_pm'] }}
