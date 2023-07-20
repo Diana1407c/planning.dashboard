@@ -104,8 +104,6 @@ class EngineerCrudController extends CrudController
         CRUD::field('username');
 
         $engineer = $this->crud->getCurrentEntry();
-        $teamName = $engineer->team ? $engineer->team->name : '-';
-        $userName = $engineer->user ? $engineer->user->name : '-';
 
         CRUD::addField([
             'name' => 'level_id',
