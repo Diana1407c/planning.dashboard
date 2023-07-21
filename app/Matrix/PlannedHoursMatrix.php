@@ -5,6 +5,7 @@ namespace App\Matrix;
 use App\Services\EngineerService;
 use App\Services\PlannedHourService;
 use App\Services\ProjectService;
+use App\Support\Filters\PlannedHoursFilter;
 
 class PlannedHoursMatrix
 {
@@ -13,19 +14,19 @@ class PlannedHoursMatrix
     protected $projects;
     protected $plannedHourService;
 
-    public function __construct(protected array $filter)
+    public function __construct(protected PlannedHoursFilter $filter)
     {
         $this->initProjects();
     }
 
     public function initProjects(): void
     {
-        $this->projects = ProjectService::filter($this->filter);
+        $this->projects = ProjectService::filter($this->filter->params);
     }
 
     protected function engineersHours(): array
     {
-        $engineers = EngineerService::filter(['team_ids' => $this->filter['team_ids'] ?? null]);
+        $engineers = EngineerService::filter(['team_ids' => $this->filter->get('team_ids')]);
 
         $data = [];
         foreach ($engineers as $engineer) {

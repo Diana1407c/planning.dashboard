@@ -99,6 +99,15 @@ table td:hover{
                 inset 4px 0 5px -4px rgba(0, 0, 0, 0.5);
 }
 
+.compact-table {
+    .compact-cell {
+        padding: 2px 3px!important;
+        input {
+            padding: 0!important;
+        }
+    }
+}
+
 
 
 

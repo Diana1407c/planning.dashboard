@@ -10,10 +10,12 @@ use App\Http\Requests\Planning\WeeklyTLPlanningFilterRequest;
 use App\Http\Requests\PMPlanningRequest;
 use App\Http\Requests\TLPlanningRequest;
 use App\Matrix\PMMonthlyPlannedHoursMatrix;
+use App\Matrix\PMWeeklyPlannedHoursMatrix;
 use App\Matrix\TLMonthlyPlannedHoursMatrix;
 use App\Matrix\TLWeeklyPlannedHoursMatrix;
 use App\Models\PlannedHour;
 use App\Services\PlannedHourService;
+use App\Support\Filters\PlannedHoursFilter;
 use Illuminate\Http\JsonResponse;
 
 class PlannedHourController extends Controller
@@ -23,7 +25,8 @@ class PlannedHourController extends Controller
 
     public function tlWeekly(WeeklyTLPlanningFilterRequest $request)
     {
-        $matrix = new TLWeeklyPlannedHoursMatrix($request->filter());
+        $filter = PlannedHoursFilter::fromArray($request->filter());
+        $matrix = new TLWeeklyPlannedHoursMatrix($filter);
 
         return response()->json([
             'table' => $matrix->matrix(),
@@ -33,7 +36,8 @@ class PlannedHourController extends Controller
 
     public function tlMonthly(MonthlyTLPlanningFilterRequest $request)
     {
-        $matrix = new TLMonthlyPlannedHoursMatrix($request->filter());
+        $filter = PlannedHoursFilter::fromArray($request->filter());
+        $matrix = new TLMonthlyPlannedHoursMatrix($filter);
 
         return response()->json([
             'table' => $matrix->matrix(),
@@ -43,7 +47,8 @@ class PlannedHourController extends Controller
 
     public function pmWeekly(WeeklyPMPlanningFilterRequest $request)
     {
-        $matrix = new PMMonthlyPlannedHoursMatrix($request->filter());
+        $filter = PlannedHoursFilter::fromArray($request->filter());
+        $matrix = new PMWeeklyPlannedHoursMatrix($filter);
 
         return response()->json([
             'table' => $matrix->matrix(),
@@ -53,7 +58,8 @@ class PlannedHourController extends Controller
 
     public function pmMonthly(MonthlyPMPlanningFilterRequest $request)
     {
-        $matrix = new PMMonthlyPlannedHoursMatrix($request->filter());
+        $filter = PlannedHoursFilter::fromArray($request->filter());
+        $matrix = new PMMonthlyPlannedHoursMatrix($filter);
 
         return response()->json([
             'table' => $matrix->matrix(),
@@ -78,12 +84,12 @@ class PlannedHourController extends Controller
             'period_number' => $request->get('period_number'),
         ], ['hours' => $request->get('hours')]);
 
-        $filter = [
+        $filter = PlannedHoursFilter::fromArray([
             'planable_type' => PlannedHour::ENGINEER_TYPE,
             'year' => $request->get('year'),
             'period_type' => $request->get('period_type'),
             'period_number' => $request->get('period_number'),
-        ];
+        ]);
 
         $matrix = $request->get('period_type') == PlannedHour::MONTH_PERIOD_TYPE ? new TLMonthlyPlannedHoursMatrix($filter) : new TLWeeklyPlannedHoursMatrix($filter);
 
@@ -110,12 +116,14 @@ class PlannedHourController extends Controller
             'period_number' => $request->get('period_number'),
         ], ['hours' => $request->get('hours')]);
 
-        $matrix = new PMMonthlyPlannedHoursMatrix([
+        $filter = PlannedHoursFilter::fromArray([
             'planable_type' => PlannedHour::TECHNOLOGY_TYPE,
             'year' => $request->get('year'),
             'period_type' => $request->get('period_type'),
             'period_number' => $request->get('period_number'),
         ]);
+
+        $matrix = $request->get('period_type') == PlannedHour::MONTH_PERIOD_TYPE ? new PMMonthlyPlannedHoursMatrix($filter) : new PMWeeklyPlannedHoursMatrix($filter);
 
         return response()->json([
             'message' => 'Successfully changed',

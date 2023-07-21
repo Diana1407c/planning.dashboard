@@ -10,7 +10,7 @@ class PMMonthlyPlannedHoursMatrix extends PlannedHoursMatrix
 
     public function matrix(): array
     {
-        $this->pmHours = $this->plannedHourService()->hoursByFilter($this->filter);
+        $this->pmHours = $this->plannedHourService()->hoursByFilter($this->filter->params);
 
         $technologies = Technology::all();
 

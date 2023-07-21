@@ -12,11 +12,10 @@ class TLMonthlyPlannedHoursMatrix extends PlannedHoursMatrix
 
     public function matrix(): array
     {
-        $this->tlHours = $this->plannedHourService()->hoursByFilter($this->filter);
+        $this->tlHours = $this->plannedHourService()->hoursByFilter($this->filter->params);
 
-        $pmFilter = $this->filter;
-        $pmFilter['planable_type'] = PlannedHour::TECHNOLOGY_TYPE;
-        $this->pmHours = $this->plannedHourService()->hoursByFilter($pmFilter);
+        $pmFilter = $this->filter->clone()->set('planable_type', PlannedHour::TECHNOLOGY_TYPE);
+        $this->pmHours = $this->plannedHourService()->hoursByFilter($pmFilter->params);
 
         return [
             'engineers' => $this->engineersHours(),
@@ -27,8 +26,8 @@ class TLMonthlyPlannedHoursMatrix extends PlannedHoursMatrix
     protected function technologyIds(): array
     {
         $query = Team::query();
-        if (!empty($this->filter['team_ids'])) {
-            $query->whereIn('id', $this->filter['team_ids']);
+        if ($teamIds = $this->filter->get('team_ids')) {
+            $query->whereIn('id', $teamIds);
         }
 
         return $query->pluck('technology_id')->toArray();

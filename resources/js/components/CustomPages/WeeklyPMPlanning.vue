@@ -39,12 +39,13 @@
         <hr class="col-12 separator-filter">
     </div>
     <div></div>
-    <table v-if="loaded" class="table table-striped table-bordered planning-table">
+    <table v-if="loaded" class="table table-striped table-bordered planning-table compact-table">
         <thead>
         <tr>
             <th class="w-5 vertical-text text-center align-middle">State</th>
             <th class="w-20 text-center align-middle">Projects</th>
-            <th class="w-8 vertical-text text-center align-middle" v-for="technology in technologies">{{ technology.name }}</th>
+            <th colspan="2" class="vertical-text text-center align-middle heading-tech-total">Total</th>
+            <th colspan="2" class="w-10 vertical-text text-center align-middle" v-for="technology in technologies">{{ technology.name }}</th>
         </tr>
         </thead>
         <tbody>
@@ -58,9 +59,18 @@
             </tr>
             <tr v-for="project in projects">
                 <td class="w-20 align-middle cell-p">{{ project.name }}</td>
-                <td class="w-8 align-middle cell-p" v-for="technology in technologies">
-                    <input type="number" :disabled="!can_edit" class="form-control text-center no-arrows" :value="table[project.id][technology.id]" @blur="plan($event, project.id, technology.id)">
+                <td class="align-middle cell-p text-center heading-tech-total">{{ table[project.id]['total']['week'] }}</td>
+                <td class="align-middle cell-p text-center heading-tech-total">
+                    {{ table[project.id]['total']['tm'] }}/{{ table[project.id]['total']['month'] }}
                 </td>
+                <template v-for="technology in technologies">
+                    <td class="align-middle cell-p w-5 compact-cell">
+                        <input type="number" :disabled="!can_edit" class="form-control text-center no-arrows" :value="table[project.id][technology.id]['week']" @blur="plan($event, project.id, technology.id)">
+                    </td>
+                    <td class="align-middle cell-p text-center w-5 compact-cell">
+                        {{ table[project.id][technology.id]['tm'] }}/{{ table[project.id][technology.id]['month'] }}
+                    </td>
+                </template>
             </tr>
         </template>
         </tbody>
@@ -162,11 +172,11 @@ export default {
 
         plan(event, projectId, technologyId){
             if(!event.target.value){
-                event.target.value = this.table[projectId][technologyId]
+                event.target.value = this.table[projectId][technologyId]['week']
                 return;
             }
 
-            if(Number(event.target.value) === this.table[projectId][technologyId]){
+            if(Number(event.target.value) === this.table[projectId][technologyId]['week']){
                 return;
             }
 

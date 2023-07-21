@@ -7,6 +7,7 @@ use App\Models\PlannedHour;
 use App\Models\Project;
 use App\Models\TeamworkTime;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class TeamworkService
@@ -176,6 +177,40 @@ class TeamworkService
             $query->selectRaw('MONTH(date) as period_number');
         }
 
+        self::applyFilter($query, $filters);
+
+        $query->groupBy([
+            'project_id',
+            'year',
+            'period_number',
+        ]);
+
+        return $query->get();
+    }
+
+    public static function technologiesHours(array $filters): Collection|array
+    {
+        $query = TeamworkTime::query()
+            ->select([
+                'project_id',
+                'technology_id',
+            ])
+            ->selectRaw('SUM(hours) as sum_hours')
+            ->join('engineers', 'engineers.id', '=', 'teamwork_time.engineer_id')
+            ->join('teams', 'teams.id', '=', 'engineers.team_id');
+
+        self::applyFilter($query, $filters);
+
+        $query->groupBy([
+            'project_id',
+            'technology_id',
+        ]);
+
+        return $query->get();
+    }
+
+    protected static function applyFilter(Builder $query, array $filters): void
+    {
         if (!empty($filters['projects_ids'])) {
             $query->whereIn('project_id', $filters['projects_ids']);
         }
@@ -187,13 +222,5 @@ class TeamworkService
         if (!empty($filters['end_date'])) {
             $query->where('date', '<=', $filters['end_date']);
         }
-
-        $query->groupBy([
-            'project_id',
-            'year',
-            'period_number',
-        ]);
-
-        return $query->get();
     }
 }
