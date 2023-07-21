@@ -58,24 +58,56 @@
         <hr class="col-12 separator-filter">
     </div>
     <div class="table-responsive">
-        <table v-if="loaded" class="table table-striped table-bordered planning-table">
+        <table v-if="loaded" class="table table-striped table-bordered planning-table compact-table">
             <thead>
             <tr>
                 <th class="w-5 vertical-text text-center align-middle">Team</th>
                 <th class="w-20 text-center align-middle">Members</th>
-                <th class="w-8 vertical-text text-center align-middle" v-for="project in projects">{{ project.name }}</th>
+                <th class="w-8 vertical-text text-center align-middle heading-tech-total">Total</th>
+                <th colspan="2" class="w-8 vertical-text text-center align-middle" v-for="project in projects">{{ project.name }}</th>
             </tr>
             </thead>
             <tbody>
             <template v-for="team in teams" :key="team.id">
                 <tr>
-                    <td class="vertical-text w-5 text-center align-middle" :rowspan="team.members.length+1">{{ team.name }}</td>
+                    <td class="vertical-text w-5 text-center align-middle" :rowspan="team.members.length+2">{{ team.name }}</td>
+                </tr>
+                <tr class="evidence-bg-1">
+                    <td class="w-20 align-middle cell-p">{{ team.technology.name }}</td>
+                    <td class="w-8 align-middle text-center cell-p heading-tech-total">
+                        <span class="tl-hour-week">{{ table['technologies'][team.technology.id]['total']['tl_week'] }}</span>
+                        <span class="hours-separator">/</span>
+                        <span class="pm-hour-week">{{ table['technologies'][team.technology.id]['total']['pm_week'] }}</span>
+                    </td>
+                    <template v-for="project in projects">
+                        <td class="w-8 align-middle text-center cell-p">
+                            <span class="tl-hour-week">{{ table['technologies'][team.technology.id][project.id]['tl_week'] }}</span>
+                            <span class="hours-separator">/</span>
+                            <span class="pm-hour-week">{{ table['technologies'][team.technology.id][project.id]['pm_week'] }}</span>
+                        </td>
+                        <td class="w-8 align-middle text-center cell-p">
+                            <span class="tw-hour-month">{{ table['technologies'][team.technology.id][project.id]['tw_month'] }}</span>
+                            <span class="hours-separator">/</span>
+                            <span class="pm-hour-month">{{ table['technologies'][team.technology.id][project.id]['pm_month'] }}</span>
+                        </td>
+                    </template>
+
                 </tr>
                 <tr v-for="member in team.members">
                     <td class="w-20 align-middle cell-p">{{ member.name }}</td>
-                    <td class="w-8 align-middle cell-p" v-for="project in projects">
-                        <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table[member.id][project.id]" @blur="plan($event, member.id, project.id)">
+                    <td class="w-8 align-middle text-center cell-p heading-tech-total">
+                        {{ table['engineers'][member.id]['total'] }}
                     </td>
+                    <template v-for="project in projects">
+                        <td class="w-8 align-middle cell-p">
+                            <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table['engineers'][member.id][project.id]['current_week']" @blur="plan($event, member.id, project.id)">
+                        </td>
+                        <td class="w-8 align-middle cell-p text-center">
+                            <span class="tw-hour-prev-week">{{ table['engineers'][member.id][project.id]['tw_prev_week'] }}</span>
+                            <span class="hours-separator">/</span>
+                            <span class="tl-hour-prev-week">{{ table['engineers'][member.id][project.id]['prev_week'] }}</span>
+                        </td>
+                    </template>
                 </tr>
             </template>
             </tbody>
@@ -180,10 +212,10 @@ export default {
 
         plan(event, engineerId, projectId){
             if(!event.target.value){
-                event.target.value = this.table[engineerId][projectId]
+                event.target.value = this.table['engineers'][engineerId][projectId]['current_week']
             }
 
-            if(Number(event.target.value) === this.table[engineerId][projectId]){
+            if(Number(event.target.value) === this.table['engineers'][engineerId][projectId]['current_week']){
                 return;
             }
 

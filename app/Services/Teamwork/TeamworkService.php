@@ -209,6 +209,25 @@ class TeamworkService
         return $query->get();
     }
 
+    public static function engineersHours(array $filters): Collection|array
+    {
+        $query = TeamworkTime::query()
+            ->select([
+                'project_id',
+                'engineer_id',
+            ])
+            ->selectRaw('SUM(hours) as sum_hours');
+
+        self::applyFilter($query, $filters);
+
+        $query->groupBy([
+            'project_id',
+            'engineer_id',
+        ]);
+
+        return $query->get();
+    }
+
     protected static function applyFilter(Builder $query, array $filters): void
     {
         if (!empty($filters['projects_ids'])) {
