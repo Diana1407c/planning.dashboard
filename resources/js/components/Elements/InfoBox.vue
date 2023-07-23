@@ -4,19 +4,17 @@
         :title="title"
     >
         <div class="modal-compare-element">
-            <div v-if="stacks.length" class="col-12 p-0 d-flex align-items-center flex-column">
+            <div v-if="technologies.length" class="col-12 p-0 d-flex align-items-center flex-column">
                 <h4>Project Manager Planning</h4>
                 <table class="table table-striped table-bordered planning-table">
                     <thead>
                     <tr>
-                        <th class="w-8 text-center align-middle">Cost (€)</th>
-                        <th class="w-10 text-center align-middle" v-for="stack in stacks">{{ stack.name }}</th>
+                        <th class="w-10 text-center align-middle" v-for="technology in technologies">{{ technology.name }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr >
-                        <td class="w-10 align-middle text-center cell-p">{{ cost }}</td>
-                        <td class="w-10 align-middle text-center cell-p" v-for="stack in stacks">{{ pmPlanning[stack.id] }}</td>
+                        <td class="w-10 align-middle text-center cell-p" v-for="technology in technologies">{{ hours['pm'][technology.id] }}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -42,9 +40,9 @@
                             <td class="w-5 vertical-text text-center align-middle" :rowspan="team.members.length+1">{{ team.name }}</td>
                         </tr>
                         <tr v-for="member in team.members" >
-                            <template v-if="tlPlanning[member.id]">
+                            <template v-if="hours['tl'][member.id]">
                                 <td class="w-15 align-middle cell-p">{{ member.name }}</td>
-                                <td class="w-8 align-middle text-center cell-p">{{ tlPlanning[member.id] }}</td>
+                                <td class="w-8 align-middle text-center cell-p">{{ hours['tl'][member.id] }}</td>
                             </template>
                         </tr>
                     </template>
@@ -72,7 +70,7 @@ export default {
             type: String,
             default: null
         },
-        date: {
+        period_type: {
             type: String,
             default: null
         },
@@ -84,14 +82,11 @@ export default {
     },
     data() {
         return {
-            year: this.date ? this.dateIndex.split("_")[0] : null,
-            week: this.date ? this.dateIndex.split("_")[1] : null,
-
+            year: this.dateIndex ? this.dateIndex.split("_")[0] : null,
+            period_number: this.dateIndex ? this.dateIndex.split("_")[1] : null,
             teams: [],
-            tlPlanning: [],
-            stacks: [],
-            cost: null,
-            pmPlanning: [],
+            hours: [],
+            technologies: [],
             loadingDetails: true
         }
     },
@@ -108,8 +103,8 @@ export default {
         project: {
             async handler(newValue) {
                 if(newValue && !this.loadingDetails){
-                    this.year = this.date ? this.dateIndex.split("_")[0] : null;
-                    this.week = this.date ? this.dateIndex.split("_")[1] : null;
+                    this.year = this.dateIndex ? this.dateIndex.split("_")[0] : null;
+                    this.period_number = this.dateIndex ? this.dateIndex.split("_")[1] : null;
                     await this.getInfo()
                 }
             },
@@ -118,8 +113,8 @@ export default {
         date: {
             async handler(newValue) {
                 if(newValue && !this.loadingDetails){
-                    this.year = this.date ? this.dateIndex.split("_")[0] : null;
-                    this.week = this.date ? this.dateIndex.split("_")[1] : null;
+                    this.year = this.dateIndex ? this.dateIndex.split("_")[0] : null;
+                    this.period_number = this.dateIndex ? this.dateIndex.split("_")[1] : null;
                     await this.getInfo()
                 }
             }
@@ -129,14 +124,13 @@ export default {
         async getInfo(){
             this.loadingDetails = true;
             axios.get('reports/comparison/detail/'+this.project.id, {params: {
-                    week: this.week,
+                    period_number: this.period_number,
                     year: this.year,
+                    period_type: this.period_type,
                 }}).then((response) => {
                 this.teams = response.data.teams
-                this.tlPlanning = response.data.tl_planning
-                this.stacks = response.data.stacks
-                this.pmPlanning = response.data.pm_planning
-                this.cost = response.data.cost
+                this.hours = response.data.hours
+                this.technologies = response.data.technologies
                 this.loadingDetails = false;
             }).catch(() => {
                 this.loadingDetails = false;

@@ -49,7 +49,7 @@
                 <template v-for="date in dates">
                     <th class="plan-type-cell text-center align-middle">PM</th>
                     <th class="plan-type-cell text-center align-middle">TL</th>
-                    <th class="plan-type-cell text-center align-middle">TM</th>
+                    <th class="plan-type-cell text-center align-middle">TW</th>
                 </template>
             </tr>
             </thead>
@@ -57,7 +57,7 @@
             <tr v-for="project in projects">
                 <td colspan="2" class="align-middle cell-p">{{ project.name }}</td>
                 <template v-for="(date, index) in dates">
-                    <td colspan="3" class="hours-compare-td date-th text-center align-middle p-0" @click="openModal(project, date, index)">
+                    <td colspan="3" class="hours-compare-td date-th text-center align-middle p-0" @click="openModal(project, index)">
                         <div class="d-inline-block hours-pm plan-type-cell text-center align-middle d-table-cell">{{ report[project.id][index]['PM'] }}</div>
                         <div class="d-inline-block hours-tl plan-type-cell text-center align-middle d-table-cell">{{ report[project.id][index]['TL'] }}</div>
                         <div class="d-inline-block hours-tm plan-type-cell text-center align-middle d-table-cell">{{ report[project.id][index]['TM'] }}</div>
@@ -67,7 +67,7 @@
             </tbody>
         </table>
     </div>
-    <info-box v-if="detailOpened" :is-open="detailOpened" :project="projectModal" :date="dateModal" :dateIndex="dateIndexModal" :close="closeModal"></info-box>
+    <info-box v-if="detailOpened" :is-open="detailOpened" :project="projectModal" :period_type="filter.period_type" :dateIndex="dateIndexModal" :close="closeModal"></info-box>
 </template>
 
 <script>
@@ -102,10 +102,9 @@ export default {
     },
 
     methods: {
-        openModal(project, date, dateIndex){
+        openModal(project, dateIndex){
             this.projectModal = project
             this.dateIndexModal = dateIndex
-            this.dateModal = date
             this.detailOpened = true;
         },
 
