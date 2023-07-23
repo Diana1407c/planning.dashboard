@@ -95,10 +95,11 @@ class TeamCrudController extends CrudController
     {
         $this->basicCreateUpdate();
 
+        $allEngineers = ShortEngineersResource::collection(EngineerRepository::all());
         $withoutTeam = ShortEngineersResource::collection(EngineerRepository::withoutTeam());
 
         $select = '<label>Team Lead</label><select name="team_lead_id" class="form-control">';
-        foreach ($withoutTeam as $engineer){
+        foreach ($allEngineers as $engineer){
             $select .= '<option value="'. $engineer->id .'">'.$engineer->fullName().' - '. $engineer->email .'</option>';
         }
         $select .= '</select>';
@@ -168,10 +169,6 @@ class TeamCrudController extends CrudController
         $team = Team::query()->create($request->validated());
 
         $membersIds = explode('|', $request->get('members',));
-        if (!in_array($team->team_lead_id, $membersIds)) {
-            $membersIds[] = $team->team_lead_id;
-        }
-
         Engineer::query()->whereIn('id', $membersIds)->update(['team_id' => $team->id]);
 
         return view($this->crud->getCreateView(), $this->data+['crud' => $this->crud]);
@@ -183,9 +180,6 @@ class TeamCrudController extends CrudController
         $team->update($request->validated());
 
         $membersIds = explode('|', $request->get('members',));
-        if (!in_array($team->team_lead_id, $membersIds)) {
-            $membersIds[] = $team->team_lead_id;
-        }
         $currentMemberIds = $team->members()->pluck('id')->toArray();
 
         $membersToAdd = array_diff($membersIds, $currentMemberIds);
