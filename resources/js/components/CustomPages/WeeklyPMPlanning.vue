@@ -60,15 +60,19 @@
             <tr v-for="project in projects">
                 <td class="w-20 align-middle cell-p">{{ project.name }}</td>
                 <td class="align-middle cell-p text-center heading-tech-total">{{ table[project.id]['total']['week'] }}</td>
-                <td class="align-middle cell-p text-center heading-tech-total">
-                    {{ table[project.id]['total']['tm'] }}/{{ table[project.id]['total']['month'] }}
+                <td title="Worked monthly / Planned monthly by PM" class="align-middle cell-p text-center heading-tech-total">
+                    <span class="tw-hour-month">{{ table[project.id]['total']['tm'] }}</span>
+                    <span class="hours-separator">/</span>
+                    <span class="pm-hour-month">{{ table[project.id]['total']['month'] }}</span>
                 </td>
                 <template v-for="technology in technologies">
                     <td class="align-middle cell-p w-5 compact-cell">
                         <input type="number" :disabled="!can_edit" class="form-control text-center no-arrows" :value="table[project.id][technology.id]['week']" @blur="plan($event, project.id, technology.id)">
                     </td>
-                    <td class="align-middle cell-p text-center w-5 compact-cell">
-                        {{ table[project.id][technology.id]['tm'] }}/{{ table[project.id][technology.id]['month'] }}
+                    <td title="Worked monthly / Planned monthly by PM" class="align-middle cell-p text-center w-5 compact-cell">
+                        <span class="tw-hour-month">{{ table[project.id][technology.id]['tm'] }}</span>
+                        <span class="hours-separator">/</span>
+                        <span class="pm-hour-month">{{ table[project.id][technology.id]['month'] }}</span>
                     </td>
                 </template>
             </tr>

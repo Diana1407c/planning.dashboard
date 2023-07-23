@@ -74,18 +74,18 @@
                 </tr>
                 <tr class="evidence-bg-1">
                     <td class="w-20 align-middle cell-p">{{ team.technology.name }}</td>
-                    <td class="w-8 align-middle text-center cell-p heading-tech-total">
+                    <td title="Planned weekly by TL / Planned weekly by PM" class="w-8 align-middle text-center cell-p heading-tech-total">
                         <span class="tl-hour-week">{{ table['technologies'][team.technology.id]['total']['tl_week'] }}</span>
                         <span class="hours-separator">/</span>
                         <span class="pm-hour-week">{{ table['technologies'][team.technology.id]['total']['pm_week'] }}</span>
                     </td>
                     <template v-for="project in projects">
-                        <td class="w-8 align-middle text-center cell-p">
+                        <td title="Planned weekly by TL / Planned weekly by PM" class="w-8 align-middle text-center cell-p">
                             <span class="tl-hour-week">{{ table['technologies'][team.technology.id][project.id]['tl_week'] }}</span>
                             <span class="hours-separator">/</span>
                             <span class="pm-hour-week">{{ table['technologies'][team.technology.id][project.id]['pm_week'] }}</span>
                         </td>
-                        <td class="w-8 align-middle text-center cell-p">
+                        <td title="Worked monthly / Planned monthly by PM" class="w-8 align-middle text-center cell-p">
                             <span class="tw-hour-month">{{ table['technologies'][team.technology.id][project.id]['tw_month'] }}</span>
                             <span class="hours-separator">/</span>
                             <span class="pm-hour-month">{{ table['technologies'][team.technology.id][project.id]['pm_month'] }}</span>
@@ -102,7 +102,7 @@
                         <td class="w-8 align-middle cell-p">
                             <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table['engineers'][member.id][project.id]['current_week']" @blur="plan($event, member.id, project.id)">
                         </td>
-                        <td class="w-8 align-middle cell-p text-center">
+                        <td title="Last week: Worked / Planned by TL" class="w-8 align-middle cell-p text-center">
                             <span class="tw-hour-prev-week">{{ table['engineers'][member.id][project.id]['tw_prev_week'] }}</span>
                             <span class="hours-separator">/</span>
                             <span class="tl-hour-prev-week">{{ table['engineers'][member.id][project.id]['prev_week'] }}</span>
