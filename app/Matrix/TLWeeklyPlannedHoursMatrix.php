@@ -40,6 +40,9 @@ class TLWeeklyPlannedHoursMatrix extends PlannedHoursMatrix
         $data = [];
         foreach ($engineers as $engineer) {
             foreach ($this->projects as $project) {
+                $twTime = $twHours->where('project_id', $project->id)
+                    ->where('engineer_id', $engineer->id)->sum('sum_hours');
+
                 $data[$engineer->id][$project->id] = [
                     'current_week' => $this->tlHours->where('project_id', $project->id)
                             ->where('planable_id', $engineer->id)
@@ -47,8 +50,7 @@ class TLWeeklyPlannedHoursMatrix extends PlannedHoursMatrix
                     'prev_week' => $tlHoursPrevWeek->where('project_id', $project->id)
                             ->where('planable_id', $engineer->id)
                             ->first()->hours ?? 0,
-                    'tw_prev_week' => $twHours->where('project_id', $project->id)
-                        ->where('engineer_id', $engineer->id)->sum('sum_hours'),
+                    'tw_prev_week' => round($twTime, 2),
                 ];
             }
             $data[$engineer->id]['total'] = $this->tlHours->where('planable_id', $engineer->id)->sum('hours');
@@ -95,6 +97,9 @@ class TLWeeklyPlannedHoursMatrix extends PlannedHoursMatrix
         $data = [];
         foreach ($engineers as $technologyId => $engineerIds) {
             foreach ($this->projects as $project) {
+                $twTime = $twMonthHours->where('project_id', $project->id)
+                    ->where('technology_id', $technologyId)->sum('sum_hours');
+
                 $data[$technologyId][$project->id] = [
                     'tl_week' => $this->tlHours->where('project_id', $project->id)
                         ->whereIn('planable_id', $engineerIds->pluck('id'))
@@ -105,15 +110,14 @@ class TLWeeklyPlannedHoursMatrix extends PlannedHoursMatrix
                     'pm_month' => $pmMonthHours->where('project_id', $project->id)
                         ->where('planable_id', $technologyId)
                         ->sum('hours'),
-                    'tw_month' => $twMonthHours->where('project_id', $project->id)
-                        ->where('technology_id', $technologyId)->sum('sum_hours')
+                    'tw_month' => round($twTime, 2),
                 ];
             }
             $data[$technologyId]['total'] = [
                 'tl_week' => $this->tlHours->whereIn('planable_id', $engineerIds->pluck('id'))->sum('real_hours'),
                 'pm_week' => $pmWeekHours->where('planable_id', $technologyId)->sum('hours'),
                 'pm_month' => $pmMonthHours->where('planable_id', $technologyId)->sum('hours'),
-                'tw_month' => $twMonthHours->where('technology_id', $technologyId)->sum('sum_hours'),
+                'tw_month' => round($twMonthHours->where('technology_id', $technologyId)->sum('sum_hours'), 2),
             ];
         }
 

@@ -57,7 +57,7 @@
             <tr v-for="project in projects">
                 <td colspan="2" class="align-middle cell-p">{{ project.name }}</td>
                 <template v-for="(date, index) in dates">
-                    <td colspan="3" class="hours-compare-td date-th text-center align-middle p-0" @click="openModal(project, index)">
+                    <td colspan="3" :class="c_comparisonColor(report[project.id][index]['PM'], report[project.id][index]['TL'], report[project.id][index]['TM'], date)" class="hours-compare-td date-th text-center align-middle p-0" @click="openModal(project, index)">
                         <div class="d-inline-block hours-pm plan-type-cell text-center align-middle d-table-cell">{{ report[project.id][index]['PM'] }}</div>
                         <div class="d-inline-block hours-tl plan-type-cell text-center align-middle d-table-cell">{{ report[project.id][index]['TL'] }}</div>
                         <div class="d-inline-block hours-tm plan-type-cell text-center align-middle d-table-cell">{{ report[project.id][index]['TM'] }}</div>
@@ -74,11 +74,13 @@
 import VueDatePicker from '@vuepic/vue-datepicker'
 import multiselect from 'vue-multiselect';
 import InfoBox from '../../Elements/InfoBox.vue';
+import Color from "../../Elements/Color.vue";
 export default {
     name: "Comparison",
     props: {
         allProjects: Object
     },
+    mixins: [Color],
     data(){
         return {
             projects: [],

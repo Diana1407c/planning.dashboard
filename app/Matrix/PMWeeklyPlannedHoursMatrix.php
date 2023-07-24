@@ -30,6 +30,9 @@ class PMWeeklyPlannedHoursMatrix extends PlannedHoursMatrix
 
         foreach ($this->projects as $project) {
             foreach ($technologies as $technology) {
+                $twTime = $tmHours->where('project_id', $project->id)
+                    ->where('technology_id', $technology->id)->sum('sum_hours');
+
                 $data[$project->id][$technology->id] = [
                     'week' =>  $this->pmHours->where('project_id', $project->id)
                             ->where('planable_id', $technology->id)
@@ -37,14 +40,14 @@ class PMWeeklyPlannedHoursMatrix extends PlannedHoursMatrix
                     'month' => $monthlyHours->where('project_id', $project->id)
                             ->where('planable_id', $technology->id)
                             ->first()->hours ?? 0,
-                    'tm' => $tmHours->where('project_id', $project->id)
-                        ->where('technology_id', $technology->id)->sum('sum_hours'),
+                    'tm' => round($twTime, 2),
                 ];
             }
             $data[$project->id]['total'] = [
                 'week' => $this->pmHours->where('project_id', $project->id)->sum('hours'),
                 'month' => $monthlyHours->where('project_id', $project->id)->sum('hours'),
-                'tm' => $tmHours->where('project_id', $project->id)->sum('sum_hours'),
+                'tm' => round($tmHours->where('project_id', $project->id)->sum('sum_hours'), 2),
+
             ];
         }
 
