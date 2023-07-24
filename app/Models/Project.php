@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $id
  * @property string $name
  * @property string $state
+ * @property boolean $no_performance
  */
 
 class Project extends Model
@@ -21,5 +22,10 @@ class Project extends Model
     use CrudTrait;
     use HasFactory;
 
-    protected $fillable = ['id', 'name', 'state'];
+    protected $fillable = ['id', 'name', 'state', 'no_performance'];
+
+    public function isNoPerformance(): bool
+    {
+        return $this->no_performance;
+    }
 }

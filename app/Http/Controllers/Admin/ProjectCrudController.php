@@ -64,6 +64,14 @@ class ProjectCrudController extends CrudController
                 Project::STATE_OPERATIONAL => 'Operational'
             ],
         ]);
+
+        CRUD::addField([
+            'label'     => "Without Performance",
+            'type'      => 'checkbox',
+            'name'      => 'no_performance',
+            'allows_null' => false,
+            'default'     => false,
+        ]);
     }
 
     public function sync(): Application|\Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|RedirectResponse
