@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\PlannedHour;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 class PlannedHourService
 {
@@ -11,25 +12,20 @@ class PlannedHourService
     {
         $query = PlannedHour::query();
 
-        if (!empty($filter['year'])) {
-            $query->where('year', $filter['year']);
-        }
+        $this->filterToQuery($query, $filter);
 
-        if (!empty($filter['period_type'])) {
-            $query->where('period_type', $filter['period_type']);
-        }
+        return $query->get();
+    }
 
-        if (!empty($filter['period_number'])) {
-            $query->where('period_number', $filter['period_number']);
-        }
+    public function hoursByFilterWithPerformance(array $filter)
+    {
+        $query = PlannedHour::query()
+            ->select(['planned_hours.*'])
+            ->selectRaw('ROUND(hours * IF(engineers.performance>0, engineers.performance, IF(levels.performance>0, levels.performance, 100)) / 100) as real_hours')
+            ->join('engineers', 'engineers.id', '=', 'planned_hours.planable_id')
+            ->leftJoin('levels', 'levels.id', '=', 'engineers.level_id');
 
-        if (!empty($filter['planable_type'])) {
-            $query->where('planable_type', $filter['planable_type']);
-        }
-
-        if (!empty($filter['planable_ids'])) {
-            $query->whereIn('planable_id', $filter['planable_ids']);
-        }
+        $this->filterToQuery($query, $filter);
 
         return $query->get();
     }
@@ -106,5 +102,28 @@ class PlannedHourService
         }
 
         return Carbon::now()->setYear($year)->setMonth($periodNumber)->startOfMonth()->gt(Carbon::now());
+    }
+
+    protected function filterToQuery(Builder $query, array $filter)
+    {
+        if (!empty($filter['year'])) {
+            $query->where('year', $filter['year']);
+        }
+
+        if (!empty($filter['period_type'])) {
+            $query->where('period_type', $filter['period_type']);
+        }
+
+        if (!empty($filter['period_number'])) {
+            $query->where('period_number', $filter['period_number']);
+        }
+
+        if (!empty($filter['planable_type'])) {
+            $query->where('planable_type', $filter['planable_type']);
+        }
+
+        if (!empty($filter['planable_ids'])) {
+            $query->whereIn('planable_id', $filter['planable_ids']);
+        }
     }
 }

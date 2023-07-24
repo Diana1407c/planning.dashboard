@@ -94,7 +94,7 @@
 
                 </tr>
                 <tr v-for="member in team.members">
-                    <td class="w-20 align-middle cell-p">{{ member.name }}</td>
+                    <td class="w-20 align-middle cell-p">{{ member.name }} <span title="Performance" class="float-right">{{ member.performance }}%</span></td>
                     <td class="w-8 align-middle text-center cell-p heading-tech-total">
                         {{ table['engineers'][member.id]['total'] }}
                     </td>

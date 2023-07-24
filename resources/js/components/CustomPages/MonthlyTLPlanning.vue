@@ -86,7 +86,7 @@
                     </td>
                 </tr>
                 <tr v-for="member in team.members">
-                    <td class="w-20 align-middle cell-p">{{ member.name }}</td>
+                    <td class="w-20 align-middle cell-p">{{ member.name }} <span title="Performance" class="float-right">{{ member.performance }}%</span></td>
                     <td class="w-8 align-middle text-center cell-p heading-tech-total">{{ table['engineers'][member.id]['total'] }}</td>
                     <td class="w-8 align-middle cell-p" v-for="project in projects">
                         <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table['engineers'][member.id][project.id]" @blur="plan($event, member.id, project.id)">

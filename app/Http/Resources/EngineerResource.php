@@ -21,7 +21,8 @@ class EngineerResource extends JsonResource
             'username' => $this->username,
             'team_name' => $this->team->name,
             'team_id' => $this->team_id,
-            'plannings' => $this->plannings()
+            'plannings' => $this->plannings(),
+            'performance' => $this->performancePercent(),
         ];
     }
 

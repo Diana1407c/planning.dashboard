@@ -61,14 +61,21 @@ class Engineer extends Model
 
     public function displayPerformance(): string
     {
-        if (!empty($this->performance)) {
-            return $this->performance . '%';
-        }
-
-        if ($this->level) {
-            return $this->level->performance . '%';
+        if ($performance = $this->performancePercent()) {
+            return $performance . '%';
         }
 
         return '-';
     }
+
+    public function performancePercent(): int
+    {
+        if ($this->performance) {
+            return $this->performance;
+        }
+
+        return $this->level ? $this->level->performance : 0;
+    }
+
+
 }

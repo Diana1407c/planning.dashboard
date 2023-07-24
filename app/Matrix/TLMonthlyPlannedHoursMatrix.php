@@ -12,7 +12,7 @@ class TLMonthlyPlannedHoursMatrix extends PlannedHoursMatrix
 
     public function matrix(): array
     {
-        $this->tlHours = $this->plannedHourService()->hoursByFilter($this->filter->params);
+        $this->tlHours = $this->plannedHourService()->hoursByFilterWithPerformance($this->filter->params);
 
         $pmFilter = $this->filter->clone()->set('planable_type', PlannedHour::TECHNOLOGY_TYPE);
         $this->pmHours = $this->plannedHourService()->hoursByFilter($pmFilter->params);
@@ -47,7 +47,7 @@ class TLMonthlyPlannedHoursMatrix extends PlannedHoursMatrix
                 $data[$technologyId][$project->id] = [
                     'planned_tl' => $this->tlHours->where('project_id', $project->id)
                         ->whereIn('planable_id', $engineerIds->pluck('id'))
-                        ->sum('hours'),
+                        ->sum('real_hours'),
                     'planned_pm' => $this->pmHours->where('project_id', $project->id)
                         ->where('planable_id', $technologyId)
                         ->sum('hours'),
@@ -55,7 +55,7 @@ class TLMonthlyPlannedHoursMatrix extends PlannedHoursMatrix
             }
             $data[$technologyId]['total'] = [
                 'planned_tl' => $this->tlHours->whereIn('planable_id', $engineerIds->pluck('id'))
-                    ->sum('hours'),
+                    ->sum('real_hours'),
                 'planned_pm' => $this->pmHours->where('planable_id', $technologyId)->sum('hours')
             ];
         }

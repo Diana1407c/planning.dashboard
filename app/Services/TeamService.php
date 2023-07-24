@@ -10,7 +10,7 @@ class TeamService
 {
     public static function filter(Request $request): Collection|array
     {
-        $query = Team::query()->with('technology');
+        $query = Team::query()->with(['technology', 'members.level', 'members']);
 
         if($team_ids = $request->get('team_ids')){
             $query->whereIn('id', $team_ids);
