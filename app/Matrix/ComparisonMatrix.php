@@ -14,7 +14,8 @@ class ComparisonMatrix
     protected Carbon|null $toDate;
     protected $plannedHourService;
 
-    protected $plannedHours;
+    protected $tlPlannedHours;
+    protected $pmPlannedHours;
     protected $projects;
     protected $loggedTimes;
 
@@ -28,13 +29,24 @@ class ComparisonMatrix
 
     public function setPlannedHours(): void
     {
-        $this->plannedHours = $this->plannedHourService()->groupedHoursByFilter([
+        $this->tlPlannedHours = $this->plannedHourService()->groupedHoursByFilterWithPerformance([
             'from_year' => $this->fromDate->year,
             'from_period_number' => $this->isWeekly() ? $this->fromDate->week : $this->fromDate->month,
             'to_year' => $this->toDate->year,
             'to_period_number' => $this->isWeekly() ? $this->toDate->week : $this->toDate->month,
             'period_type' => $this->periodType,
             'projects_ids' => $this->projects->pluck('id'),
+            'planable_type' => PlannedHour::ENGINEER_TYPE,
+        ]);
+
+        $this->pmPlannedHours = $this->plannedHourService()->groupedHoursByFilter([
+            'from_year' => $this->fromDate->year,
+            'from_period_number' => $this->isWeekly() ? $this->fromDate->week : $this->fromDate->month,
+            'to_year' => $this->toDate->year,
+            'to_period_number' => $this->isWeekly() ? $this->toDate->week : $this->toDate->month,
+            'period_type' => $this->periodType,
+            'projects_ids' => $this->projects->pluck('id'),
+            'planable_type' => PlannedHour::TECHNOLOGY_TYPE,
         ]);
     }
 
@@ -99,18 +111,16 @@ class ComparisonMatrix
     {
         foreach ($this->projects as $project) {
             $data[$project->id][$year . '_' . $periodNumber]['PM']
-                = $this->plannedHours->where('project_id', $project->id)
-                ->where('planable_type', PlannedHour::TECHNOLOGY_TYPE)
+                = $this->pmPlannedHours->where('project_id', $project->id)
                 ->where('year', $year)
                 ->where('period_number', $periodNumber)
                 ->first()->sum_hours ?? 0;
 
             $data[$project->id][$year . '_' . $periodNumber]['TL']
-                = $this->plannedHours->where('project_id', $project->id)
-                ->where('planable_type', PlannedHour::ENGINEER_TYPE)
+                = $this->tlPlannedHours->where('project_id', $project->id)
                 ->where('year', $year)
                 ->where('period_number', $periodNumber)
-                ->first()->sum_hours ?? 0;
+                ->first()->sum_real_hours ?? 0;
 
             $temWorkTime = $this->loggedTimes->where('project_id', $project->id)->where('project_id', $project->id)
                 ->where('year', $year)
