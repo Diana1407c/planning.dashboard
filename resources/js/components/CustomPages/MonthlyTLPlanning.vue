@@ -79,7 +79,7 @@
                         <span class="hours-separator">/</span>
                         <span class="pm-hour-month">{{ table['technologies'][team.technology.id]['total']['planned_pm'] }}</span>
                     </td>
-                    <td title="Planned monthly by TL / Planned monthly by PM" class="w-8 align-middle text-center cell-p" v-for="project in projects">
+                    <td :class="setColorHour(table['technologies'][team.technology.id][project.id]['planned_tl'], table['technologies'][team.technology.id][project.id]['planned_pm'])" title="Planned monthly by TL / Planned monthly by PM" class="w-8 align-middle text-center cell-p" v-for="project in projects">
                         <span class="tl-hour-month">{{ table['technologies'][team.technology.id][project.id]['planned_tl'] }}</span>
                         <span class="hours-separator">/</span>
                         <span class="pm-hour-month">{{ table['technologies'][team.technology.id][project.id]['planned_pm'] }}</span>
@@ -122,6 +122,7 @@ import Layout from "./../Layout.vue";
 const { getWeek } = require('date-fns');
 import VueMultiselect from 'vue-multiselect';
 import errorMessages from "../../helpers";
+import Color from "../Elements/Color.vue";
 
 export default {
     name: "MonthlyTLPlanning",
@@ -130,6 +131,9 @@ export default {
         allTeams: Object,
         allProjects: Object
     },
+    mixins: [
+        Color
+    ],
     data(){
         return {
             projects: [],

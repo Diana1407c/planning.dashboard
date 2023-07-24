@@ -69,7 +69,8 @@
                     <td class="align-middle cell-p w-5 compact-cell">
                         <input type="number" :disabled="!can_edit" class="form-control text-center no-arrows" :value="table[project.id][technology.id]['week']" @blur="plan($event, project.id, technology.id)">
                     </td>
-                    <td title="Worked monthly / Planned monthly by PM" class="align-middle cell-p text-center w-5 compact-cell">
+                    <td :class="setColorHourWeek(table[project.id][technology.id]['tm'], table[project.id][technology.id]['month'], this.filter.year, this.filter.week)"
+                        title="Worked monthly / Planned monthly by PM" class="align-middle cell-p text-center w-5 compact-cell">
                         <span class="tw-hour-month">{{ table[project.id][technology.id]['tm'] }}</span>
                         <span class="hours-separator">/</span>
                         <span class="pm-hour-month">{{ table[project.id][technology.id]['month'] }}</span>
@@ -106,12 +107,14 @@ import Multiselect from 'vue-multiselect';
 const { getWeek } = require('date-fns');
 import { useNotification } from "@kyvg/vue3-notification";
 import errorMessages from "../../helpers";
+import Color from "../Elements/Color.vue";
 
 const { notify } = useNotification()
 
 export default {
     name: "WeeklyPMPlanning",
     layout: (h, page) => h(Layout, [page]),
+    mixins:[Color],
     props: {
         technologies: Object,
         allProjects: Object

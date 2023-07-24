@@ -238,8 +238,8 @@ class TeamworkService
             $query->where('date', '>=', $filters['from_date']);
         }
 
-        if (!empty($filters['end_date'])) {
-            $query->where('date', '<=', $filters['end_date']);
+        if (!empty($filters['to_date'])) {
+            $query->where('date', '<=', $filters['to_date']);
         }
     }
 }

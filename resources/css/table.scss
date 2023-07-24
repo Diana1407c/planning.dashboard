@@ -110,6 +110,20 @@ table td:hover{
 .hours-separator {}
 .tw-hour-month, .pm-hour-month, .pm-hour-week, .tl-hour-month, .tw-hour-prev-week, .tl-hour-prev-week {}
 
+.alert-ok {
+    color: #f8fafd;
+    background-color: #467fd0;
+    border-color: #4277c3;
+}
+
+.alert-ok hr {
+    border-top-color: #396bb3;
+}
+
+.alert-ok .alert-link {
+    color: #d0def2;
+}
+
 
 
 

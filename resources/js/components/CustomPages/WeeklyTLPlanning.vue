@@ -80,7 +80,7 @@
                         <span class="pm-hour-week">{{ table['technologies'][team.technology.id]['total']['pm_week'] }}</span>
                     </td>
                     <template v-for="project in projects">
-                        <td title="Planned weekly by TL / Planned weekly by PM" class="w-8 align-middle text-center cell-p">
+                        <td :class="setColorHour(table['technologies'][team.technology.id][project.id]['tl_week'], table['technologies'][team.technology.id][project.id]['pm_week'])" title="Planned weekly by TL / Planned weekly by PM" class="w-8 align-middle text-center cell-p">
                             <span class="tl-hour-week">{{ table['technologies'][team.technology.id][project.id]['tl_week'] }}</span>
                             <span class="hours-separator">/</span>
                             <span class="pm-hour-week">{{ table['technologies'][team.technology.id][project.id]['pm_week'] }}</span>
@@ -102,7 +102,7 @@
                         <td class="w-8 align-middle cell-p">
                             <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table['engineers'][member.id][project.id]['current_week']" @blur="plan($event, member.id, project.id)">
                         </td>
-                        <td title="Last week: Worked / Planned by TL" class="w-8 align-middle cell-p text-center">
+                        <td :class="setColorHour(table['engineers'][member.id][project.id]['tw_prev_week'], table['engineers'][member.id][project.id]['prev_week'])" title="Last week: Worked / Planned by TL" class="w-8 align-middle cell-p text-center">
                             <span class="tw-hour-prev-week">{{ table['engineers'][member.id][project.id]['tw_prev_week'] }}</span>
                             <span class="hours-separator">/</span>
                             <span class="tl-hour-prev-week">{{ table['engineers'][member.id][project.id]['prev_week'] }}</span>
@@ -139,10 +139,14 @@ import Layout from "./../Layout.vue";
 const { getWeek } = require('date-fns');
 import VueMultiselect from 'vue-multiselect';
 import errorMessages from "../../helpers";
+import Color from "../Elements/Color.vue";
 
 export default {
     name: "WeeklyTLPlanning",
     layout: (h, page) => h(Layout, [page]),
+    mixins: [
+        Color,
+    ],
     props: {
         allTeams: Object,
         allProjects: Object
