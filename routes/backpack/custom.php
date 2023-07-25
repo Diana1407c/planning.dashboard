@@ -56,4 +56,9 @@ Route::group([
     Route::group(['middleware' => ['permission:manage levels']], function () {
         Route::crud('level', 'LevelCrudController');
     });
+
+    Route::group(['middleware' => ['permission:manage holidays']], function () {
+        Route::crud('holidays', 'HolidayCrudController');
+    });
+
 });

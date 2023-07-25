@@ -14,6 +14,7 @@ const mix = require('laravel-mix');
 mix
     .js('resources/js/app.js', 'public/js').vue()
     .js('resources/js/multiselect.js', 'public/js').vue()
+    .js('resources/js/holiday.js', 'public/js').vue()
     .sass('resources/scss/custom-bundle.scss', 'public/css/')
     .webpackConfig({
         output: {
