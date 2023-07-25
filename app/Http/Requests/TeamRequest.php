@@ -26,7 +26,8 @@ class TeamRequest extends FormRequest
     {
         return [
             'name' => 'required|string|min:3',
-            'technology_id' => 'required|integer',
+            'technologies' => 'required|array',
+            'members' => 'required|array',
             'team_lead_id' => 'required|integer'
         ];
     }

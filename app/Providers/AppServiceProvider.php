@@ -4,11 +4,10 @@ namespace App\Providers;
 
 use App\Models\Engineer;
 use App\Models\Level;
-use App\Models\PlannedHour;
 use App\Models\Team;
 use App\Models\Technology;
-use App\Observers\EngineerLevelPerformanceHistoryObserver;
-use App\Observers\EngineerTeamHistoryObserver;
+use App\Observers\EngineerObserver;
+use App\Observers\TeamObserver;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -42,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
 //            PlannedHour::ENGINEER_TYPE => Engineer::class,
         ]);
 
-        Engineer::observe(EngineerLevelPerformanceHistoryObserver::class);
-        Team::observe(EngineerTeamHistoryObserver::class);
+        Engineer::observe(EngineerObserver::class);
+        Team::observe(TeamObserver::class);
     }
 }

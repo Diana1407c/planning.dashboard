@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\TeamRequest;
 use App\Http\Resources\Short\ShortEngineersResource;
+use App\Http\Resources\TechnologyResource;
 use App\Models\Engineer;
-use App\Models\EngineerHistory;
 use App\Models\Team;
 use App\Models\Technology;
 use App\Repositories\EngineerRepository;
@@ -36,6 +36,7 @@ class TeamCrudController extends CrudController
         CRUD::setModel(\App\Models\Team::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/team');
         CRUD::setEntityNameStrings('team', 'teams');
+
     }
 
     protected function basicCreateUpdate()
@@ -43,15 +44,6 @@ class TeamCrudController extends CrudController
         CRUD::setValidation(TeamRequest::class);
 
         CRUD::field('name');
-
-        CRUD::addField([
-            'label' => 'Technology',
-            'type'  => 'select',
-            'name'  => 'technology_id',
-            'entity' => 'technology',
-            'attribute' => 'name',
-            'model' => Technology::class
-        ]);
     }
 
     /**
@@ -62,14 +54,6 @@ class TeamCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::column('name');
-
-        CRUD::addColumn([
-            'label' => 'Technology',
-            'name'  => 'technology_id',
-            'entity' => 'technology',
-            'attribute' => 'name',
-            'model' => Technology::class
-        ]);
 
         CRUD::addColumn([
             'label' => 'Team Lead',
@@ -97,8 +81,6 @@ class TeamCrudController extends CrudController
         $this->basicCreateUpdate();
 
         $allEngineers = ShortEngineersResource::collection(EngineerRepository::all());
-        $withoutTeam = ShortEngineersResource::collection(EngineerRepository::withoutTeam());
-
         $select = '<label>Team Lead</label><select name="team_lead_id" class="form-control">';
         foreach ($allEngineers as $engineer){
             $select .= '<option value="'. $engineer->id .'">'.$engineer->fullName().' - '. $engineer->email .'</option>';
@@ -112,12 +94,15 @@ class TeamCrudController extends CrudController
             'value' => $select
         ]);
 
+        $technologies = TechnologyResource::collection(Technology::all());
+        $withoutTeam = ShortEngineersResource::collection(EngineerRepository::withoutTeam());
+
         CRUD::addField([
-            'name'  => 'separator',
+            'name'  => 'technologies',
             'type'  => 'custom_html',
             'value' => '<div id="backpack-vue">
-                            <engineer-multiselect :engineers=\''.json_encode($withoutTeam).'\'> </engineer-multiselect>
-                        </div>'
+                    <custom-fields-team :engineers=\''.json_encode($withoutTeam).'\' :technologies=\''.json_encode($technologies).'\'> </custom-fields-team>
+            </div>'
         ]);
     }
 
@@ -132,29 +117,29 @@ class TeamCrudController extends CrudController
         $withoutTeam = ShortEngineersResource::collection(EngineerRepository::withoutTeam());
         $currentTeam = ShortEngineersResource::collection(EngineerRepository::team($this->crud->getCurrentEntryId()));
 
-        $currentMembersId = (clone $currentTeam)->pluck('id')->toArray();
-        $currentLead = $this->crud->getCurrentEntry()->team_lead_id;
-
-        if (!in_array($currentLead, $currentMembersId)) {
-            $currentMembersId[] = $currentLead;
-        }
-
         CRUD::addField([
             'label'     => "Team Lead",
             'type'      => 'select',
             'name'      => 'team_lead_id',
             'entity'    => 'teamLead',
             'model'     => "App\Models\Engineer",
-            'options'   => (function ($query) use($currentMembersId) {
-                return $query
-                    ->whereNull('team_id')
-                    ->orWhereIn('id', $currentMembersId)->get();
-            }),
         ]);
 
         $forSelecting = $withoutTeam->concat($currentTeam)->unique(function ($item) {
             return $item['id'];
         });
+
+        $technologies = TechnologyResource::collection(Technology::all());
+        $currentTechnologies = TechnologyResource::collection($this->crud->getCurrentEntry()->technologies);
+
+        CRUD::addField([
+            'name'  => 'technologies',
+            'type'  => 'custom_html',
+            'value' => '<div id="backpack-vue">
+                    <custom-fields-team :current_members=\''.json_encode($currentTeam).'\' :current_technologies=\''.json_encode($currentTechnologies).'\'
+                    :engineers=\''.json_encode($forSelecting).'\' :technologies=\''.json_encode($technologies).'\'> </custom-fields-team>
+            </div>'
+        ]);
 
         CRUD::addField([
             'name'  => 'separator',
@@ -167,23 +152,11 @@ class TeamCrudController extends CrudController
 
     public function store(TeamRequest $request): View
     {
+        /** @var Team $team */
         $team = Team::query()->create($request->validated());
+        $team->technologies()->sync($request->get('technologies'));
 
-        $membersIds = explode('|', $request->get('members',));
-        Engineer::query()->whereIn('id', $membersIds)->update(['team_id' => $team->id]);
-
-        foreach ($membersIds as $memberId) {
-            if ($memberId !== $team->team_lead_id) {
-                $member = Engineer::find($memberId);
-                EngineerHistory::create([
-                    'engineer_id' => $member->id,
-                    'historyable_type' => 'team',
-                    'historyable_id' => $team->id,
-                    'value' => $team->name,
-                    'label' => 'engineer_added_to_team',
-                ]);
-            }
-        }
+        $this->storeMembers($team, $request->get('members'));
 
         return view($this->crud->getCreateView(), $this->data+['crud' => $this->crud]);
     }
@@ -192,43 +165,30 @@ class TeamCrudController extends CrudController
     {
         $team = Team::find($request->get('id'));
         $team->update($request->validated());
-        $oldMembersIds = $team->members()->pluck('id')->toArray();
+        $team->technologies()->sync($request->get('technologies'));
+        $this->storeMembers($team, $request->get('members'));
 
-        $membersIds = explode('|', $request->get('members',));
-        $currentMemberIds = $team->members()->pluck('id')->toArray();
-
-        $currentMembersIds = Engineer::whereIn('id', $membersIds)->pluck('id')->toArray();
-
-        $membersToAdd = array_diff($currentMembersIds, $oldMembersIds);
-        $membersToRemove = array_diff($oldMembersIds, $currentMembersIds);
-
-        if($membersToAdd){
-            Engineer::query()->whereIn('id', $membersToAdd)->update(['team_id' => $team->id]);
-
-            foreach ($membersToAdd as $memberId) {
-                $member = Engineer::find($memberId);
-                EngineerHistory::create([
-                    'engineer_id' => $member->id,
-                    'historyable_type' => 'team',
-                    'historyable_id' => $team->id,
-                    'value' => $team->name,
-                    'label' => 'engineer_added_to_team',
-                ]);
-            }
-        }
-        if($membersToRemove){
-            Engineer::query()->whereIn('id', $membersToRemove)->update(['team_id' => null]);
-
-            foreach ($membersToRemove as $memberId) {
-                EngineerHistory::create([
-                    'engineer_id' => $memberId,
-                    'historyable_type' => 'team',
-                    'historyable_id' => $team->id,
-                    'value' => $team->name,
-                    'label' => 'engineer_deleted_from_team',
-                ]);
-            }
-        }
         return $this->crud->performSaveAction($this->crud->getCurrentEntry()->getKey());
+    }
+
+    protected function storeMembers(Team $team, array $members)
+    {
+        $deletedMembers = $team->members()->whereNotIn('id', $members)->get();
+
+        $newMembers = Engineer::query()->whereIn('id', $members)
+            ->where(function ($q) use($team) {
+                $q->where('team_id', '<>', $team->id)
+                    ->orWhereNull('team_id');
+            })->get();
+
+        foreach ($newMembers as $member) {
+            $member->team_id = $team->id;
+            $member->save();
+        }
+
+        foreach ($deletedMembers as $member) {
+            $member->team_id = null;
+            $member->save();
+        }
     }
 }

@@ -1,9 +1,9 @@
 import { createApp } from 'vue';
-import EngineerMultiselect from './components/Elements/EngineerMultiselect.vue';
+import CustomFieldsTeam from './components/Team/CustomFieldsTeam.vue';
 
 const adminApp = createApp({
     components: {
-        EngineerMultiselect,
+        CustomFieldsTeam
     },
 });
 

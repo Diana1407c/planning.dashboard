@@ -53,15 +53,23 @@ class Holiday extends Model
 
         $date = $this->carbonDate();
 
-        if ($date->isWeekday()) {
+        if ($date->isWeekend()) {
             return 0;
         }
 
         if ($this->isShortDay()) {
-            return $this->day_hours;
+            return $this->day_hours - self::DAY_HOURS;
         }
 
         return -1 * self::DAY_HOURS;
+    }
+
+    public function isFreeDay(): bool
+    {
+        return in_array($this->type, [
+            self::HOLIDAY_TYPE,
+            self::DAY_OFF_TYPE,
+        ]);
     }
 
     public function isShortDay(): bool
