@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\EngineerRequest;
 use App\Jobs\SyncTeamworkEngineers;
+use App\Models\EngineerHistory;
 use App\Models\Level;
 use App\Models\Team;
 use App\Models\User;
@@ -94,6 +95,17 @@ class EngineerCrudController extends CrudController
     {
         $this->addLevelFields();
         CRUD::setValidation(EngineerRequest::class);
+
+        Widget::add([
+            'type' => 'view',
+            'name' => 'engineer_history',
+            'label' => 'Engineer History',
+            'view' => 'admin.engineer_history',
+            'data' => [
+                'engineer' => $this->crud->getCurrentEntry(),
+                'histories' => $this->fetchEngineerHistory($this->crud->getCurrentEntryId()),
+            ],
+        ])->to('after_content');
     }
 
     protected function addLevelFields()
@@ -160,5 +172,14 @@ class EngineerCrudController extends CrudController
         $engineer->save();
 
         return $this->crud->performSaveAction($this->crud->getCurrentEntry()->getKey());
+    }
+
+    protected function fetchEngineerHistory(): void
+    {
+        $engineer = $this->crud->getCurrentEntry();
+        $histories = EngineerHistory::where('engineer_id', $engineer->getKey())->orderBy('created_at', 'desc')->get();
+
+        $this->data['engineer'] = $engineer;
+        $this->data['histories'] = $histories;
     }
 }
