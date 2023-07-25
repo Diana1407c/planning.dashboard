@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,6 +25,8 @@ class Holiday extends Model
     const SHORT_TYPE = 'short';
     const RECOVERABLE_TYPE = 'recoverable';
 
+    const DAY_HOURS = 8;
+
     protected $fillable = [
         'name',
         'date',
@@ -40,5 +43,45 @@ class Holiday extends Model
             self::SHORT_TYPE,
             self::RECOVERABLE_TYPE,
         ];
+    }
+
+    public function hours(): int
+    {
+        if ($this->isRecoverable()) {
+            return $this->day_hours;
+        }
+
+        $date = $this->carbonDate();
+
+        if ($date->isWeekday()) {
+            return 0;
+        }
+
+        if ($this->isShortDay()) {
+            return $this->day_hours;
+        }
+
+        return -1 * self::DAY_HOURS;
+    }
+
+    public function isShortDay(): bool
+    {
+        return $this->type == self::SHORT_TYPE;
+    }
+
+    public function isRecoverable(): bool
+    {
+        return $this->type == self::RECOVERABLE_TYPE;
+    }
+
+    public function carbonDate(): Carbon
+    {
+        $date = Carbon::parse($this->date);
+
+        if ($this->every_year) {
+            $date->setYear(Carbon::now()->year);
+        }
+
+        return $date;
     }
 }

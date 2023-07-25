@@ -48,7 +48,7 @@
             <button :disabled="!loaded" type="button" class="btn btn-primary date-change-button" @click="handleDateInput(false)"><i class="fa-solid fa-arrow-left"></i> Previous</button>
         </div>
         <div class="col-4 d-flex justify-content-center align-items-center">
-            <div class="week-inscription">{{ month_name }} {{ this.filter.year }}</div>
+            <div class="week-inscription">{{ month_name }} {{ this.filter.year }} - {{ hours_count }} hours</div>
         </div>
         <div class="col-4 d-flex justify-content-end">
             <button :disabled="!loaded" type="button" class="btn btn-primary date-change-button" @click="handleDateInput(true)">Next <i class="fa-solid fa-arrow-right"></i></button>
@@ -105,7 +105,7 @@
                 <button type="button" class="btn btn-primary date-change-button" @click="handleDateInput(false)"><i class="fa-solid fa-arrow-left"></i> Previous</button>
             </div>
             <div class="col-4 d-flex justify-content-center align-items-center">
-                <div class="week-inscription">{{ month_name }} {{ this.filter.year }}</div>
+                <div class="week-inscription">{{ month_name }} {{ this.filter.year }} - {{ hours_count }} hours</div>
             </div>
             <div class="col-4 d-flex justify-content-end">
                 <button type="button" class="btn btn-primary date-change-button" @click="handleDateInput(true)">Next <i class="fa-solid fa-arrow-right"></i></button>
@@ -147,7 +147,8 @@ export default {
                 month: null,
                 year: null
             },
-            loaded: false
+            loaded: false,
+            hours_count: 0
         }
     },
     components: {VueMultiselect},
@@ -193,6 +194,7 @@ export default {
                 }}).then(response => {
                 this.table = response.data.table;
                 this.can_edit = response.data.can_edit
+                this.hours_count = response.data.hours_count
             }).catch(() => {});
         },
 

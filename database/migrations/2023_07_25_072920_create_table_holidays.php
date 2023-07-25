@@ -19,6 +19,9 @@ return new class extends Migration
             $table->unsignedTinyInteger('day_hours')->nullable();
             $table->boolean('every_year')->default(0);
             $table->timestamps();
+
+            $table->index('every_year');
+            $table->index('date');
         });
 
         $this->createPermissions();

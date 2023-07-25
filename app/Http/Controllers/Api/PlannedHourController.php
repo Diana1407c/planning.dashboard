@@ -14,13 +14,14 @@ use App\Matrix\PMWeeklyPlannedHoursMatrix;
 use App\Matrix\TLMonthlyPlannedHoursMatrix;
 use App\Matrix\TLWeeklyPlannedHoursMatrix;
 use App\Models\PlannedHour;
+use App\Services\HolidayService;
 use App\Services\PlannedHourService;
 use App\Support\Filters\PlannedHoursFilter;
 use Illuminate\Http\JsonResponse;
 
 class PlannedHourController extends Controller
 {
-    public function __construct(protected PlannedHourService $plannedHourService)
+    public function __construct(protected PlannedHourService $plannedHourService, protected HolidayService $holidayService)
     {}
 
     public function tlWeekly(WeeklyTLPlanningFilterRequest $request)
@@ -42,6 +43,7 @@ class PlannedHourController extends Controller
         return response()->json([
             'table' => $matrix->matrix(),
             'can_edit' => $this->plannedHourService->canEditPeriodByFilter($request->filter()),
+            'hours_count' => $this->holidayService->monthWorkHours($filter->period->from, $filter->period->to),
         ]);
     }
 
@@ -64,6 +66,7 @@ class PlannedHourController extends Controller
         return response()->json([
             'table' => $matrix->matrix(),
             'can_edit' => $this->plannedHourService->canEditPeriodByFilter($request->filter()),
+            'hours_count' => $this->holidayService->monthWorkHours($filter->period->from, $filter->period->to),
         ]);
     }
 
