@@ -29,7 +29,7 @@ class HolidaysSeeder extends Seeder
                 ['01-08', "Orthodox Christmas Day 2"],
                 ['03-08', "International Women's Day"],
                 ['05-01', "Labour Day"],
-                ['05-09', "Victory Day"],
+                ['05-09', "Europe Day and Victory Day"],
                 ['08-27', "Independence Holiday"],
                 ['08-31', "National Language Day (Moldova)"],
                 ['10-14', "Chisinau City Day"],
@@ -48,10 +48,10 @@ class HolidaysSeeder extends Seeder
                         ['every_year' => 1]
                     );
                 }
-                elseif (($name === "Victory Day") &&
+                elseif (($name === "Europe Day and Victory Day") &&
                     ($date === $year . '-' . $easterDate || $date === $year . '-' . $memorialEasterDate)) {
                     Holiday::updateOrCreate(
-                        ['date' => $date, 'name' => 'Victory Day'],
+                        ['date' => $date, 'name' => 'Europe Day and Victory Day'],
                         ['every_year' => 1]
                     );
                 }else {
