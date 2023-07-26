@@ -16,7 +16,6 @@ class HolidaysSeeder extends Seeder
         $currentYear = date('Y');
         $endYear = 2099;
 
-
         for ($year = $currentYear; $year <= $endYear; $year++) {
 
             $easterTimestamp = orthodox_eastern($year);
@@ -42,10 +41,25 @@ class HolidaysSeeder extends Seeder
                 $date = $year . '-' . $holidayData[0];
                 $name = $holidayData[1];
 
-                Holiday::updateOrCreate(
-                    ['date' => $date],
-                    ['name' => $name, 'every_year' => 1]
-                );
+                if (($name === "Labour Day") &&
+                    ($date === $year . '-' . $easterDate || $date === $year . '-' . $memorialEasterDate)) {
+                    Holiday::updateOrCreate(
+                        ['date' => $date, 'name' => 'Labour Day'],
+                        ['every_year' => 1]
+                    );
+                }
+                elseif (($name === "Victory Day") &&
+                    ($date === $year . '-' . $easterDate || $date === $year . '-' . $memorialEasterDate)) {
+                    Holiday::updateOrCreate(
+                        ['date' => $date, 'name' => 'Victory Day'],
+                        ['every_year' => 1]
+                    );
+                }else {
+                    Holiday::updateOrCreate(
+                        ['date' => $date, 'name' => $name],
+                        ['every_year' => 1]
+                    );
+                }
             }
         }
     }
