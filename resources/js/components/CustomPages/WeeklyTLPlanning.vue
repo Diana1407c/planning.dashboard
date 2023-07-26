@@ -70,25 +70,27 @@
             <tbody>
             <template v-for="team in teams" :key="team.id">
                 <tr>
-                    <td class="vertical-text w-5 text-center align-middle" :rowspan="team.members.length+2">{{ team.name }}</td>
+                    <td class="vertical-text w-5 text-center align-middle" :rowspan="team.members.length+ team.technologies.length + 1">
+                        {{ team.name }}
+                    </td>
                 </tr>
-                <tr class="evidence-bg-1">
-                    <td class="w-20 align-middle cell-p">{{ team.technology.name }}</td>
+                <tr v-for="technology in team.technologies" class="evidence-bg-1">
+                    <td class="w-20 align-middle cell-p">{{ technology.name }}</td>
                     <td title="Planned weekly by TL / Planned weekly by PM" class="w-8 align-middle text-center cell-p heading-tech-total">
-                        <span class="tl-hour-week">{{ table['technologies'][team.technology.id]['total']['tl_week'] }}</span>
+                        <span class="tl-hour-week">{{ table['technologies'][technology.id]['total']['tl_week'] }}</span>
                         <span class="hours-separator">/</span>
-                        <span class="pm-hour-week">{{ table['technologies'][team.technology.id]['total']['pm_week'] }}</span>
+                        <span class="pm-hour-week">{{ table['technologies'][technology.id]['total']['pm_week'] }}</span>
                     </td>
                     <template v-for="project in projects">
-                        <td :class="setColorHour(table['technologies'][team.technology.id][project.id]['tl_week'], table['technologies'][team.technology.id][project.id]['pm_week'])" title="Planned weekly by TL / Planned weekly by PM" class="w-8 align-middle text-center cell-p">
-                            <span class="tl-hour-week">{{ table['technologies'][team.technology.id][project.id]['tl_week'] }}</span>
+                        <td :class="setColorHour(table['technologies'][technology.id][project.id]['tl_week'], table['technologies'][technology.id][project.id]['pm_week'])" title="Planned weekly by TL / Planned weekly by PM" class="w-8 align-middle text-center cell-p">
+                            <span class="tl-hour-week">{{ table['technologies'][technology.id][project.id]['tl_week'] }}</span>
                             <span class="hours-separator">/</span>
-                            <span class="pm-hour-week">{{ table['technologies'][team.technology.id][project.id]['pm_week'] }}</span>
+                            <span class="pm-hour-week">{{ table['technologies'][technology.id][project.id]['pm_week'] }}</span>
                         </td>
                         <td title="Worked monthly / Planned monthly by PM" class="w-8 align-middle text-center cell-p">
-                            <span class="tw-hour-month">{{ table['technologies'][team.technology.id][project.id]['tw_month'] }}</span>
+                            <span class="tw-hour-month">{{ table['technologies'][technology.id][project.id]['tw_month'] }}</span>
                             <span class="hours-separator">/</span>
-                            <span class="pm-hour-month">{{ table['technologies'][team.technology.id][project.id]['pm_month'] }}</span>
+                            <span class="pm-hour-month">{{ table['technologies'][technology.id][project.id]['pm_month'] }}</span>
                         </td>
                     </template>
 

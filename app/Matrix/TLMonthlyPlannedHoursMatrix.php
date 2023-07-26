@@ -4,7 +4,7 @@ namespace App\Matrix;
 
 use App\Models\Engineer;
 use App\Models\PlannedHour;
-use App\Models\Team;
+use Illuminate\Support\Facades\DB;
 
 class TLMonthlyPlannedHoursMatrix extends PlannedHoursMatrix
 {
@@ -23,23 +23,22 @@ class TLMonthlyPlannedHoursMatrix extends PlannedHoursMatrix
         ];
     }
 
-    protected function technologyIds(): array
+    protected function engineersGroupedByTechnology()
     {
-        $query = Team::query();
+        $query = Engineer::query()->select(['team_technology.technology_id', 'engineers.id'])
+            ->join('teams', 'teams.id', '=', 'engineers.team_id')
+            ->join('team_technology', 'teams.id', '=', 'team_technology.team_id');
+
         if ($teamIds = $this->filter->get('team_ids')) {
-            $query->whereIn('id', $teamIds);
+            $query->whereIn('teams.id', $teamIds);
         }
 
-        return $query->pluck('technology_id')->toArray();
+        return $query->get()->groupBy('technology_id');
     }
 
     protected function technologiesHours(): array
     {
-        $technologyIds = $this->technologyIds();
-
-        $engineers = Engineer::query()->select(['teams.technology_id', 'engineers.id'])
-            ->join('teams', 'teams.id', '=', 'engineers.team_id')
-            ->whereIn('teams.technology_id', $technologyIds)->get()->groupBy('technology_id');
+        $engineers = $this->engineersGroupedByTechnology();
 
         $data = [];
         foreach ($engineers as $technologyId => $engineerIds) {

@@ -35,5 +35,5 @@
 @if(backpack_user()->can('manage reports'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('reports/comparison') }}"><i class="nav-icon la la-files-o"></i> Comparision Report</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('reports/engineers') }}"><i class="nav-icon la la-files-o"></i> Engineers Report</a></li>
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('reports/teamwork-time') }}"><i class="nav-icon la la-files-o"></i> Teamwork Time</a></li>
+{{--    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('reports/teamwork-time') }}"><i class="nav-icon la la-files-o"></i> Teamwork Time</a></li>--}}
 @endif

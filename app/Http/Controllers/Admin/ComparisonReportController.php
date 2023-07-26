@@ -3,11 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Resources\Short\ShortProjectResource;
-use App\Http\Resources\Short\ShortTeamsResource;
-use App\Http\Resources\StackResource;
 use App\Models\Project;
-use App\Models\Stack;
-use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;

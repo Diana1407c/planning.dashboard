@@ -197,7 +197,7 @@ class TeamworkService
             ])
             ->selectRaw('SUM(hours) as sum_hours')
             ->join('engineers', 'engineers.id', '=', 'teamwork_time.engineer_id')
-            ->join('teams', 'teams.id', '=', 'engineers.team_id');
+            ->join('team_technology', 'engineers.team_id', '=', 'team_technology.team_id');
 
         self::applyFilter($query, $filters);
 

@@ -70,19 +70,21 @@
             <tbody>
             <template v-for="team in teams" :key="team.id">
                 <tr>
-                    <td class="vertical-text w-5 text-center align-middle" :rowspan="team.members.length+2">{{ team.name }}</td>
-                </tr>
-                <tr class="evidence-bg-1">
-                    <td class="w-20 align-middle cell-p">{{ team.technology.name }}</td>
-                    <td title="Planned monthly by TL / Planned monthly by PM" class="w-8 align-middle text-center cell-p heading-tech-total">
-                        <span class="tl-hour-month">{{ table['technologies'][team.technology.id]['total']['planned_tl'] }}</span>
-                        <span class="hours-separator">/</span>
-                        <span class="pm-hour-month">{{ table['technologies'][team.technology.id]['total']['planned_pm'] }}</span>
+                    <td class="vertical-text w-5 text-center align-middle" :rowspan="team.members.length + team.technologies.length + 1">
+                        {{ team.name }}
                     </td>
-                    <td :class="setColorHour(table['technologies'][team.technology.id][project.id]['planned_tl'], table['technologies'][team.technology.id][project.id]['planned_pm'])" title="Planned monthly by TL / Planned monthly by PM" class="w-8 align-middle text-center cell-p" v-for="project in projects">
-                        <span class="tl-hour-month">{{ table['technologies'][team.technology.id][project.id]['planned_tl'] }}</span>
+                </tr>
+                <tr v-for="technology in team.technologies" class="evidence-bg-1">
+                    <td class="w-20 align-middle cell-p">{{ technology.name }}</td>
+                    <td title="Planned monthly by TL / Planned monthly by PM" class="w-8 align-middle text-center cell-p heading-tech-total">
+                        <span class="tl-hour-month">{{ table['technologies'][technology.id]['total']['planned_tl'] }}</span>
                         <span class="hours-separator">/</span>
-                        <span class="pm-hour-month">{{ table['technologies'][team.technology.id][project.id]['planned_pm'] }}</span>
+                        <span class="pm-hour-month">{{ table['technologies'][technology.id]['total']['planned_pm'] }}</span>
+                    </td>
+                    <td :class="setColorHour(table['technologies'][technology.id][project.id]['planned_tl'], table['technologies'][technology.id][project.id]['planned_pm'])" title="Planned monthly by TL / Planned monthly by PM" class="w-8 align-middle text-center cell-p" v-for="project in projects">
+                        <span class="tl-hour-month">{{ table['technologies'][technology.id][project.id]['planned_tl'] }}</span>
+                        <span class="hours-separator">/</span>
+                        <span class="pm-hour-month">{{ table['technologies'][technology.id][project.id]['planned_pm'] }}</span>
                     </td>
                 </tr>
                 <tr v-for="member in team.members">
