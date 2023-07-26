@@ -27,6 +27,16 @@ class EngineerService
         ]);
     }
 
+    public function accountantEngineers(array $filter)
+    {
+        $query = Engineer::query()
+            ->with(['team', 'team.technologies', 'level']);
+
+        self::filterTeams($query, $filter['team_ids'] ?? []);
+
+        return $query->get();
+    }
+
     public static function withTeams(): Collection|array
     {
         $query = Engineer::query();
@@ -39,7 +49,7 @@ class EngineerService
     public static function filter(array $filter): Collection|array
     {
         $query = Engineer::query()
-            ->with(['plannedHours' => function($query) use ($filter) {
+            ->with(['plannedHours' => function ($query) use ($filter) {
                 self::plannedHoursQuery($query, $filter);
             }]);
 

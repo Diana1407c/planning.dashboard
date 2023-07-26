@@ -28,4 +28,13 @@ class Project extends Model
     {
         return $this->no_performance;
     }
+
+    public static function states(): array
+    {
+        return [
+            self::STATE_ACTIVE,
+            self::STATE_MAINTENANCE,
+            self::STATE_OPERATIONAL,
+        ];
+    }
 }

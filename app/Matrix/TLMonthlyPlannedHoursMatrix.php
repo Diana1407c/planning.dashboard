@@ -4,7 +4,6 @@ namespace App\Matrix;
 
 use App\Models\Engineer;
 use App\Models\PlannedHour;
-use Illuminate\Support\Facades\DB;
 
 class TLMonthlyPlannedHoursMatrix extends PlannedHoursMatrix
 {

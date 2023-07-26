@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AccountantReportController;
 use App\Http\Controllers\Api\EngineerController;
 use App\Http\Controllers\Api\PlannedHourController;
 use App\Http\Controllers\Api\ProjectController;
@@ -58,8 +59,12 @@ Route::group(['middleware' => array_merge(
 
         Route::get('engineers', [EngineerController::class, 'index']);
         Route::get('engineers/export', [EngineerController::class, 'export']);
+        Route::get('engineers/accountant', [EngineerController::class, 'accountant']);
 
         Route::get('teamwork-time', [TeamworkController::class, 'index']);
         Route::get('teamwork-time/export', [TeamworkController::class, 'export']);
+
+        Route::get('accountant', [AccountantReportController::class, 'index']);
+        Route::get('accountant/export', [AccountantReportController::class, 'export']);
     });
 });
