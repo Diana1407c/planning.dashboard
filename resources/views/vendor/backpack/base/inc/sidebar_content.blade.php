@@ -15,7 +15,7 @@
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('level') }}"><i class="nav-icon la la-user-check"></i> <span>Engineers Level</span></a></li>
 @endif
 @if(backpack_user()->can('manage holidays'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('holidays') }}"><i class="nav-icon la la-user-check"></i> <span>Holidays</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('holidays') }}"><i class="nav-icon la la-calendar-day"></i> <span>Holidays</span></a></li>
 @endif
 @if(backpack_user()->can('manage team'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('team') }}"><i class="nav-icon la la-group"></i> Teams</a></li>
