@@ -123,6 +123,10 @@ class TeamCrudController extends CrudController
             'name'      => 'team_lead_id',
             'entity'    => 'teamLead',
             'model'     => "App\Models\Engineer",
+            'attribute' => 'name',
+            'options'   => (function ($query) {
+                return $query->selectRaw('Concat(first_name, " ", last_name) as name')->get();
+            }),
         ]);
 
         $forSelecting = $withoutTeam->concat($currentTeam)->unique(function ($item) {
