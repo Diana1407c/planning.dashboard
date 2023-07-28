@@ -210,7 +210,7 @@ export default {
             let nextWeekStart = new Date();
             nextWeekStart.setDate(nextWeekStart.getDate() + ((8 - nextWeekStart.getDay()) % 7));
 
-            this.filter.week = getWeek(nextWeekStart, { weekStartsOn: 1 })
+            this.filter.week = getWeek(nextWeekStart)
             this.filter.year = nextWeekStart.getFullYear()
             await this.getWeekRange()
         },
