@@ -57,7 +57,7 @@
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-    <div class="table-responsive">
+    <div class="sticky-table">
         <table v-if="loaded" class="table table-striped table-bordered planning-table">
             <thead>
             <tr>
@@ -88,7 +88,7 @@
                     </td>
                 </tr>
                 <tr v-for="member in team.members">
-                    <td class="w-20 align-middle cell-p">{{ member.name }} <span title="Performance" class="float-right">{{ member.performance }}%</span></td>
+                    <td class="w-20 align-middle cell-p left_sticky">{{ member.name }} <span title="Performance" class="float-right">{{ member.performance }}%</span></td>
                     <td class="w-8 align-middle text-center cell-p heading-tech-total">{{ table['engineers'][member.id]['total'] }}</td>
                     <td class="w-8 align-middle cell-p" v-for="project in projects">
                         <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table['engineers'][member.id][project.id]" @blur="plan($event, member.id, project.id)">

@@ -38,48 +38,50 @@
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-    <div></div>
-    <table v-if="loaded" class="table table-striped table-bordered planning-table compact-table">
-        <thead>
-        <tr>
-            <th class="w-5 vertical-text text-center align-middle">State</th>
-            <th class="w-20 text-center align-middle">Projects</th>
-            <th colspan="2" class="vertical-text text-center align-middle heading-tech-total">Total</th>
-            <th colspan="2" class="w-10 vertical-text text-center align-middle" v-for="technology in technologies">{{ technology.name }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <template v-for="(projects, state) in groupedProjects" :key="state">
+    <div class="sticky-table">
+        <table v-if="loaded" class="table table-striped table-bordered planning-table compact-table">
+            <thead>
             <tr>
-                <td class="vertical-text w-5" :rowspan="projects.length+1">
-                    <div class="d-flex justify-content-center align-items-center">
-                        {{ state }}
-                    </div>
-                </td>
+                <th class="w-5 vertical-text text-center align-middle">State</th>
+                <th class="w-20 text-center align-middle">Projects</th>
+                <th colspan="2" class="vertical-text text-center align-middle heading-tech-total">Total</th>
+                <th colspan="2" class="w-10 vertical-text text-center align-middle" v-for="technology in technologies">{{ technology.name }}</th>
             </tr>
-            <tr v-for="project in projects">
-                <td class="w-20 align-middle cell-p">{{ project.name }}</td>
-                <td class="align-middle cell-p text-center heading-tech-total">{{ table[project.id]['total']['week'] }}</td>
-                <td title="Worked monthly / Planned monthly by PM" class="align-middle cell-p text-center heading-tech-total">
-                    <span class="tw-hour-month">{{ table[project.id]['total']['tm'] }}</span>
-                    <span class="hours-separator">/</span>
-                    <span class="pm-hour-month">{{ table[project.id]['total']['month'] }}</span>
-                </td>
-                <template v-for="technology in technologies">
-                    <td class="align-middle cell-p w-5 compact-cell">
-                        <input type="number" :disabled="!can_edit" class="form-control text-center no-arrows" :value="table[project.id][technology.id]['week']" @blur="plan($event, project.id, technology.id)">
+            </thead>
+            <tbody>
+            <template v-for="(projects, state) in groupedProjects" :key="state">
+                <tr>
+                    <td class="vertical-text w-5" :rowspan="projects.length+1">
+                        <div class="d-flex justify-content-center align-items-center">
+                            {{ state }}
+                        </div>
                     </td>
-                    <td :class="setColorHourWeek(table[project.id][technology.id]['tm'], table[project.id][technology.id]['month'], this.filter.year, this.filter.week)"
-                        title="Worked monthly / Planned monthly by PM" class="align-middle cell-p text-center w-5 compact-cell">
-                        <span class="tw-hour-month">{{ table[project.id][technology.id]['tm'] }}</span>
+                </tr>
+                <tr v-for="project in projects">
+                    <td class="w-20 align-middle cell-p left_sticky">{{ project.name }}</td>
+                    <td class="align-middle cell-p text-center heading-tech-total">{{ table[project.id]['total']['week'] }}</td>
+                    <td title="Worked monthly / Planned monthly by PM" class="align-middle cell-p text-center heading-tech-total">
+                        <span class="tw-hour-month">{{ table[project.id]['total']['tm'] }}</span>
                         <span class="hours-separator">/</span>
-                        <span class="pm-hour-month">{{ table[project.id][technology.id]['month'] }}</span>
+                        <span class="pm-hour-month">{{ table[project.id]['total']['month'] }}</span>
                     </td>
-                </template>
-            </tr>
-        </template>
-        </tbody>
-    </table>
+                    <template v-for="technology in technologies">
+                        <td class="align-middle cell-p w-5 compact-cell">
+                            <input type="number" :disabled="!can_edit" class="form-control text-center no-arrows" :value="table[project.id][technology.id]['week']" @blur="plan($event, project.id, technology.id)">
+                        </td>
+                        <td :class="setColorHourWeek(table[project.id][technology.id]['tm'], table[project.id][technology.id]['month'], this.filter.year, this.filter.week)"
+                            title="Worked monthly / Planned monthly by PM" class="align-middle cell-p text-center w-5 compact-cell">
+                            <span class="tw-hour-month">{{ table[project.id][technology.id]['tm'] }}</span>
+                            <span class="hours-separator">/</span>
+                            <span class="pm-hour-month">{{ table[project.id][technology.id]['month'] }}</span>
+                        </td>
+                    </template>
+                </tr>
+            </template>
+            </tbody>
+        </table>
+    </div>
+
     <div v-if="loaded">
         <div class="d-flex box-filter-separator">
             <hr class="col-12 separator-filter">

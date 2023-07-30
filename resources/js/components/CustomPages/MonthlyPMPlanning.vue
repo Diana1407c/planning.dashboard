@@ -38,35 +38,36 @@
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-    <div></div>
-    <table v-if="loaded" class="table table-striped table-bordered planning-table">
-        <thead>
-        <tr>
-            <th class="w-5 vertical-text text-center align-middle">State</th>
-            <th class="w-20 text-center align-middle">Projects</th>
-            <th class="w-8 vertical-text text-center align-middle heading-tech-total">Total</th>
-            <th class="w-8 vertical-text text-center align-middle" v-for="technology in technologies">{{ technology.name }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <template v-for="(projects, state) in groupedProjects" :key="state">
+    <div class="sticky-table">
+        <table v-if="loaded" class="table table-striped table-bordered planning-table">
+            <thead>
             <tr>
-                <td class="vertical-text w-5" :rowspan="projects.length+1">
-                    <div class="d-flex justify-content-center align-items-center">
-                        {{ state }}
-                    </div>
-                </td>
+                <th class="w-5 vertical-text text-center align-middle">State</th>
+                <th class="w-20 text-center align-middle">Projects</th>
+                <th class="w-8 vertical-text text-center align-middle heading-tech-total">Total</th>
+                <th class="w-8 vertical-text text-center align-middle" v-for="technology in technologies">{{ technology.name }}</th>
             </tr>
-            <tr v-for="project in projects">
-                <td class="w-20 align-middle cell-p">{{ project.name }}</td>
-                <td class="w-8 align-middle cell-p text-center heading-tech-total">{{ table[project.id]['total'] }}</td>
-                <td class="w-8 align-middle cell-p" v-for="technology in technologies">
-                    <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table[project.id][technology.id]" @blur="plan($event, project.id, technology.id)">
-                </td>
-            </tr>
-        </template>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            <template v-for="(projects, state) in groupedProjects" :key="state">
+                <tr>
+                    <td class="vertical-text w-5" :rowspan="projects.length+1">
+                        <div class="d-flex justify-content-center align-items-center">
+                            {{ state }}
+                        </div>
+                    </td>
+                </tr>
+                <tr v-for="project in projects">
+                    <td class="w-20 align-middle cell-p left_sticky">{{ project.name }}</td>
+                    <td class="w-8 align-middle cell-p text-center heading-tech-total">{{ table[project.id]['total'] }}</td>
+                    <td class="w-8 align-middle cell-p" v-for="technology in technologies">
+                        <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table[project.id][technology.id]" @blur="plan($event, project.id, technology.id)">
+                    </td>
+                </tr>
+            </template>
+            </tbody>
+        </table>
+    </div>
     <div v-if="loaded">
         <div class="d-flex box-filter-separator">
             <hr class="col-12 separator-filter">
