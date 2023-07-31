@@ -4,8 +4,10 @@ namespace App\Services;
 
 use App\Models\Engineer;
 use App\Models\PlannedHour;
+use App\Models\Project;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class PlannedHourService
 {
@@ -125,6 +127,36 @@ class PlannedHourService
         }
 
         return Carbon::now()->setYear($year)->setMonth($periodNumber)->startOfMonth()->gt(Carbon::now());
+    }
+
+    public function resetPerformanceHours(Engineer $engineer, int $percent, Carbon $from, Carbon $to = null)
+    {
+        $exceptProjects = Project::query()->where('no_performance', 1)->pluck('id');
+
+        $from->startOfMonth();
+        $query = $engineer->plannedHours()
+            ->whereNotIn('project_id', $exceptProjects)
+            ->where('period_type', PlannedHour::MONTH_PERIOD_TYPE)
+            ->where(function ($q) use ($from) {
+                $q->where(function ($qYear) use ($from) {
+                    $qYear->where('year', '=', $from->year)
+                        ->where('period_number', '>=', $from->month);
+                })->orWhere('year', '>', $from->year);
+            });
+
+        if ($to) {
+            $to->endOfMonth();
+            $query->where(function ($q) use ($to) {
+                $q->where(function ($qYear) use ($to) {
+                    $qYear->where('year', '=', $to->year)
+                        ->where('period_number', '<=', $to->month);
+                })->orWhere('year', '<', $to->year);
+            });
+        }
+
+        $query->update([
+            'performance_hours' => DB::raw("ROUND($percent*hours/100)")
+        ]);
     }
 
     protected function filterToQuery(Builder $query, array $filter)
