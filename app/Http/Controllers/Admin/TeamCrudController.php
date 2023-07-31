@@ -39,11 +39,24 @@ class TeamCrudController extends CrudController
 
     }
 
-    protected function basicCreateUpdate()
+    protected function basicCreateUpdate(string $teamLeadId = null): void
     {
-        CRUD::setValidation(TeamRequest::class);
-
         CRUD::field('name');
+
+        $allEngineers = ShortEngineersResource::collection(EngineerRepository::all());
+        $select = '<label>Team Lead</label><select name="team_lead_id" class="form-control">';
+        foreach ($allEngineers as $engineer){
+            $selected = $teamLeadId == $engineer->id ? "selected" : null;
+            $select .= '<option value="'. $engineer->id .'" '. $selected .'>' .$engineer->fullName().' - '. $engineer->email .'</option>';
+        }
+        $select .= '</select>';
+
+        CRUD::addField([
+            'label' => "Team Lead",
+            'name'  => 'team_lead_id',
+            'type'  => 'custom_html',
+            'value' => $select
+        ]);
     }
 
     /**
@@ -51,7 +64,7 @@ class TeamCrudController extends CrudController
      *
      * @return void
      */
-    protected function setupListOperation()
+    protected function setupListOperation(): void
     {
         CRUD::column('name');
 
@@ -69,6 +82,13 @@ class TeamCrudController extends CrudController
             'type'  => 'model_function',
             'function_name' => 'membersCount'
         ]);
+
+        CRUD::addColumn([
+            'label' => 'Technologies',
+            'name'  => 'technologies',
+            'type'  => 'model_function',
+            'function_name' => 'technologiesString'
+        ]);
     }
 
     /**
@@ -76,23 +96,9 @@ class TeamCrudController extends CrudController
      *
      * @return void
      */
-    protected function setupCreateOperation()
+    protected function setupCreateOperation(): void
     {
         $this->basicCreateUpdate();
-
-        $allEngineers = ShortEngineersResource::collection(EngineerRepository::all());
-        $select = '<label>Team Lead</label><select name="team_lead_id" class="form-control">';
-        foreach ($allEngineers as $engineer){
-            $select .= '<option value="'. $engineer->id .'">'.$engineer->fullName().' - '. $engineer->email .'</option>';
-        }
-        $select .= '</select>';
-
-        CRUD::addField([
-            'label' => "Team Lead",
-            'name'  => 'team_lead_id',
-            'type'  => 'custom_html',
-            'value' => $select
-        ]);
 
         $technologies = TechnologyResource::collection(Technology::all());
         $withoutTeam = ShortEngineersResource::collection(EngineerRepository::withoutTeam());
@@ -111,23 +117,11 @@ class TeamCrudController extends CrudController
      *
      * @return void
      */
-    protected function setupUpdateOperation()
+    protected function setupUpdateOperation(): void
     {
-        $this->basicCreateUpdate();
+        $this->basicCreateUpdate($this->crud->getCurrentEntry()->team_lead_id);
         $withoutTeam = ShortEngineersResource::collection(EngineerRepository::withoutTeam());
         $currentTeam = ShortEngineersResource::collection(EngineerRepository::team($this->crud->getCurrentEntryId()));
-
-        CRUD::addField([
-            'label'     => "Team Lead",
-            'type'      => 'select',
-            'name'      => 'team_lead_id',
-            'entity'    => 'teamLead',
-            'model'     => "App\Models\Engineer",
-            'attribute' => 'name',
-            'options'   => (function ($query) {
-                return $query->selectRaw('Concat(first_name, " ", last_name) as name')->get();
-            }),
-        ]);
 
         $forSelecting = $withoutTeam->concat($currentTeam)->unique(function ($item) {
             return $item['id'];
@@ -144,17 +138,9 @@ class TeamCrudController extends CrudController
                     :engineers=\''.json_encode($forSelecting).'\' :technologies=\''.json_encode($technologies).'\'> </custom-fields-team>
             </div>'
         ]);
-
-        CRUD::addField([
-            'name'  => 'separator',
-            'type'  => 'custom_html',
-            'value' => '<div id="backpack-vue">
-                            <engineer-multiselect :engineers=\''.json_encode($forSelecting).'\' :selected-props=\''.json_encode($currentTeam).'\'></engineer-multiselect>
-                        </div>'
-        ]);
     }
 
-    public function store(TeamRequest $request): View
+    public function store(TeamRequest $request): RedirectResponse
     {
         /** @var Team $team */
         $team = Team::query()->create($request->validated());
@@ -162,7 +148,8 @@ class TeamCrudController extends CrudController
 
         $this->storeMembers($team, $request->get('members'));
 
-        return view($this->crud->getCreateView(), $this->data+['crud' => $this->crud]);
+        $this->data['entry'] = $this->crud->entry = $team;
+        return $this->crud->performSaveAction($team->id);
     }
 
     public function update(TeamRequest $request): RedirectResponse
@@ -175,7 +162,7 @@ class TeamCrudController extends CrudController
         return $this->crud->performSaveAction($this->crud->getCurrentEntry()->getKey());
     }
 
-    protected function storeMembers(Team $team, array $members)
+    protected function storeMembers(Team $team, array $members): void
     {
         $deletedMembers = $team->members()->whereNotIn('id', $members)->get();
 

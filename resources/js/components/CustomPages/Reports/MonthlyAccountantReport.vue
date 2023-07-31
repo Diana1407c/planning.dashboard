@@ -60,9 +60,9 @@
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-    <div class="table-responsive">
+    <div class="sticky-table">
         <table v-if="loaded" class="table table-striped table-bordered planning-table">
-            <thead>
+            <thead class="sticky-top">
             <tr>
                 <th class="w-20 vertical-text text-center align-middle">Engineers</th>
                 <th class="vertical-text text-center align-middle">Performance</th>
@@ -71,7 +71,7 @@
                 <th class="vertical-text text-center align-middle">Seniority</th>
 
                 <template v-for="state in status_projects">
-                    <th v-if="projects[state].length > 0" class="vertical-text text-center align-middle" v-for="project in projects[state]">
+                    <th v-if="projects[state].length > 0" class="vertical-text text-center align-middle h-30" v-for="project in projects[state]">
                         {{ project.name }}
                     </th>
                     <th class="heading-total vertical-text text-center align-middle">{{ state }}</th>
@@ -82,7 +82,7 @@
             </thead>
             <tbody>
             <tr v-for="engineer in engineers">
-                <td class="align-middle cell-p">{{ engineer.name }} </td>
+                <td class="align-middle cell-p left_sticky">{{ engineer.name }} </td>
                 <td class="align-middle cell-p">{{ engineer.performance }}%</td>
                 <td class="align-middle cell-p">{{ engineer.team.name }}</td>
                 <td class="align-middle cell-p">{{ engineer.team.technology }}</td>

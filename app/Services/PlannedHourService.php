@@ -96,6 +96,10 @@ class PlannedHourService
 
     public function canEditPeriod(int $year, int $periodNumber, string $periodType): bool
     {
+        if (!config('app.con_edit_conditions')) {
+            return true;
+        }
+
         if ($periodType == PlannedHour::WEEK_PERIOD_TYPE) {
             return Carbon::now()->setISODate($year, $periodNumber)->startOfWeek()->gt(Carbon::now());
         }

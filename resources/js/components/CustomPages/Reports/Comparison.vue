@@ -36,9 +36,9 @@
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-    <div class="table-responsive">
+    <div class="sticky-table">
         <table v-if="loaded" class="table table-striped table-bordered planning-table">
-            <thead>
+            <thead class="sticky-top">
             <tr>
                 <th colspan="2" rowspan="2" class="w-20 text-center align-middle">Projects</th>
                 <template v-for="(date, index) in dates">

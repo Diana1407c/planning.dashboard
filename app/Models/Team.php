@@ -44,4 +44,9 @@ class Team extends Model
     {
         return $this->members()->count();
     }
+
+    public function technologiesString(): string
+    {
+        return implode(", ", $this->technologies()->pluck('name')->toArray());
+    }
 }

@@ -57,14 +57,14 @@
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-    <div class="table-responsive">
+    <div class="sticky-table">
         <table v-if="loaded" class="table table-striped table-bordered planning-table compact-table">
-            <thead>
+            <thead class="sticky-top">
             <tr>
                 <th class="w-5 vertical-text text-center align-middle">Team</th>
                 <th class="w-20 text-center align-middle">Members</th>
                 <th class="w-8 vertical-text text-center align-middle heading-tech-total">Total</th>
-                <th colspan="2" class="w-8 vertical-text text-center align-middle" v-for="project in projects">{{ project.name }}</th>
+                <th colspan="2" class="w-8 vertical-text text-center align-middle h-30" v-for="project in projects">{{ project.name }}</th>
             </tr>
             </thead>
             <tbody>
@@ -96,7 +96,7 @@
 
                 </tr>
                 <tr v-for="member in team.members">
-                    <td class="w-20 align-middle cell-p">{{ member.name }} <span title="Performance" class="float-right">{{ member.performance }}%</span></td>
+                    <td class="w-20 align-middle cell-p left_sticky">{{ member.name }} <span title="Performance" class="float-right">{{ member.performance }}%</span></td>
                     <td class="w-8 align-middle text-center cell-p heading-tech-total">
                         {{ table['engineers'][member.id]['total'] }}
                     </td>
@@ -246,7 +246,7 @@ export default {
 
         async setNextWeek(){
             let nextWeekStart = new Date();
-            nextWeekStart.setDate(nextWeekStart.getDate() + ((8 - nextWeekStart.getDay()) % 7));
+            nextWeekStart.setDate(nextWeekStart.getDate() + (7 - nextWeekStart.getDay() % 7))
 
             this.filter.week = getWeek(nextWeekStart, { weekStartsOn: 1 })
             this.filter.year = nextWeekStart.getFullYear()
