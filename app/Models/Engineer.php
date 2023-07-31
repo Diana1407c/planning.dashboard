@@ -6,6 +6,7 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -26,7 +27,7 @@ class Engineer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id', 'first_name', 'last_name', 'email', 'username', 'level_id', 'performance', 'team_id', 'user_id'
+        'id', 'first_name', 'last_name', 'email', 'username', 'performance', 'team_id', 'user_id'
     ];
 
     public function team(): BelongsTo
@@ -54,9 +55,11 @@ class Engineer extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function level()
+    public function levels(): BelongsToMany
     {
-        return $this->belongsTo(Level::class);
+        return $this->belongsToMany(Level::class)
+            ->withPivot('from')
+            ->orderBy('from', 'desc');
     }
 
     public function displayPerformance(): string
@@ -68,13 +71,20 @@ class Engineer extends Model
         return '-';
     }
 
+    public function currentLevel()
+    {
+        return $this->levels()->first();
+    }
+
     public function performancePercent(): int
     {
         if ($this->performance) {
             return $this->performance;
         }
 
-        return $this->level ? $this->level->performance : 0;
+        $currentLevel = $this->currentLevel();
+
+        return $currentLevel ? $currentLevel->performance : 0;
     }
 
 

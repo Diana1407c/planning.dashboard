@@ -11,7 +11,7 @@ class TLWeeklyPlannedHoursMatrix extends PlannedHoursMatrix
 {
     public function matrix(): array
     {
-        $this->tlHours = $this->plannedHourService()->hoursByFilterWithPerformance($this->filter->params);
+        $this->tlHours = $this->plannedHourService()->hoursByFilter($this->filter->params);
 
         return [
             'engineers' => $this->engineersHours(),
@@ -101,7 +101,7 @@ class TLWeeklyPlannedHoursMatrix extends PlannedHoursMatrix
                 $data[$technologyId][$project->id] = [
                     'tl_week' => $this->tlHours->where('project_id', $project->id)
                         ->whereIn('planable_id', $engineerIds->pluck('id'))
-                        ->sum('real_hours'),
+                        ->sum('performance_hours'),
                     'pm_week' => $pmWeekHours->where('project_id', $project->id)
                         ->where('planable_id', $technologyId)
                         ->sum('hours'),
@@ -112,7 +112,7 @@ class TLWeeklyPlannedHoursMatrix extends PlannedHoursMatrix
                 ];
             }
             $data[$technologyId]['total'] = [
-                'tl_week' => $this->tlHours->whereIn('planable_id', $engineerIds->pluck('id'))->sum('real_hours'),
+                'tl_week' => $this->tlHours->whereIn('planable_id', $engineerIds->pluck('id'))->sum('performance_hours'),
                 'pm_week' => $pmWeekHours->where('planable_id', $technologyId)->sum('hours'),
                 'pm_month' => $pmMonthHours->where('planable_id', $technologyId)->sum('hours'),
                 'tw_month' => round($twMonthHours->where('technology_id', $technologyId)->sum('sum_hours'), 2),

@@ -21,7 +21,7 @@ class PlannedHourService
     {
         $query = PlannedHour::query()
             ->select(['planned_hours.*'])
-            ->selectRaw('IF(projects.no_performance=1, hours,  ROUND(hours * IF(engineers.performance>0, engineers.performance, IF(levels.performance>0, levels.performance, 100)) / 100)) as real_hours')
+            ->selectRaw('IF(projects.no_performance=1, hours,  ROUND(hours * IF(engineers.performance>0, engineers.performance, IF(levels.performance>0, levels.performance, 100)) / 100)) as performance_hours')
             ->join('engineers', 'engineers.id', '=', 'planned_hours.planable_id')
             ->join('projects', 'projects.id', '=', 'planned_hours.project_id')
             ->leftJoin('levels', 'levels.id', '=', 'engineers.level_id');
@@ -49,7 +49,9 @@ class PlannedHourService
             'planable_type',
             'year',
             'period_number',
-        ])->selectRaw('SUM(hours) as sum_hours');
+        ])
+            ->selectRaw('SUM(hours) as sum_hours')
+            ->selectRaw('SUM(performance_hours) as sum_performance_hours');
 
         $this->groupedHoursFilterToQuery($query, $filter);
 
@@ -71,7 +73,7 @@ class PlannedHourService
             'planned_hours.period_number',
         ])
             ->selectRaw('SUM(hours) as sum_hours')
-            ->selectRaw('SUM(IF(projects.no_performance=1, hours,  ROUND(hours * IF(engineers.performance>0, engineers.performance, IF(levels.performance>0, levels.performance, 100)) / 100))) as sum_real_hours')
+            ->selectRaw('SUM(IF(projects.no_performance=1, hours,  ROUND(hours * IF(engineers.performance>0, engineers.performance, IF(levels.performance>0, levels.performance, 100)) / 100))) as sum_performance_hours')
             ->join('projects', 'projects.id', '=', 'planned_hours.project_id')
             ->join('engineers', 'engineers.id', '=', 'planned_hours.planable_id')
             ->leftJoin('levels', 'levels.id', '=', 'engineers.level_id');

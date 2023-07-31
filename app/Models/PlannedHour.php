@@ -25,6 +25,7 @@ class PlannedHour extends Model
         'period_number',
         'period_type',
         'hours',
+        'performance_hours',
     ];
 
     public function project(): belongsTo

@@ -13,7 +13,9 @@ use App\Matrix\PMMonthlyPlannedHoursMatrix;
 use App\Matrix\PMWeeklyPlannedHoursMatrix;
 use App\Matrix\TLMonthlyPlannedHoursMatrix;
 use App\Matrix\TLWeeklyPlannedHoursMatrix;
+use App\Models\Engineer;
 use App\Models\PlannedHour;
+use App\Models\Project;
 use App\Services\HolidayService;
 use App\Services\PlannedHourService;
 use App\Support\Filters\PlannedHoursFilter;
@@ -78,6 +80,20 @@ class PlannedHourController extends Controller
             ], 400);
         }
 
+        $isPerformanceProject = Project::where([
+            'id' => $request->get('project_id'),
+            'no_performance' => 0
+        ])->exists();
+
+        $performancePercentage = 100;
+        if($isPerformanceProject){
+            $engineer = Engineer::find($request->get('engineer_id'));
+
+            $performancePercentage = $engineer->performance ?? $engineer->level->performance ?? 100;
+        }
+
+        $performanceHours = ($request->get('hours') * $performancePercentage) / 100;
+
         $this->plannedHourService->storeHours([
             'planable_type' => PlannedHour::ENGINEER_TYPE,
             'project_id' => $request->get('project_id'),
@@ -85,7 +101,10 @@ class PlannedHourController extends Controller
             'year' => $request->get('year'),
             'period_type' => $request->get('period_type'),
             'period_number' => $request->get('period_number'),
-        ], ['hours' => $request->get('hours')]);
+        ], [
+            'hours' => $request->get('hours'),
+            'performance_hours' => $performanceHours
+        ]);
 
         $filter = PlannedHoursFilter::fromArray([
             'planable_type' => PlannedHour::ENGINEER_TYPE,

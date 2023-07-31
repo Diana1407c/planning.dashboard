@@ -29,7 +29,7 @@ class ComparisonMatrix
 
     public function setPlannedHours(): void
     {
-        $this->tlPlannedHours = $this->plannedHourService()->groupedHoursByFilterWithPerformance([
+        $this->tlPlannedHours = $this->plannedHourService()->groupedHoursByFilter([
             'from_year' => $this->fromDate->year,
             'from_period_number' => $this->isWeekly() ? $this->fromDate->week : $this->fromDate->month,
             'to_year' => $this->toDate->year,
@@ -120,7 +120,7 @@ class ComparisonMatrix
                 = $this->tlPlannedHours->where('project_id', $project->id)
                 ->where('year', $year)
                 ->where('period_number', $periodNumber)
-                ->first()->sum_real_hours ?? 0;
+                ->first()->sum_performance_hours ?? 0;
 
             $temWorkTime = $this->loggedTimes->where('project_id', $project->id)->where('project_id', $project->id)
                 ->where('year', $year)
