@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('engineer_id');
             $table->integer('performance');
-            $table->timestamp('from');
+            $table->date('from_date');
             $table->timestamps();
 
             $table->foreign('engineer_id')

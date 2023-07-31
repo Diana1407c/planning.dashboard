@@ -58,8 +58,18 @@ class Engineer extends Model
     public function levels(): BelongsToMany
     {
         return $this->belongsToMany(Level::class)
-            ->withPivot('from')
-            ->orderBy('from', 'desc');
+            ->withPivot(['from_date', 'id'])
+            ->orderBy('from_date', 'desc');
+    }
+
+    public function level(): ?Level
+    {
+        return $this->levels()->orderBy('from_date', 'desc')->first();
+    }
+
+    public function performances(): HasMany
+    {
+        return $this->hasMany(EngineerPerformance::class);
     }
 
     public function displayPerformance(): string

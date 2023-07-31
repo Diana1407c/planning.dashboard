@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Operations\UpdateEngineerOperation;
 use App\Http\Requests\EngineerRequest;
 use App\Jobs\SyncTeamworkEngineers;
 use App\Models\EngineerHistory;
@@ -22,7 +23,7 @@ use Illuminate\Http\RedirectResponse;
 class EngineerCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+    use UpdateEngineerOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -53,13 +54,13 @@ class EngineerCrudController extends CrudController
         CRUD::column('last_name');
         CRUD::column('email');
         CRUD::column('username');
-        CRUD::addColumn([
-            'label' => 'Level',
-            'name'  => 'level_id',
-            'entity' => 'level',
-            'attribute' => 'name',
-            'model' => Level::class
-        ]);
+//        CRUD::addColumn([
+//            'label' => 'Level',
+//            'name'  => 'level_id',
+//            'entity' => 'level',
+//            'attribute' => 'name',
+//            'model' => Level::class
+//        ]);
 
         CRUD::addColumn([
             'label' => 'Performance(%)',
@@ -91,22 +92,22 @@ class EngineerCrudController extends CrudController
 
         return redirect($this->crud->route);
     }
-    protected function setupUpdateOperation()
-    {
-        $this->addLevelFields();
-        CRUD::setValidation(EngineerRequest::class);
-
-        Widget::add([
-            'type' => 'view',
-            'name' => 'engineer_history',
-            'label' => 'Engineer History',
-            'view' => 'admin.engineer_history',
-            'data' => [
-                'engineer' => $this->crud->getCurrentEntry(),
-                'histories' => $this->fetchEngineerHistory($this->crud->getCurrentEntryId()),
-            ],
-        ])->to('after_content');
-    }
+//    protected function setupUpdateOperation()
+//    {
+//        $this->addLevelFields();
+//        CRUD::setValidation(EngineerRequest::class);
+//
+//        Widget::add([
+//            'type' => 'view',
+//            'name' => 'engineer_history',
+//            'label' => 'Engineer History',
+//            'view' => 'admin.engineer_history',
+//            'data' => [
+//                'engineer' => $this->crud->getCurrentEntry(),
+//                'histories' => $this->fetchEngineerHistory($this->crud->getCurrentEntryId()),
+//            ],
+//        ])->to('after_content');
+//    }
 
     protected function addLevelFields()
     {

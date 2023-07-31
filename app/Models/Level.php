@@ -19,11 +19,6 @@ class Level extends Model
 
     protected $fillable = ['name','performance'];
 
-    public function engineer()
-    {
-        return $this->belongsTo(Engineer::class);
-    }
-
     public function displayPerformance(): string
     {
         return $this->performance . '%';
