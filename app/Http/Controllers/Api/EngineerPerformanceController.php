@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EngineerPerformanceRequest;
 use App\Http\Resources\EngineerPerformanceResource;
 use App\Models\Engineer;
+use App\Models\EngineerPerformance;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class EngineerPerformanceController extends Controller
 {
     public function index(Engineer $engineer): AnonymousResourceCollection
     {
-        return EngineerPerformanceResource::collection($engineer->performances);
+        $performances = $engineer->performances()->orderBy('from_date', 'desc')->get();
+
+        return EngineerPerformanceResource::collection($performances);
     }
 
     public function store(Engineer $engineer, EngineerPerformanceRequest $request)
@@ -24,18 +27,19 @@ class EngineerPerformanceController extends Controller
         ]);
     }
 
-    public function update(Engineer $engineer, int $id, EngineerPerformanceRequest $request)
+    public function update(Engineer $engineer, EngineerPerformance $engineerPerformance, EngineerPerformanceRequest $request)
     {
-        $engineer->performances()->where('id', $id)->update($request->validated());
+        $engineerPerformance->fill($request->validated());
+        $engineerPerformance->save();
 
         return response()->json([
             'message' => 'success',
         ]);
     }
 
-    public function delete(Engineer $engineer, int $id)
+    public function delete(Engineer $engineer, EngineerPerformance $engineerPerformance)
     {
-        $engineer->performances()->where('id', $id)->delete();
+        $engineerPerformance->delete();
 
         return response()->json([], 204);
     }

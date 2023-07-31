@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\Operations\UpdateEngineerOperation;
-use App\Http\Requests\EngineerRequest;
 use App\Jobs\SyncTeamworkEngineers;
 use App\Models\EngineerHistory;
-use App\Models\Level;
 use App\Models\Team;
 use App\Models\User;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -54,17 +52,17 @@ class EngineerCrudController extends CrudController
         CRUD::column('last_name');
         CRUD::column('email');
         CRUD::column('username');
-//        CRUD::addColumn([
-//            'label' => 'Level',
-//            'name'  => 'level_id',
-//            'entity' => 'level',
-//            'attribute' => 'name',
-//            'model' => Level::class
-//        ]);
+
+        CRUD::addColumn([
+            'label' => 'Level',
+            'name'  => 'level_id',
+            'type' => 'model_function',
+            'function_name' => 'levelName',
+        ]);
 
         CRUD::addColumn([
             'label' => 'Performance(%)',
-            'name'  => 'performance',
+            'name'  => 'performance_value',
             'type' => 'model_function',
             'function_name' => 'displayPerformance',
         ]);
@@ -109,71 +107,6 @@ class EngineerCrudController extends CrudController
 //        ])->to('after_content');
 //    }
 
-    protected function addLevelFields()
-    {
-        CRUD::field('first_name');
-        CRUD::field('last_name');
-        CRUD::field('email');
-        CRUD::field('username');
-
-        $engineer = $this->crud->getCurrentEntry();
-
-        CRUD::addField([
-            'name' => 'level_id',
-            'label' => 'Level',
-            'type' => 'select',
-            'entity' => 'level',
-            'attribute' => 'name',
-            'model' => Level::class,
-            'value' => $engineer->level_id,
-
-        ]);
-
-        CRUD::addField([
-            'name' => 'performance',
-            'label' => 'Individual performance(%)',
-            'type' => 'number',
-            'attributes' => [
-                'min' => 0,
-                'max' => 100,
-                'step' => 1,
-            ],
-        ]);
-
-        CRUD::addField([
-            'name' => 'team_id',
-            'label' => 'Team ',
-            'type' => 'text',
-            'model' => Team::class,
-            'value' => $engineer->team_id ? $engineer->team->name : '-',
-            'attributes' => [
-                'readonly' => true,
-            ],
-        ]);
-
-        CRUD::addField([
-            'name' => 'user_id',
-            'label' => 'Related user ',
-            'type' => 'text',
-            'model' => User::class,
-            'value' => $engineer->user_id ? $engineer->user->name : '-',
-            'attributes' => [
-                'readonly' => true,
-            ],
-        ]);
-
-        CRUD::setValidation(EngineerRequest::class);
-    }
-    public function update(EngineerRequest $request): RedirectResponse
-    {
-        $engineer = $this->crud->getCurrentEntry();
-        $engineer->update($request->except(['level_id', 'performance','team_id','user_id']));
-        $engineer->level_id = $request->input('level_id');
-        $engineer->performance = $request->input('performance');
-        $engineer->save();
-
-        return $this->crud->performSaveAction($this->crud->getCurrentEntry()->getKey());
-    }
 
     protected function fetchEngineerHistory(): void
     {

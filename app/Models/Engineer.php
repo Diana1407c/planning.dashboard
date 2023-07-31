@@ -27,7 +27,13 @@ class Engineer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id', 'first_name', 'last_name', 'email', 'username', 'performance', 'team_id', 'user_id'
+        'id',
+        'first_name',
+        'last_name',
+        'email',
+        'username',
+        'team_id',
+        'user_id',
     ];
 
     public function team(): BelongsTo
@@ -55,16 +61,9 @@ class Engineer extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function levels(): BelongsToMany
+    public function performance()
     {
-        return $this->belongsToMany(Level::class)
-            ->withPivot(['from_date', 'id'])
-            ->orderBy('from_date', 'desc');
-    }
-
-    public function level(): ?Level
-    {
-        return $this->levels()->orderBy('from_date', 'desc')->first();
+        return $this->performances()->where('is_current', true)->first();
     }
 
     public function performances(): HasMany
@@ -81,20 +80,22 @@ class Engineer extends Model
         return '-';
     }
 
-    public function currentLevel()
-    {
-        return $this->levels()->first();
-    }
-
     public function performancePercent(): int
     {
-        if ($this->performance) {
-            return $this->performance;
+        if ($performance = $this->performance()) {
+            return $performance->performancePercent();
         }
 
-        $currentLevel = $this->currentLevel();
+        return 0;
+    }
 
-        return $currentLevel ? $currentLevel->performance : 0;
+    public function levelName(): ?string
+    {
+        if ($performance = $this->performance()) {
+            return $performance->levelName();
+        }
+
+        return null;
     }
 
 

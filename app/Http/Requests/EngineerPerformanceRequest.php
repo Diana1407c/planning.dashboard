@@ -25,8 +25,9 @@ class EngineerPerformanceRequest extends FormRequest
     public function rules()
     {
         return [
-            'performance' => 'required|int|min:1|max:100',
-            'from_date' => 'required|date'
+            'performance' => 'nullable|int|min:0|max:100',
+            'from_date' => 'required|date',
+            'level_id' => 'required|int'
         ];
     }
 }

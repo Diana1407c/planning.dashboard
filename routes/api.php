@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\AccountantReportController;
 use App\Http\Controllers\Api\EngineerController;
-use App\Http\Controllers\Api\EngineerLevelController;
 use App\Http\Controllers\Api\EngineerPerformanceController;
 use App\Http\Controllers\Api\PlannedHourController;
 use App\Http\Controllers\Api\ProjectController;
@@ -55,15 +54,10 @@ Route::group(['middleware' => array_merge(
     });
 
     Route::group(['prefix' => 'engineer/{engineer}', 'middleware' => ['permission:manage engineer']], function() {
-        Route::get('levels', [EngineerLevelController::class, 'index']);
-        Route::post('levels', [EngineerLevelController::class, 'store']);
-        Route::patch('levels/{id}', [EngineerLevelController::class, 'update']);
-        Route::delete('levels/{id}', [EngineerLevelController::class, 'delete']);
-
         Route::get('performances', [EngineerPerformanceController::class, 'index']);
         Route::post('performances', [EngineerPerformanceController::class, 'store']);
-        Route::patch('performances/{id}', [EngineerPerformanceController::class, 'update']);
-        Route::delete('performances/{id}', [EngineerPerformanceController::class, 'delete']);
+        Route::patch('performances/{engineerPerformance}', [EngineerPerformanceController::class, 'update']);
+        Route::delete('performances/{engineerPerformance}', [EngineerPerformanceController::class, 'delete']);
     });
 
     Route::group(['prefix' => 'reports', 'middleware' => ['permission:manage reports']], function() {

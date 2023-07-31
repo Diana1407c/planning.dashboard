@@ -18,6 +18,7 @@ class EngineerPerformanceResource extends JsonResource
             'id' => $this->id,
             'from_date' => $this->from_date,
             'performance' => $this->performance,
+            'level' => $this->level
         ];
     }
 }

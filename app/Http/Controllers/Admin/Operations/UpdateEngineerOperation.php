@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Admin\Operations;
 
-use App\Http\Resources\EngineerLevelResource;
-use App\Http\Resources\EngineerPerformanceResource;
 use App\Models\Engineer;
 use App\Models\Level;
 use Illuminate\Http\Request;
