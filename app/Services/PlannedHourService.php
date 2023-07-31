@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Engineer;
 use App\Models\PlannedHour;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -40,6 +41,25 @@ class PlannedHourService
         }
 
         PlannedHour::query()->updateOrCreate($attributes, $values);
+    }
+
+    public function calcPerformanceHours(int $hours, int $engineerId): int
+    {
+        if (!$hours) {
+            return 0;
+        }
+
+        $engineer = Engineer::find($engineerId);
+
+        if (!$engineer) {
+            return $hours;
+        }
+
+        if ($percent = $engineer->performancePercent()) {
+            return round($hours * $percent / 100);
+        }
+
+        return $hours;
     }
 
     public function groupedHoursByFilter(array $filter)

@@ -13,7 +13,6 @@ use App\Matrix\PMMonthlyPlannedHoursMatrix;
 use App\Matrix\PMWeeklyPlannedHoursMatrix;
 use App\Matrix\TLMonthlyPlannedHoursMatrix;
 use App\Matrix\TLWeeklyPlannedHoursMatrix;
-use App\Models\Engineer;
 use App\Models\PlannedHour;
 use App\Models\Project;
 use App\Services\HolidayService;
@@ -24,7 +23,8 @@ use Illuminate\Http\JsonResponse;
 class PlannedHourController extends Controller
 {
     public function __construct(protected PlannedHourService $plannedHourService, protected HolidayService $holidayService)
-    {}
+    {
+    }
 
     public function tlWeekly(WeeklyTLPlanningFilterRequest $request)
     {
@@ -85,14 +85,10 @@ class PlannedHourController extends Controller
             'no_performance' => 0
         ])->exists();
 
-        $performancePercentage = 100;
-        if($isPerformanceProject){
-            $engineer = Engineer::find($request->get('engineer_id'));
-
-            $performancePercentage = $engineer->performance ?? $engineer->level->performance ?? 100;
+        $performanceHours = 0;
+        if ($isPerformanceProject) {
+            $performanceHours = $this->plannedHourService->calcPerformanceHours($request->get('hours'), $request->get('engineer_id'));
         }
-
-        $performanceHours = ($request->get('hours') * $performancePercentage) / 100;
 
         $this->plannedHourService->storeHours([
             'planable_type' => PlannedHour::ENGINEER_TYPE,

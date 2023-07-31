@@ -20,7 +20,7 @@ class EngineerAccountantResource extends JsonResource
             'email' => $this->email,
             'team' => TeamAccountantResource::make($this->team),
             'performance' => $this->performancePercent(),
-            'level' => $this->level,
+            'level' => $this->performance ? $this->performance->level : null,
         ];
     }
 }

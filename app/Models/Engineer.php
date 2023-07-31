@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
@@ -61,9 +62,9 @@ class Engineer extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function performance()
+    public function performance(): HasOne
     {
-        return $this->performances()->where('is_current', true)->first();
+        return $this->hasOne(EngineerPerformance::class)->where('is_current', true);
     }
 
     public function performances(): HasMany
@@ -82,20 +83,12 @@ class Engineer extends Model
 
     public function performancePercent(): int
     {
-        if ($performance = $this->performance()) {
-            return $performance->performancePercent();
-        }
-
-        return 0;
+        return $this->performance ? $this->performance->performancePercent() : 0;
     }
 
     public function levelName(): ?string
     {
-        if ($performance = $this->performance()) {
-            return $performance->levelName();
-        }
-
-        return null;
+        return $this->performance ? $this->performance->levelName() : null;
     }
 
 

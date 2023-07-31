@@ -30,7 +30,7 @@ class EngineerService
     public function accountantEngineers(array $filter)
     {
         $query = Engineer::query()
-            ->with(['team', 'team.technologies', 'level']);
+            ->with(['team', 'team.technologies', 'performance', 'performance.level']);
 
         self::filterTeams($query, $filter['team_ids'] ?? []);
 
