@@ -40,7 +40,7 @@
     </div>
     <div class="sticky-table">
         <table v-if="loaded" class="table table-striped table-bordered planning-table">
-            <thead>
+            <thead class="sticky-top">
             <tr>
                 <th class="w-5 vertical-text text-center align-middle">State</th>
                 <th class="w-20 text-center align-middle">Projects</th>

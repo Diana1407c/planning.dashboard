@@ -59,12 +59,12 @@
     </div>
     <div class="sticky-table">
         <table v-if="loaded" class="table table-striped table-bordered planning-table">
-            <thead>
+            <thead class="sticky-top">
             <tr>
                 <th class="w-5 vertical-text text-center align-middle">Team</th>
                 <th class="w-20 text-center align-middle">Members</th>
                 <th class="w-8 vertical-text text-center align-middle heading-tech-total">Total</th>
-                <th class="w-8 vertical-text text-center align-middle" v-for="project in projects">{{ project.name }}</th>
+                <th class="w-8 vertical-text text-center align-middle h-30" v-for="project in projects">{{ project.name }}</th>
             </tr>
             </thead>
             <tbody>

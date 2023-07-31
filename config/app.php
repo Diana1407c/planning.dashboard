@@ -143,6 +143,7 @@ return [
         'driver' => 'file',
         // 'store'  => 'redis',
     ],
+    'con_edit_conditions' => env('CAN_EDIT_CONDITIONS', true),
 
     /*
     |--------------------------------------------------------------------------
