@@ -20,14 +20,6 @@ class EngineerObserver
      */
     public function updated(Engineer $engineer): void
     {
-        if ($engineer->isDirty('level_id')) {
-            EngineerHistoryRepository::storeLevel($engineer);
-        }
-
-        if ($engineer->isDirty('performance')) {
-            EngineerHistoryRepository::storePerformance($engineer);
-        }
-
         if ($engineer->isDirty('team_id')) {
             EngineerHistoryRepository::storeTeam($engineer, $engineer->team);
         }

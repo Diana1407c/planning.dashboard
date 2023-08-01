@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Models\Engineer;
+use App\Models\EngineerPerformance;
 use App\Models\Level;
 use App\Models\Team;
 use App\Models\Technology;
 use App\Observers\EngineerObserver;
+use App\Observers\EngineerPerformanceObserver;
 use App\Observers\TeamObserver;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\URL;
@@ -43,5 +45,6 @@ class AppServiceProvider extends ServiceProvider
 
         Engineer::observe(EngineerObserver::class);
         Team::observe(TeamObserver::class);
+        EngineerPerformance::observe(EngineerPerformanceObserver::class);
     }
 }

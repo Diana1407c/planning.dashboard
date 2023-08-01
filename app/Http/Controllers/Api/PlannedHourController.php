@@ -85,7 +85,7 @@ class PlannedHourController extends Controller
             'no_performance' => 0
         ])->exists();
 
-        $performanceHours = 0;
+        $performanceHours = $request->get('hours');
         if ($isPerformanceProject) {
             $performanceHours = $this->plannedHourService->calcPerformanceHours($request->get('hours'), $request->get('engineer_id'));
         }

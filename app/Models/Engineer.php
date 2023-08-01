@@ -91,5 +91,9 @@ class Engineer extends Model
         return $this->performance ? $this->performance->levelName() : null;
     }
 
+    public function history(): HasMany
+    {
+        return $this->HasMany(EngineerHistory::class);
+    }
 
 }

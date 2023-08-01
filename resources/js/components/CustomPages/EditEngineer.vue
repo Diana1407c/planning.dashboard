@@ -43,6 +43,22 @@
             </div>
         </div>
 
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>History</h3>
+            </div>
+            <div class="col-12 mt-4">
+                <div class="scroll-container">
+                    <ul v-if="history_logs.length > 0">
+                        <li v-for="log in history_logs">
+                            <i>{{ log.label }}</i> <strong>{{ log.value }}</strong> <small>{{ log.created_at }}</small>
+                        </li>
+                    </ul>
+                    <p v-else>No history available for this engineer.</p>
+                </div>
+            </div>
+        </div>
+
         <div data-backdrop="false" class="modal fade" id="performanceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -97,11 +113,13 @@ export default {
         return {
             edit_performance: null,
             performances: [],
+            history_logs: [],
         }
     },
     created() {
         this.getPerformances()
         this.setNewPerformance()
+        this.getHistory()
     },
     methods: {
         setNewPerformance() {
@@ -156,6 +174,14 @@ export default {
         getPerformances() {
             axios.get(this.basePath() + 'performances').then((response) => {
                 this.performances = response.data.data
+            }).catch((error) => {
+                this.displayError(error)
+            });
+        },
+
+        getHistory() {
+            axios.get(this.basePath() + 'history').then((response) => {
+                this.history_logs = response.data.data
             }).catch((error) => {
                 this.displayError(error)
             });

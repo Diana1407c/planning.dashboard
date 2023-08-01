@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Operations;
 
 use App\Models\Engineer;
+use App\Models\EngineerHistory;
 use App\Models\Level;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

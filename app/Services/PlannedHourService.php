@@ -129,34 +129,49 @@ class PlannedHourService
         return Carbon::now()->setYear($year)->setMonth($periodNumber)->startOfMonth()->gt(Carbon::now());
     }
 
-    public function resetPerformanceHours(Engineer $engineer, int $percent, Carbon $from, Carbon $to = null)
+    public function resetEngineerPerformanceHours(Engineer $engineer, int $percent, Carbon $from, Carbon $to = null): void
     {
         $exceptProjects = Project::query()->where('no_performance', 1)->pluck('id');
-
         $from->startOfMonth();
-        $query = $engineer->plannedHours()
-            ->whereNotIn('project_id', $exceptProjects)
-            ->where('period_type', PlannedHour::MONTH_PERIOD_TYPE)
-            ->where(function ($q) use ($from) {
-                $q->where(function ($qYear) use ($from) {
-                    $qYear->where('year', '=', $from->year)
-                        ->where('period_number', '>=', $from->month);
-                })->orWhere('year', '>', $from->year);
-            });
+        $queryMonth = $engineer->plannedHours()
+            ->whereNotIn('project_id', $exceptProjects);
 
+        $queryWeek = clone $queryMonth;
+        $this->queryFromPeriod($queryMonth, $from->year, $from->month);
+        $this->queryFromPeriod($queryWeek, $from->year, $from->week);
         if ($to) {
             $to->endOfMonth();
-            $query->where(function ($q) use ($to) {
-                $q->where(function ($qYear) use ($to) {
-                    $qYear->where('year', '=', $to->year)
-                        ->where('period_number', '<=', $to->month);
-                })->orWhere('year', '<', $to->year);
-            });
+            $this->queryToPeriod($queryMonth, $from->year, $to->month);
+            $this->queryToPeriod($queryWeek, $from->year, $to->week);
         }
 
-        $query->update([
+        $queryMonth->update([
             'performance_hours' => DB::raw("ROUND($percent*hours/100)")
         ]);
+
+        $queryWeek->update([
+            'performance_hours' => DB::raw("ROUND($percent*hours/100)")
+        ]);
+    }
+
+    protected function queryFromPeriod($query, int $year, int $periodNumber): void
+    {
+        $query->where(function ($q) use ($year, $periodNumber) {
+            $q->where(function ($qYear) use ($year, $periodNumber) {
+                $qYear->where('year', '=', $year)
+                    ->where('period_number', '>=', $periodNumber);
+            })->orWhere('year', '>', $year);
+        });
+    }
+
+    protected function queryToPeriod($query, int $year, int $periodNumber): void
+    {
+        $query->where(function ($q) use ($year, $periodNumber) {
+            $q->where(function ($qYear) use ($year, $periodNumber) {
+                $qYear->where('year', '=', $year)
+                    ->where('period_number', '<=', $periodNumber);
+            })->orWhere('year', '<', $year);
+        });
     }
 
     protected function filterToQuery(Builder $query, array $filter)

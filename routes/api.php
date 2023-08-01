@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AccountantReportController;
 use App\Http\Controllers\Api\EngineerController;
+use App\Http\Controllers\Api\EngineerHistoryController;
 use App\Http\Controllers\Api\EngineerPerformanceController;
 use App\Http\Controllers\Api\PlannedHourController;
 use App\Http\Controllers\Api\ProjectController;
@@ -58,6 +59,8 @@ Route::group(['middleware' => array_merge(
         Route::post('performances', [EngineerPerformanceController::class, 'store']);
         Route::patch('performances/{engineerPerformance}', [EngineerPerformanceController::class, 'update']);
         Route::delete('performances/{engineerPerformance}', [EngineerPerformanceController::class, 'delete']);
+
+        Route::get('history', [EngineerHistoryController::class, 'index']);
     });
 
     Route::group(['prefix' => 'reports', 'middleware' => ['permission:manage reports']], function() {
