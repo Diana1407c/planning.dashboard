@@ -1,9 +1,6 @@
 <template>
-    <Modal
-        v-model:visible="isOpen"
-        :title="title"
-    >
-        <div class="modal-compare-element">
+    <Modal v-model:visible="isOpen" :title="title" :onclose="onClose()" :okButton="this.refreshButton">
+        <div v-if="!loadingDetails" class="modal-compare-element">
             <div v-if="technologies.length" class="col-12 p-0 d-flex align-items-center flex-column">
                 <h4>Project Manager Planning</h4>
                 <table class="table table-striped table-bordered planning-table">
@@ -23,13 +20,14 @@
                 <h4 class="m-0">No plannings from PMs</h4>
             </div>
         </div>
-        <div class="modal-compare-element">
+        <div v-if="!loadingDetails" class="modal-compare-element">
             <div v-if="teams.length" class="col-12 p-0 d-flex align-items-center flex-column">
                 <h4>Team Lead Planning</h4>
                 <table class="table table-striped table-bordered planning-table">
                     <thead>
                     <tr>
                         <th class="w-5 vertical-text text-center align-middle">Team</th>
+                        <th class="w-5 vertical-text text-center align-middle">Technology</th>
                         <th class="w-15 text-center align-middle">Members</th>
                         <th class="w-8 text-center align-middle">Planned</th>
                     </tr>
@@ -38,11 +36,18 @@
                     <template v-for="team in teams" :key="team.id">
                         <tr>
                             <td class="w-5 vertical-text text-center align-middle" :rowspan="team.members.length+1">{{ team.name }}</td>
+                            <td class="w-5 vertical-text text-center align-middle" :rowspan="team.members.length+1">
+                                <div v-if="team.technologies" v-for="technology in team.technologies">
+                                    {{ technology.name }}
+                                </div>
+                            </td>
                         </tr>
                         <tr v-for="member in team.members" >
                             <template v-if="hours['tl'][member.id]">
                                 <td class="w-15 align-middle cell-p">{{ member.name }}</td>
-                                <td class="w-8 align-middle text-center cell-p">{{ hours['tl'][member.id] }}</td>
+                                <td class="w-8 align-middle text-center cell-p">
+                                    <span v-if="hours['tl'][member.id]">{{ hours['tl'][member.id] }}</span>
+                                </td>
                             </template>
                         </tr>
                     </template>
@@ -70,6 +75,10 @@ export default {
             type: String,
             default: null
         },
+        date: {
+            type: String,
+            default: null
+        },
         period_type: {
             type: String,
             default: null
@@ -87,7 +96,15 @@ export default {
             teams: [],
             hours: [],
             technologies: [],
-            loadingDetails: true
+            loadingDetails: true,
+
+            refreshButton: {
+                text: 'Refresh',
+                onclick: () => {
+                    this.getInfo()
+                },
+                loading: false
+            }
         }
     },
     computed:{
@@ -121,6 +138,11 @@ export default {
         }
     },
     methods: {
+        onClose() {
+            if (!this.isOpen) {
+                this.close();
+            }
+        },
         async getInfo(){
             this.loadingDetails = true;
             axios.get('reports/comparison/detail/'+this.project.id, {params: {

@@ -48,7 +48,7 @@ class ReportController extends Controller
         foreach ($teams as $team) {
             foreach ($team->members as $member) {
                 $hours['tl'][$member->id] = $plannedHours->where('planable_type', PlannedHour::ENGINEER_TYPE)
-                    ->where('planable_id', $member->id)->first()->hours ?? 0;
+                    ->where('planable_id', $member->id)->first()->performance_hours ?? 0;
             }
         }
 

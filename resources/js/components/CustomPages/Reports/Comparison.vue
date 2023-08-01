@@ -57,7 +57,7 @@
             <tr v-for="project in projects">
                 <td colspan="2" class="align-middle cell-p">{{ project.name }}</td>
                 <template v-for="(date, index) in dates">
-                    <td colspan="3" class="hours-compare-td date-th text-center align-middle p-0" @click="openModal(project, index)">
+                    <td colspan="3" class="hours-compare-td date-th text-center align-middle p-0" @click="openModal(project, index, date)">
                         <div class="d-inline-block hours-pm plan-type-cell text-center align-middle d-table-cell">
                             {{ report[project.id][index]['PM'] }}
                         </div>
@@ -73,7 +73,7 @@
             </tbody>
         </table>
     </div>
-    <info-box v-if="detailOpened" :is-open="detailOpened" :project="projectModal" :period_type="filter.period_type" :dateIndex="dateIndexModal" :close="closeModal"></info-box>
+    <info-box v-if="detailOpened" :is-open="detailOpened" :project="projectModal" :period_type="filter.period_type" :date="dateModal" :dateIndex="dateIndexModal" :close="closeModal"></info-box>
 </template>
 
 <script>
@@ -110,14 +110,18 @@ export default {
     },
 
     methods: {
-        openModal(project, dateIndex){
+        openModal(project, dateIndex, date) {
             this.projectModal = project
             this.dateIndexModal = dateIndex
+            this.dateModal = date
             this.detailOpened = true;
         },
 
-        closeModal(){
+        closeModal() {
             this.detailOpened = false;
+            this.projectModal = null;
+            this.dateIndexModal = null;
+            this.dateModal = null;
         },
 
         async handleDiselect(){
