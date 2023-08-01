@@ -77,21 +77,22 @@
                 <tr v-for="technology in team.technologies" class="evidence-bg-1">
                     <td class="w-20 align-middle cell-p">{{ technology.name }}</td>
                     <td title="Planned monthly by TL / Planned monthly by PM" class="w-8 align-middle text-center cell-p heading-tech-total">
-                        <span class="tl-hour-month">{{ table['technologies'][technology.id]['total']['planned_tl'] }}</span>
+                        <span class="tl-hour-month">{{ tValue(['technologies', 'planned_tl', 'total', technology.id]) }}</span>
                         <span class="hours-separator">/</span>
-                        <span class="pm-hour-month">{{ table['technologies'][technology.id]['total']['planned_pm'] }}</span>
+                        <span class="pm-hour-month">{{ tValue(['technologies', 'planned_pm', 'total', technology.id]) }}</span>
                     </td>
-                    <td :class="setColorHour(table['technologies'][technology.id][project.id]['planned_tl'], table['technologies'][technology.id][project.id]['planned_pm'])" title="Planned monthly by TL / Planned monthly by PM" class="w-8 align-middle text-center cell-p" v-for="project in projects">
-                        <span class="tl-hour-month">{{ table['technologies'][technology.id][project.id]['planned_tl'] }}</span>
+                    <td :class="setColorHour(tValue(['technologies', 'planned_tl', technology.id, project.id]), tValue(['technologies', 'planned_pm', technology.id, project.id]))" title="Planned monthly by TL / Planned monthly by PM" class="w-8 align-middle text-center cell-p" v-for="project in projects">
+                        <span class="tl-hour-month">{{ tValue(['technologies', 'planned_tl', technology.id, project.id]) }}</span>
                         <span class="hours-separator">/</span>
-                        <span class="pm-hour-month">{{ table['technologies'][technology.id][project.id]['planned_pm'] }}</span>
+                        <span class="pm-hour-month">{{ tValue(['technologies', 'planned_pm', technology.id, project.id]) }}</span>
                     </td>
                 </tr>
                 <tr v-for="member in team.members">
                     <td class="w-20 align-middle cell-p left_sticky">{{ member.name }} <span title="Performance" class="float-right">{{ member.performance }}%</span></td>
-                    <td class="w-8 align-middle text-center cell-p heading-tech-total">{{ table['engineers'][member.id]['total'] }}</td>
+                    <td class="w-8 align-middle text-center cell-p heading-tech-total">{{ tValue(['engineers', member.id, 'total']) }}</td>
                     <td class="w-8 align-middle cell-p" v-for="project in projects">
-                        <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table['engineers'][member.id][project.id]" @blur="plan($event, member.id, project.id)">
+                        <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows"
+                               :value="tValue(['engineers', member.id, project.id])" @blur="plan($event, member.id, project.id)">
                     </td>
                 </tr>
             </template>
@@ -125,6 +126,7 @@ const { getWeek } = require('date-fns');
 import VueMultiselect from 'vue-multiselect';
 import errorMessages from "../../helpers";
 import Color from "../Elements/Color.vue";
+import BasePlanning from "./BasePlanning.vue";
 
 export default {
     name: "MonthlyTLPlanning",
@@ -134,13 +136,13 @@ export default {
         allProjects: Object
     },
     mixins: [
-        Color
+        Color,
+        BasePlanning,
     ],
     data(){
         return {
             projects: [],
             teams: [],
-            table: [],
             can_edit: true,
             month_name: null,
             filter: {
@@ -154,7 +156,7 @@ export default {
         }
     },
     components: {VueMultiselect},
-    async mounted() {
+    async created() {
         const storedObject = localStorage.getItem("filter-tl-monthly");
         if (storedObject) {
             this.filter = JSON.parse(storedObject);
@@ -201,11 +203,12 @@ export default {
         },
 
         plan(event, engineerId, projectId){
+            let currentVal = this.table['engineers'].hasOwnProperty(engineerId) && this.table['engineers'][[engineerId]].hasOwnProperty(projectId) ? this.table['engineers'][engineerId][projectId] : 0
             if(!event.target.value){
-                event.target.value = this.table['engineers'][engineerId][projectId]
+                event.target.value = currentVal
             }
 
-            if(Number(event.target.value) === this.table['engineers'][engineerId][projectId]){
+            if(Number(event.target.value) === currentVal){
                 return;
             }
 

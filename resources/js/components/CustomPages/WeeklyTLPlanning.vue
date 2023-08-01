@@ -77,20 +77,20 @@
                 <tr v-for="technology in team.technologies" class="evidence-bg-1">
                     <td class="w-20 align-middle cell-p">{{ technology.name }}</td>
                     <td title="Planned weekly by TL / Planned weekly by PM" class="w-8 align-middle text-center cell-p heading-tech-total">
-                        <span class="tl-hour-week">{{ table['technologies'][technology.id]['total']['tl_week'] }}</span>
+                        <span class="tl-hour-week">{{ tValue(['technologies', 'planned_tl', 'total', technology.id]) }}</span>
                         <span class="hours-separator">/</span>
-                        <span class="pm-hour-week">{{ table['technologies'][technology.id]['total']['pm_week'] }}</span>
+                        <span class="pm-hour-week">{{ tValue(['technologies', 'planned_pm', 'total', technology.id]) }}</span>
                     </td>
                     <template v-for="project in projects">
-                        <td :class="setColorHour(table['technologies'][technology.id][project.id]['tl_week'], table['technologies'][technology.id][project.id]['pm_week'])" title="Planned weekly by TL / Planned weekly by PM" class="w-8 align-middle text-center cell-p">
-                            <span class="tl-hour-week">{{ table['technologies'][technology.id][project.id]['tl_week'] }}</span>
+                        <td :class="setColorHour(tValue(['technologies', 'planned_tl', technology.id, project.id]), tValue(['technologies', 'planned_pm', technology.id, project.id]))" title="Planned weekly by TL / Planned weekly by PM" class="w-8 align-middle text-center cell-p">
+                            <span class="tl-hour-week">{{ tValue(['technologies', 'planned_tl', technology.id, project.id]) }}</span>
                             <span class="hours-separator">/</span>
-                            <span class="pm-hour-week">{{ table['technologies'][technology.id][project.id]['pm_week'] }}</span>
+                            <span class="pm-hour-week">{{ tValue(['technologies', 'planned_pm', technology.id, project.id]) }}</span>
                         </td>
                         <td title="Worked monthly / Planned monthly by PM" class="w-8 align-middle text-center cell-p">
-                            <span class="tw-hour-month">{{ table['technologies'][technology.id][project.id]['tw_month'] }}</span>
+                            <span class="tw-hour-month">{{ tValue(['month_worked', project.id, technology.id]) }}</span>
                             <span class="hours-separator">/</span>
-                            <span class="pm-hour-month">{{ table['technologies'][technology.id][project.id]['pm_month'] }}</span>
+                            <span class="pm-hour-month">{{ tValue(['month_planned', project.id, technology.id]) }}</span>
                         </td>
                     </template>
 
@@ -98,16 +98,18 @@
                 <tr v-for="member in team.members">
                     <td class="w-20 align-middle cell-p left_sticky">{{ member.name }} <span title="Performance" class="float-right">{{ member.performance }}%</span></td>
                     <td class="w-8 align-middle text-center cell-p heading-tech-total">
-                        {{ table['engineers'][member.id]['total'] }}
+                        {{ tValue(['engineers', member.id, 'total']) }}
                     </td>
                     <template v-for="project in projects">
                         <td class="w-8 align-middle cell-p">
-                            <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows" :value="table['engineers'][member.id][project.id]['current_week']" @blur="plan($event, member.id, project.id)">
+                            <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows"
+                                   :value="tValue(['engineers', member.id, project.id])"
+                                   @blur="plan($event, member.id, project.id)">
                         </td>
-                        <td :class="setColorHour(table['engineers'][member.id][project.id]['tw_prev_week'], table['engineers'][member.id][project.id]['prev_week'])" title="Last week: Worked / Planned by TL" class="w-8 align-middle cell-p text-center">
-                            <span class="tw-hour-prev-week">{{ table['engineers'][member.id][project.id]['tw_prev_week'] }}</span>
+                        <td :class="setColorHour(tValue(['prev_worked', member.id, project.id]), tValue(['prev_planned', member.id, project.id]))" title="Last week: Worked / Planned by TL" class="w-8 align-middle cell-p text-center">
+                            <span class="tw-hour-prev-week">{{ tValue(['prev_worked', member.id, project.id]) }}</span>
                             <span class="hours-separator">/</span>
-                            <span class="tl-hour-prev-week">{{ table['engineers'][member.id][project.id]['prev_week'] }}</span>
+                            <span class="tl-hour-prev-week">{{ tValue(['prev_planned', member.id, project.id]) }}</span>
                         </td>
                     </template>
                 </tr>
@@ -142,12 +144,14 @@ const { getWeek } = require('date-fns');
 import VueMultiselect from 'vue-multiselect';
 import errorMessages from "../../helpers";
 import Color from "../Elements/Color.vue";
+import BasePlanning from "./BasePlanning.vue";
 
 export default {
     name: "WeeklyTLPlanning",
     layout: (h, page) => h(Layout, [page]),
     mixins: [
         Color,
+        BasePlanning,
     ],
     props: {
         allTeams: Object,
@@ -217,11 +221,12 @@ export default {
         },
 
         plan(event, engineerId, projectId){
+            let currentVal = this.table['engineers'].hasOwnProperty(engineerId) && this.table['engineers'][[engineerId]].hasOwnProperty(projectId) ? this.table['engineers'][engineerId][projectId] : 0
             if(!event.target.value){
-                event.target.value = this.table['engineers'][engineerId][projectId]['current_week']
+                event.target.value = currentVal
             }
 
-            if(Number(event.target.value) === this.table['engineers'][engineerId][projectId]['current_week']){
+            if(Number(event.target.value) === currentVal){
                 return;
             }
 
