@@ -60,6 +60,7 @@ class TLWeeklyPlannedHoursMatrix extends TLBaseMatrix
         $pmMonthHours = $this->plannedHourService()->hoursByFilter($pmFilter->params)
             ->groupBy(['project_id', 'planable_id']);
 
+        $this->data['month_planned'] = [];
         foreach ($pmMonthHours as $projectId => $projectHours) {
             foreach ($projectHours as $technologyId => $hour) {
                 $this->data['month_planned'][$projectId][$technologyId] = $hour->first()->hours;

@@ -40,6 +40,7 @@ class TLBaseMatrix
         $pmHours = $this->hours->where('planable_type', PlannedHour::TECHNOLOGY_TYPE)
             ->groupBy(['planable_id', 'project_id']);
 
+        $this->data['technologies']['planned_pm'] = [];
         foreach ($pmHours as $technologyId => $technologyHours) {
             $this->data['technologies']['planned_pm']['total'][$technologyId] = 0;
             foreach ($technologyHours as $projectId => $hour) {
@@ -73,8 +74,10 @@ class TLBaseMatrix
             }
         }
 
-        foreach ($this->data['technologies']['planned_tl'] as $technologyId => $projectHours) {
-            $this->data['technologies']['planned_tl']['total'][$technologyId] = array_sum($projectHours);
+        if (isset($this->data['technologies']['planned_tl'])) {
+            foreach ($this->data['technologies']['planned_tl'] as $technologyId => $projectHours) {
+                $this->data['technologies']['planned_tl']['total'][$technologyId] = array_sum($projectHours);
+            }
         }
     }
 
