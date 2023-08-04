@@ -67,7 +67,7 @@ class TLWeeklyPlannedHoursMatrix extends TLBaseMatrix
             }
         }
 
-        $twMonthHours = TeamworkService::technologiesHours([
+        $twMonthHours = TeamworkService::engineersHours([
             'from_date' => $pmFilter->period->from,
             'to_date' => $pmFilter->period->to,
         ])->groupBy(['project_id', 'engineer_id']);
