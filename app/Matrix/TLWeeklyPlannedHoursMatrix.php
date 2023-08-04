@@ -79,4 +79,23 @@ class TLWeeklyPlannedHoursMatrix extends TLBaseMatrix
             }
         }
     }
+
+    protected function detectTechnologyIdByData($data, $projectId, $engineerId)
+    {
+        if (!isset($this->technologyEngineers[$engineerId])) {
+            return null;
+        }
+
+        $technologies = $this->technologyEngineers[$engineerId];
+
+        if ($technologies->count() > 1) {
+            foreach ($technologies as $technology) {
+                if (isset($data[$projectId][$technology->technology_id])) {
+                    return $technology->technology_id;
+                }
+            }
+        }
+
+        return $technologies->first()->technology_id;
+    }
 }
