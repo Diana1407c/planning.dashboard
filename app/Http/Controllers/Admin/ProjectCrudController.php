@@ -48,6 +48,17 @@ class ProjectCrudController extends CrudController
 
         CRUD::column('name');
         CRUD::column('state');
+        CRUD::column('type');
+
+        CRUD::addColumn([
+            'name'  => 'no_performance',
+            'label' => 'Have Performance',
+            'type'  => 'boolean',
+            'options' => [
+                0 => 'Yes',
+                1 => 'No'
+            ]
+        ]);
     }
 
     protected function setupUpdateOperation()
@@ -61,7 +72,21 @@ class ProjectCrudController extends CrudController
             'options'   => [
                 Project::STATE_ACTIVE => 'Active',
                 Project::STATE_MAINTENANCE => 'Maintenance',
-                Project::STATE_OPERATIONAL => 'Operational'
+                Project::STATE_OPERATIONAL => 'Operational',
+                Project::STATE_CLOSED => 'Closed'
+            ],
+        ]);
+
+        CRUD::addField([
+            'label'     => "Type",
+            'type'      => 'select_from_array',
+            'name'      => 'type',
+            'allows_null' => false,
+            'default'     => Project::TYPE_BILLABLE,
+            'options'   => [
+                Project::TYPE_BILLABLE => 'Billable',
+                Project::TYPE_NON_BILLABLE => 'Non Billable',
+                Project::TYPE_HOLIDAY => 'Holiday'
             ],
         ]);
 

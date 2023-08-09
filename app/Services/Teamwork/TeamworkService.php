@@ -234,6 +234,12 @@ class TeamworkService
             $query->whereIn('project_id', $filters['projects_ids']);
         }
 
+        if (!empty($filters['projects_states'])) {
+            $query->whereHas('project', function ($project) use($filters){
+                $project->whereIn('state', $filters['project_states']);
+            });
+        }
+
         if (!empty($filters['from_date'])) {
             $query->where('date', '>=', $filters['from_date']);
         }

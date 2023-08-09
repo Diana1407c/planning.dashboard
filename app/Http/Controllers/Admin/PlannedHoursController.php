@@ -23,6 +23,7 @@ class PlannedHoursController extends Controller
     {
         return Inertia::render('WeeklyTLPlanning',[
             'allProjects' => ShortProjectResource::collection(Project::all())->toArray($request),
+            'projectStates' => Project::indexedStates(),
             'allTeams' => ShortTeamsResource::collection(Team::all())->toArray($request)
         ])->withViewData([
             'title' => 'Weekly Team Lead Planning',
@@ -37,6 +38,7 @@ class PlannedHoursController extends Controller
     {
         return Inertia::render('MonthlyTLPlanning',[
             'allProjects' => ShortProjectResource::collection(Project::all())->toArray($request),
+            'projectStates' => Project::indexedStates(),
             'allTeams' => ShortTeamsResource::collection(Team::all())->toArray($request)
         ])->withViewData([
             'title' => 'Monthly Team Lead Planning',
@@ -51,6 +53,7 @@ class PlannedHoursController extends Controller
     {
         return Inertia::render('MonthlyPMPlanning',[
             'technologies' => TechnologyResource::collection(Technology::all())->toArray($request),
+            'projectStates' => Project::indexedStates(),
             'allProjects' => ShortProjectResource::collection(Project::all())->toArray($request),
         ])->withViewData([
             'title' => 'Monthly Project Manager Planning',
@@ -65,6 +68,7 @@ class PlannedHoursController extends Controller
     {
         return Inertia::render('WeeklyPMPlanning',[
             'technologies' => TechnologyResource::collection(Technology::all())->toArray($request),
+            'projectStates' => Project::indexedStates(),
             'allProjects' => ShortProjectResource::collection(Project::all())->toArray($request),
         ])->withViewData([
             'title' => 'Weekly Project Manager Planning',

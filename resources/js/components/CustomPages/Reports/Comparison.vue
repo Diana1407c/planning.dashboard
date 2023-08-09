@@ -3,10 +3,27 @@
         <hr class="col-12 separator-filter">
     </div>
     <div class="row">
-        <div class="col-4">
+        <div class="col-3">
             <VueDatePicker v-model="filter.date" multi-calendars multi-calendars-solo range @update:model-value="getReport"/>
         </div>
-        <div class="col-4">
+        <div class="col-2">
+            <multiselect
+                v-model="filter.project_states"
+                :options="projectStates"
+                :close-on-select="true"
+                :clear-on-select="false"
+                placeholder="Select states"
+                label="name"
+                :multiple="true"
+                track-by="name"
+                @select="getReport"
+                @remove="getReport">
+                <template v-if="filter.project_states.length" #beforeList class="multiselect__element" >
+                    <span @click="handleDiselectStates" class="multiselect__option diselect_all"><span>Diselect All</span></span>
+                </template>
+            </multiselect>
+        </div>
+        <div class="col-3">
             <multiselect
                 v-model="filter.project_ids"
                 :options="allProjects"
@@ -19,7 +36,7 @@
                 @select="getReport"
                 @remove="getReport">
                 <template v-if="filter.project_ids.length" #beforeList class="multiselect__element" >
-                    <span @click="handleDiselect" class="multiselect__option diselect_all"><span>Diselect All</span></span>
+                    <span @click="handleDiselectProjects" class="multiselect__option diselect_all"><span>Diselect All</span></span>
                 </template>
             </multiselect>
         </div>
@@ -84,7 +101,8 @@ import Color from "../../Elements/Color.vue";
 export default {
     name: "Comparison",
     props: {
-        allProjects: Object
+        allProjects: Object,
+        projectStates: Object
     },
     mixins: [Color],
     data(){
@@ -94,6 +112,7 @@ export default {
             report: [],
             filter: {
                 project_ids: [],
+                project_states: [],
                 date: [new Date()],
                 period_type: 'month'
             },
@@ -124,14 +143,20 @@ export default {
             this.dateModal = null;
         },
 
-        async handleDiselect(){
+        async handleDiselectProjects(){
             this.filter.project_ids = []
+            await this.getReport()
+        },
+
+        async handleDiselectStates(){
+            this.filter.project_states = []
             await this.getReport()
         },
 
         async getReport(){
             await axios.get('reports/comparison', {params: {
                     project_ids: this.filter.project_ids.map(obj => obj.id),
+                    project_states: this.filter.project_states.map(obj => obj.id),
                     start_date: this.filter.date[0],
                     end_date: this.filter.date[1],
                     period_type: this.filter.period_type
@@ -148,6 +173,7 @@ export default {
                 responseType: "blob",
                 params: {
                     project_ids: this.filter.project_ids.map(obj => obj.id),
+                    project_states: this.filter.project_states.map(obj => obj.id),
                     start_date: this.filter.date[0],
                     end_date: this.filter.date[1],
                     period_type: this.filter.period_type

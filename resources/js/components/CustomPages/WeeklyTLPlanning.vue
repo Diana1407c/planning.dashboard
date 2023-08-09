@@ -3,7 +3,7 @@
         <hr class="col-12 separator-filter">
     </div>
     <div class="row">
-        <div class="col-6">
+        <div class="col-4">
             <VueMultiselect
                 v-model="filter.team_ids"
                 :options="allTeams"
@@ -15,13 +15,29 @@
                 track-by="name"
                 @select="getData"
                 @remove="getData">
-
                 <template v-if="filter.project_ids.length" #beforeList class="multiselect__element" >
                     <span @click="handleDiselectTeams" class="multiselect__option diselect_all"><span>Diselect All</span></span>
                 </template>
             </VueMultiselect>
         </div>
-        <div class="col-6">
+        <div class="col-4">
+            <VueMultiselect
+                v-model="filter.project_states"
+                :options="projectStates"
+                :close-on-select="true"
+                :clear-on-select="false"
+                placeholder="Select states"
+                label="name"
+                :multiple="true"
+                track-by="name"
+                @select="getData"
+                @remove="getData">
+                <template v-if="filter.project_states.length" #beforeList class="multiselect__element" >
+                    <span @click="handleDiselectStates" class="multiselect__option diselect_all"><span>Diselect All</span></span>
+                </template>
+            </VueMultiselect>
+        </div>
+        <div class="col-4">
             <VueMultiselect
                 v-model="filter.project_ids"
                 :options="allProjects"
@@ -33,7 +49,6 @@
                 track-by="name"
                 @select="getData"
                 @remove="getData">
-
                 <template v-if="filter.project_ids.length" #beforeList class="multiselect__element" >
                     <span @click="handleDiselectProjects" class="multiselect__option diselect_all"><span>Diselect All</span></span>
                 </template>
@@ -155,6 +170,7 @@ export default {
     ],
     props: {
         allTeams: Object,
+        projectStates: Object,
         allProjects: Object
     },
     data(){
@@ -168,6 +184,7 @@ export default {
             filter: {
                 team_ids: [],
                 project_ids: [],
+                project_states: [],
                 week: null,
                 year: null
             },
@@ -176,10 +193,7 @@ export default {
     },
     components: {VueMultiselect},
     async mounted() {
-        const storedObject = localStorage.getItem("filter-tl");
-        if (storedObject) {
-            this.filter = JSON.parse(storedObject);
-        }
+        await this.setFilter()
         await this.setNextWeek()
         await this.getData()
     },
@@ -195,6 +209,7 @@ export default {
         async getProjects(){
             await axios.get('projects', {params: {
                     project_ids: this.filter.project_ids.map(obj => obj.id),
+                    project_states: this.filter.project_states.map(obj => obj.id),
                 }}).then((response) => {
                 this.projects = response.data.data
             });
@@ -212,6 +227,7 @@ export default {
             await axios.get('tl-planning/weekly', {params: {
                     team_ids: this.filter.team_ids.map(obj => obj.id),
                     project_ids: this.filter.project_ids.map(obj => obj.id),
+                    project_states: this.filter.project_states.map(obj => obj.id),
                     year: this.filter.year,
                     period_number: this.filter.week
                 }}).then(response => {
@@ -307,6 +323,26 @@ export default {
         async handleDiselectProjects(){
             this.filter.project_ids = []
             await this.getData()
+        },
+
+        async handleDiselectStates(){
+            this.filter.project_states = []
+            await this.getData()
+        },
+
+        async setFilter() {
+            const storedObject = localStorage.getItem("filter-tl");
+            if (storedObject) {
+                let storageFilter = JSON.parse(storedObject);
+
+                for (const key in this.filter) {
+                    if (!storageFilter.hasOwnProperty(key)) {
+                        storageFilter[key] = this.filter[key];
+                    }
+                }
+
+                this.filter = storageFilter;
+            }
         }
     },
 }

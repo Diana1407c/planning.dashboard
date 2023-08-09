@@ -18,7 +18,8 @@ class ComparisonReportController extends Controller
     public function index(Request $request)
     {
         return Inertia::render('Reports/Comparison',[
-            'allProjects' => ShortProjectResource::collection(Project::all())->toArray($request)
+            'allProjects' => ShortProjectResource::collection(Project::all())->toArray($request),
+            'projectStates' => Project::indexedStates()
         ])->withViewData([
             'title' => 'Comparison Report',
             'breadcrumbs' => [

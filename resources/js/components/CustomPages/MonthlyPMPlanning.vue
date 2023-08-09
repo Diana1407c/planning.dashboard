@@ -3,10 +3,27 @@
         <hr class="col-12 separator-filter">
     </div>
     <div class="row">
-        <div class="col-12">
+        <div class="col-6">
+            <multiselect
+                v-model="filter.project_states"
+                :options="projectStates"
+                :close-on-select="true"
+                :clear-on-select="false"
+                placeholder="Select states"
+                label="name"
+                :multiple="true"
+                track-by="name"
+                @select="getData"
+                @remove="getData">
+                <template v-if="filter.project_states.length" #beforeList class="multiselect__element" >
+                    <span @click="handleDiselectStates" class="multiselect__option diselect_all"><span>Diselect All</span></span>
+                </template>
+            </multiselect>
+        </div>
+        <div class="col-6">
             <multiselect
                 v-model="filter.project_ids"
-                :options="allProjects"
+                :options="projects"
                 :close-on-select="true"
                 :clear-on-select="false"
                 placeholder="Select projects"
@@ -16,7 +33,7 @@
                 @select="getData"
                 @remove="getData">
                 <template v-if="filter.project_ids.length" #beforeList class="multiselect__element" >
-                    <span @click="handleDiselect" class="multiselect__option diselect_all"><span>Diselect All</span></span>
+                    <span @click="handleDiselectProjects" class="multiselect__option diselect_all"><span>Diselect All</span></span>
                 </template>
             </multiselect>
         </div>
@@ -49,15 +66,15 @@
             </tr>
             </thead>
             <tbody>
-            <template v-for="(projects, state) in groupedProjects" :key="state">
+            <template v-for="(stateProjects, state) in groupedProjects" :key="state">
                 <tr>
-                    <td class="vertical-text w-5" :rowspan="projects.length+1">
+                    <td class="vertical-text w-5" :rowspan="stateProjects.length+1">
                         <div class="d-flex justify-content-center align-items-center">
                             {{ state }}
                         </div>
                     </td>
                 </tr>
-                <tr v-for="project in projects">
+                <tr v-for="project in stateProjects">
                     <td class="w-20 align-middle cell-p left_sticky">{{ project.name }}</td>
                     <td class="w-8 align-middle cell-p text-center heading-tech-total">{{ table[project.id]['total'] }}</td>
                     <td class="w-8 align-middle cell-p" v-for="technology in technologies">
@@ -102,6 +119,7 @@ export default {
     layout: (h, page) => h(Layout, [page]),
     props: {
         technologies: Object,
+        projectStates: Object,
         allProjects: Object
     },
     data(){
@@ -113,24 +131,23 @@ export default {
             month_name: null,
             filter: {
                 project_ids: [],
+                project_states: [],
                 month: null,
                 year: null
             },
             loaded: false,
             hours_count: 0,
+            projects: this.allProjects
         }
     },
     components: {Multiselect},
     async mounted() {
-        const storedObject = localStorage.getItem("monthly-filter-pm");
-        if (storedObject) {
-            this.filter = JSON.parse(storedObject);
-        }
+        await this.setFilter()
         await this.setNextMonth()
         await this.getData()
     },
     methods: {
-        async getData(){
+        async getData() {
             localStorage.setItem("monthly-filter-pm", JSON.stringify(this.filter));
             await this.getProjects()
             await this.getPlannings()
@@ -140,6 +157,7 @@ export default {
         async getProjects(){
             await axios.get('projects', {params: {
                     project_ids: this.filter.project_ids.map(obj => obj.id),
+                    project_states: this.filter.project_states.map(obj => obj.id),
                 }}).then((response) => {
 
                 this.groupedProjects = response.data.data.reduce((result, item) => {
@@ -154,6 +172,7 @@ export default {
 
         async getPlannings(){
             await axios.get('pm-planning/monthly', {params: {
+                    project_states: this.filter.project_states.map(obj => obj.id),
                     project_ids: this.filter.project_ids.map(obj => obj.id),
                     year: this.filter.year,
                     period_number: this.filter.month
@@ -234,10 +253,30 @@ export default {
             this.loaded = true;
         },
 
-        async handleDiselect(){
+        async handleDiselectProjects(){
             this.filter.project_ids = []
             await this.getData()
         },
+
+        async handleDiselectStates(){
+            this.filter.project_states = []
+            await this.getData()
+        },
+
+        async setFilter() {
+            const storedObject = localStorage.getItem("monthly-filter-pm");
+            if (storedObject) {
+                let storageFilter = JSON.parse(storedObject);
+
+                for (const key in this.filter) {
+                    if (!storageFilter.hasOwnProperty(key)) {
+                        storageFilter[key] = this.filter[key];
+                    }
+                }
+
+                this.filter = storageFilter;
+            }
+        }
     },
 }
 </script>
