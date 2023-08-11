@@ -83,11 +83,6 @@ class TLBaseMatrix
 
     protected function detectTechnologyId($projectId, $engineerId)
     {
-        return $this->detectTechnologyIdByData($this->data['technologies']['planned_pm'], $projectId, $engineerId);
-    }
-
-    protected function detectTechnologyIdByData($data, $projectId, $engineerId)
-    {
         if (!isset($this->technologyEngineers[$engineerId])) {
             return null;
         }
@@ -96,7 +91,7 @@ class TLBaseMatrix
 
         if ($technologies->count() > 1) {
             foreach ($technologies as $technology) {
-                if (isset($data[$technology->technology_id][$projectId])) {
+                if (isset($this->data['technologies']['planned_pm'][$technology->technology_id][$projectId])) {
                     return $technology->technology_id;
                 }
             }
