@@ -77,5 +77,7 @@ Route::group(['middleware' => array_merge(
 
         Route::get('accountant', [AccountantReportController::class, 'index']);
         Route::get('accountant/export', [AccountantReportController::class, 'export']);
+
+        Route::get('history', [ProjectHistoryReportController::class,'index']);
     });
 });
