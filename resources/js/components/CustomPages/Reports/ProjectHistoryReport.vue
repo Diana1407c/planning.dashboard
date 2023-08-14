@@ -39,15 +39,13 @@
     <div>
         <GoogleChart></GoogleChart>
     </div>
-    <info-box v-if="detailOpened" :is-open="detailOpened" :project="projectModal" :period_type="filter.period_type" :date="dateModal" :dateIndex="dateIndexModal" :close="closeModal"></info-box>
 </template>
 
 <script>
 import GoogleChart from "../../google-chart/GoogleChart.vue";
 import VueDatePicker from "@vuepic/vue-datepicker";
-import InfoBox from "../../Elements/InfoBox.vue";
 import multiselect from "vue-multiselect";
-
+import {history} from "../../../history";
 export default {
     name: "ProjectHistoryReport",
     props: {
@@ -70,7 +68,8 @@ export default {
             loaded: false,
         }
     },
-    components: {multiselect, InfoBox, VueDatePicker, GoogleChart },
+    components: {multiselect, VueDatePicker, GoogleChart },
+    mixins:[history],
     async mounted() {
         await this.getReport()
     },
