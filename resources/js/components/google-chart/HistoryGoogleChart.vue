@@ -1,10 +1,7 @@
 <template>
-    <div class="d-flex box-filter-separator">
-        <hr class="col-12 separator-filter">
-    </div>
     <div class="row">
         <div class="col-4">
-            <VueDatePicker v-model="filter.date" multi-calendars multi-calendars-solo range @update:model-value="getReport"/>
+            <VueDatePicker  v-model="filter.date"  multi-calendars multi-calendars-solo range @update:model-value="getReport"/>
         </div>
         <div class="col-4">
             <multiselect
@@ -23,39 +20,71 @@
                 </template>
             </multiselect>
         </div>
-        <div class="col-2">
+        <div class="col-4">
             <select v-model="filter.period_type" class="form-control" @change="getReport">
                 <option value="week">Weekly</option>
                 <option value="month">Monthly</option>
             </select>
         </div>
-        <div class="col-2">
-            <button type="button" class="btn btn-primary w-100" @click="filterChart"><i class="fa-solid fa-filter"></i> Filter Chart </button>
-        </div>
     </div>
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-    <div>
-        <GoogleChart></GoogleChart>
+    <div class="col-6">
+        <GChart
+            type="LineChart"
+            :options="options"
+            :data="collectionData"
+        />
     </div>
+    <info-box v-if="detailOpened" :is-open="detailOpened" :project="projectModal" :period_type="filter.period_type" :date="dateModal" :dateIndex="dateIndexModal" :close="closeModal"></info-box>
+
 </template>
 
 <script>
-import GoogleChart from "../../google-chart/GoogleChart.vue";
+import { GChart } from "vue-google-charts";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import multiselect from "vue-multiselect";
-import {history} from "../../../history";
+import InfoBox from "../Elements/InfoBox.vue";
 export default {
-    name: "ProjectHistoryReport",
-    props: {
-        allProjects: Object
+    name: 'HistoryGoogleChart',
+    components: {
+        InfoBox,
+        multiselect,
+        VueDatePicker,
+        GChart,
     },
-    data(){
+    data() {
         return {
-            projects: [],
-            dates: [],
-            report: [],
+            allProjects:[],
+            chartType:"LineChart",
+            collectionData: [
+                ["Week", "PM", "TL", "TW"],
+            ],
+            options: {
+                title: 'Project History Report',
+                lineWidth: 3,
+                titleTextStyle:{
+                    fontSize: 26,
+                },
+                height: 600,
+                vAxis: {
+                    title:'Hours(h)',
+                    titleTextStyle:{
+                        color:'green',
+                        bold: 'true',
+                        fontSize: 18,
+                    },
+                },
+                hAxis: {
+                    title:'Weeks',
+                    titleTextStyle:{
+                        color:'green',
+                        bold: 'true',
+                        fontSize: 18,
+                    }
+                },
+            },
             filter: {
                 project_ids: [],
                 date: [new Date()],
@@ -66,14 +95,12 @@ export default {
             dateModal: null,
             dateIndexModal: null,
             loaded: false,
-        }
+        };
     },
-    components: {multiselect, VueDatePicker, GoogleChart },
-    mixins:[history],
     async mounted() {
         await this.getReport()
+        await this.getData()
     },
-
     methods: {
         openModal(project, dateIndex, date) {
             this.projectModal = project
@@ -88,19 +115,28 @@ export default {
             this.dateIndexModal = null;
             this.dateModal = null;
         },
-
-        async handleDiselect() {
+        async handleDiselect(){
             this.filter.project_ids = []
             await this.getReport()
         },
+        async getData(){
+            await axios.get('reports/statistics', {params: {
+                    // project_ids: this.filter.project_ids.map(obj => obj.id),
+                    // start_date: this.filter.date[0],
+                    // end_date: this.filter.date[1],
+                    // period_type: this.filter.period_type
+                }}).then((response) => {
+                this.collectionData = response.data
+            });
+        },
 
-        async getReport() {
-            await axios.get('reports/history', {params: {
-                project_ids: this.filter.project_ids.map(obj => obj.id),
+        async getReport(){
+            await axios.get('reports/comparison', {params: {
+                    project_ids: this.filter.project_ids.map(obj => obj.id),
                     start_date: this.filter.date[0],
                     end_date: this.filter.date[1],
                     period_type: this.filter.period_type
-            }}).then((response) => {
+                }}).then((response) => {
                 this.dates = response.data.dates
                 this.projects = response.data.projects
                 this.report = response.data.report

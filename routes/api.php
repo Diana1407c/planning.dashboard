@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\StatisticsController;
 use App\Http\Controllers\Api\AccountantReportController;
 use App\Http\Controllers\Api\EngineerController;
 use App\Http\Controllers\Api\EngineerHistoryController;
@@ -10,7 +11,6 @@ use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\StackController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TeamworkController;
-use App\Http\Controllers\Api\ProjectHistoryReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -79,6 +79,6 @@ Route::group(['middleware' => array_merge(
         Route::get('accountant', [AccountantReportController::class, 'index']);
         Route::get('accountant/export', [AccountantReportController::class, 'export']);
 
-        Route::get('history', [ProjectHistoryReportController::class,'index']);
+        Route::get('statistics', [StatisticsController::class,'history']);
     });
 });
