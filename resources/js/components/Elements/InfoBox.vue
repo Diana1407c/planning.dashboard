@@ -110,19 +110,19 @@
                                 </td>
                             </template>
                         </tr>
-                        <tr>
-                            <td :colspan="3" class="w-15 align-middle cell-p">Total</td>
-                            <td class="w-8 align-middle text-center cell-p">
-                                {{ hours['tw']['total']['billable'] }}
-                            </td>
-                            <td class="w-8 align-middle text-center cell-p">
-                                {{ hours['tw']['total']['no_billable'] }}
-                            </td>
-                            <td class="w-8 align-middle text-center cell-p">
-                                {{ hours['tw']['total']['total'] }}
-                            </td>
-                        </tr>
                     </template>
+                    <tr>
+                        <td :colspan="3" class="w-15 align-middle cell-p">Total</td>
+                        <td class="w-8 align-middle text-center cell-p">
+                            {{ hours['tw']['total']['billable'] }}
+                        </td>
+                        <td class="w-8 align-middle text-center cell-p">
+                            {{ hours['tw']['total']['no_billable'] }}
+                        </td>
+                        <td class="w-8 align-middle text-center cell-p">
+                            {{ hours['tw']['total']['total'] }}
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>

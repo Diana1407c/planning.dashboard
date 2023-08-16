@@ -232,7 +232,7 @@ class TeamworkService
     public function projectHours(Project $project, GenericPeriod $period)
     {
         return $project->teamworkTime()
-            ->select(['engineer_id'])
+            ->select(['engineer_id', 'billable'])
             ->selectRaw('SUM(hours) as sum_hours')
             ->whereBetween('date', [$period->from, $period->to])
             ->groupBy(['engineer_id', 'billable'])->get();
