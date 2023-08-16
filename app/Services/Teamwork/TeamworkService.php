@@ -6,6 +6,7 @@ use App\Models\Engineer;
 use App\Models\PlannedHour;
 use App\Models\Project;
 use App\Models\TeamworkTime;
+use App\Support\GenericPeriod;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -226,6 +227,15 @@ class TeamworkService
         ]);
 
         return $query->get();
+    }
+
+    public function projectHours(Project $project, GenericPeriod $period)
+    {
+        return $project->teamworkTime()
+            ->select(['engineer_id'])
+            ->selectRaw('SUM(hours) as sum_hours')
+            ->whereBetween('date', [$period->from, $period->to])
+            ->groupBy(['engineer_id', 'billable'])->get();
     }
 
     protected static function applyFilter(Builder $query, array $filters): void
