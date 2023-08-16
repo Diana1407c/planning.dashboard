@@ -3,35 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\TeamResource;
-use App\Http\Resources\TechnologyResource;
 use App\Models\PlannedHour;
 use App\Models\Project;
 use App\Models\Team;
 use App\Models\Technology;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
 class StatisticsController extends Controller
 {
-//    public function history(Request $request): JsonResponse
-//    {
-//        $data = [
-//            ["Week", "PM", "TL", "TW"],
-//            ['31.07-07.08',  120, 120, 112],
-//            ['07.08-14.08',  120, 120, 120],
-//            ['14.08-21.08',  120, 120, 120],
-//            ['21.08-28.08',  120, 120, 104],
-//            ['28.08-04.09',  120, 120, 128],
-//        ];
-//
-//        return response()->json($data);
-//
-//    }
-
     public function history(Project $project, Request $request): JsonResponse
     {
+        $periodType = $request->get('period_type');
         $plannedHours = PlannedHour::all();
 
         $teams = Team::query()->select('teams.*')
@@ -42,10 +27,7 @@ class StatisticsController extends Controller
 
         $technologies = Technology::query()->whereIn('id', $plannedHours->where('planable_type', PlannedHour::TECHNOLOGY_TYPE)->pluck('planable_id'))->get();
 
-        $data = [
-            ["Week", "PM", "TL", "TW"],
-        ];
-
+        $data = [["Week", "PM", "TL", "TW"]];
         $hours = [];
 
         foreach ($technologies as $technology) {
@@ -60,12 +42,23 @@ class StatisticsController extends Controller
             }
         }
 
-        foreach ($plannedHours->where('period_type', 'week') as $hour) {
+        foreach ($plannedHours->where('period_type', $periodType)->sortBy('period_number') as $hour) {
+            $startDate = Carbon::now()->setISODate($hour->year, $hour->period_number)->startOfWeek();
+            $endDate = Carbon::now()->setISODate($hour->year, $hour->period_number)->endOfWeek();
+            $weekData = "{$hour->period_number} - {$startDate->format('d.m')} - {$endDate->format('d.m')}";
+
+            $totalTlHours = 0;
+            foreach ($teams as $team) {
+                foreach ($team->members as $member) {
+                    $totalTlHours += $hours['tl'][$member->id];
+                }
+            }
+
             $rowData = [
-                $hour->period_number,
+                "$weekData",
                 $hours['pm'][$technology->id],
-                $hours['tl'][$member->id],
-                88,
+                $totalTlHours,
+                100,
             ];
 
             $data[] = $rowData;

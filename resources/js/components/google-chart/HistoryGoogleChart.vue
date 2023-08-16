@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-4">
-            <VueDatePicker  v-model="filter.date"  multi-calendars multi-calendars-solo range @update:model-value="getReport"/>
+            <VueDatePicker  v-model="filter.date"  multi-calendars multi-calendars-solo range @update:model-value="getData"/>
         </div>
         <div class="col-4">
             <multiselect
@@ -13,15 +13,15 @@
                 label="name"
                 :multiple="true"
                 track-by="name"
-                @select="getReport"
-                @remove="getReport">
+                @select="getData"
+                @remove="getData">
                 <template v-if="filter.project_ids.length" #beforeList class="multiselect__element" >
                     <span @click="handleDiselect" class="multiselect__option diselect_all"><span>Diselect All</span></span>
                 </template>
             </multiselect>
         </div>
         <div class="col-4">
-            <select v-model="filter.period_type" class="form-control" @change="getReport">
+            <select v-model="filter.period_type" class="form-control" @change="getData">
                 <option value="week">Weekly</option>
                 <option value="month">Monthly</option>
             </select>
@@ -30,43 +30,42 @@
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-    <div class="col-6">
+    <div class="col-8">
         <GChart
             type="LineChart"
             :options="options"
             :data="collectionData"
         />
     </div>
-    <info-box v-if="detailOpened" :is-open="detailOpened" :project="projectModal" :period_type="filter.period_type" :date="dateModal" :dateIndex="dateIndexModal" :close="closeModal"></info-box>
-
 </template>
 
 <script>
 import { GChart } from "vue-google-charts";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import multiselect from "vue-multiselect";
-import InfoBox from "../Elements/InfoBox.vue";
 export default {
     name: 'HistoryGoogleChart',
     components: {
-        InfoBox,
         multiselect,
         VueDatePicker,
         GChart,
     },
+    props: {
+        allProjects: Object,
+    },
     data() {
         return {
-            allProjects:[],
             chartType:"LineChart",
             collectionData: [
                 ["Week", "PM", "TL", "TW"],
             ],
             options: {
                 title: 'Project History Report',
-                lineWidth: 3,
+                lineWidth: 2,
                 titleTextStyle:{
                     fontSize: 26,
                 },
+                pointSize: 3,
                 height: 600,
                 vAxis: {
                     title:'Hours(h)',
@@ -77,28 +76,23 @@ export default {
                     },
                 },
                 hAxis: {
-                    title:'Weeks',
+                    title: "Week",
                     titleTextStyle:{
                         color:'green',
                         bold: 'true',
                         fontSize: 18,
-                    }
+                    },
                 },
             },
             filter: {
                 project_ids: [],
                 date: [new Date()],
-                period_type: 'week'
+                period_type: 'month'
             },
-            detailOpened: false,
-            projectModal: null,
-            dateModal: null,
-            dateIndexModal: null,
             loaded: false,
         };
     },
     async mounted() {
-        await this.getReport()
         await this.getData()
     },
     methods: {
@@ -117,30 +111,21 @@ export default {
         },
         async handleDiselect(){
             this.filter.project_ids = []
-            await this.getReport()
+            await this.getData()
         },
         async getData(){
             await axios.get('reports/statistics', {params: {
-                    // project_ids: this.filter.project_ids.map(obj => obj.id),
-                    // start_date: this.filter.date[0],
-                    // end_date: this.filter.date[1],
-                    // period_type: this.filter.period_type
-                }}).then((response) => {
-                this.collectionData = response.data
-            });
-        },
-
-        async getReport(){
-            await axios.get('reports/comparison', {params: {
                     project_ids: this.filter.project_ids.map(obj => obj.id),
                     start_date: this.filter.date[0],
                     end_date: this.filter.date[1],
                     period_type: this.filter.period_type
                 }}).then((response) => {
+                this.collectionData = response.data
                 this.dates = response.data.dates
                 this.projects = response.data.projects
                 this.report = response.data.report
                 this.loaded = true;
+
             });
         },
     }

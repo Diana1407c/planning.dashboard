@@ -2,7 +2,7 @@
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-            <HistoryGoogleChart></HistoryGoogleChart>
+            <HistoryGoogleChart :allProjects="allProjects" ></HistoryGoogleChart>
 </template>
 
 <script>
