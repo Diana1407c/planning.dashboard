@@ -29,6 +29,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        $schedule->command('command:sync-teamwork current_week')->cron('30 18 * * *')->appendOutputTo($this->outputPath);
+        $schedule->command('command:sync-teamwork current_week')->cron('0 9 * * *')->appendOutputTo($this->outputPath);
         $schedule->command('command:sync-teamwork current_week')->cron('0 1 * * 6')->appendOutputTo($this->outputPath);
         $schedule->command('command:sync-teamwork past_week')->cron('0 1 * * 1')->appendOutputTo($this->outputPath);
 

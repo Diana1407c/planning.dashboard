@@ -62,8 +62,8 @@
             <thead class="sticky-top">
             <tr>
                 <th class="w-5 vertical-text text-center align-middle">Team</th>
-                <th class="w-20 text-center align-middle">Members</th>
-                <th class="w-8 vertical-text text-center align-middle heading-tech-total">Total</th>
+                <th class="w-20 left-header-sticky text-center align-middle">Members</th>
+                <th class="w-8 left-header-sticky l-200 vertical-text text-center align-middle heading-tech-total">Total</th>
                 <th class="w-8 vertical-text text-center align-middle h-30" v-for="project in projects">{{ project.name }}</th>
             </tr>
             </thead>
@@ -75,8 +75,8 @@
                     </td>
                 </tr>
                 <tr v-for="technology in team.technologies" class="evidence-bg-1">
-                    <td class="w-20 align-middle cell-p">{{ technology.name }}</td>
-                    <td title="Planned monthly by TL / Planned monthly by PM" class="w-8 align-middle text-center cell-p heading-tech-total">
+                    <td class="left_sticky bg-medium-important w-20 align-middle cell-p">{{ technology.name }}</td>
+                    <td title="Planned monthly by TL / Planned monthly by PM" class="left_sticky l-200 w-8 align-middle text-center cell-p heading-tech-total">
                         <span class="tl-hour-month">{{ tValue(['technologies', 'planned_tl', 'total', technology.id]) }}</span>
                         <span class="hours-separator">/</span>
                         <span class="pm-hour-month">{{ tValue(['technologies', 'planned_pm', 'total', technology.id]) }}</span>
@@ -89,7 +89,7 @@
                 </tr>
                 <tr v-for="member in team.members">
                     <td class="w-20 align-middle cell-p left_sticky">{{ member.name }} <span title="Performance" class="float-right">{{ member.performance }}%</span></td>
-                    <td class="w-8 align-middle text-center cell-p heading-tech-total">{{ tValue(['engineers', member.id, 'total']) }}</td>
+                    <td class="left_sticky l-200 w-8 align-middle text-center cell-p heading-tech-total">{{ tValue(['engineers', member.id, 'total']) }}</td>
                     <td class="w-8 align-middle cell-p" v-for="project in projects">
                         <input :disabled="!can_edit" type="number" class="form-control text-center no-arrows"
                                :value="tValue(['engineers', member.id, project.id])" @blur="plan($event, member.id, project.id)">

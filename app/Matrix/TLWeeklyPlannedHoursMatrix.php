@@ -43,7 +43,7 @@ class TLWeeklyPlannedHoursMatrix extends TLBaseMatrix
 
         foreach ($twHours as $engineerId => $engineerHours) {
             foreach ($engineerHours as $projectId => $hour) {
-                $this->data['prev_worked'][$engineerId][$projectId] = $hour->sum('sum_hours');
+                $this->data['prev_worked'][$engineerId][$projectId] = twHours($hour->sum('sum_hours'));
             }
         }
     }
@@ -75,7 +75,7 @@ class TLWeeklyPlannedHoursMatrix extends TLBaseMatrix
         foreach ($twMonthHours as $projectId => $projectHours) {
             foreach ($projectHours as $engineerId => $hour) {
                 $technologyId = $this->detectTechnologyIdByData($this->data['month_planned'], $projectId, $engineerId);
-                $this->data['month_worked'][$projectId][$technologyId] = $hour->sum('sum_hours');
+                $this->data['month_worked'][$projectId][$technologyId] = twHours($hour->sum('sum_hours'));
             }
         }
     }

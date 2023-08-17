@@ -40,13 +40,13 @@ class PMWeeklyPlannedHoursMatrix extends PlannedHoursMatrix
                     'month' => $monthlyHours->where('project_id', $project->id)
                             ->where('planable_id', $technology->id)
                             ->first()->hours ?? 0,
-                    'tm' => round($twTime, 2),
+                    'tm' => twHours($twTime),
                 ];
             }
             $data[$project->id]['total'] = [
                 'week' => $this->pmHours->where('project_id', $project->id)->sum('hours'),
                 'month' => $monthlyHours->where('project_id', $project->id)->sum('hours'),
-                'tm' => round($tmHours->where('project_id', $project->id)->sum('sum_hours'), 2),
+                'tm' => twHours($tmHours->where('project_id', $project->id)->sum('sum_hours')),
 
             ];
         }

@@ -145,10 +145,24 @@ table td:hover{
         //    background: #eceff3;
         //    z-index: 2;
         //}
-        .left_sticky {
+        .left_sticky, .left-header-sticky {
             position: sticky;
             left: 0;
             background: #e9eaeb;
+        }
+        .left-header-sticky {
+            z-index: 30;
+        }
+
+        .l-200 {
+            left: 200px
+        }
+
+        .bg-default {
+            background: #e9eaeb;
+        }
+        .bg-medium-important {
+            background: #c1c4c8;
         }
     }
 }

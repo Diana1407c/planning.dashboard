@@ -43,8 +43,8 @@
             <thead class="sticky-top">
             <tr>
                 <th class="w-5 vertical-text text-center align-middle">State</th>
-                <th class="w-20 text-center align-middle">Projects</th>
-                <th colspan="2" class="vertical-text text-center align-middle heading-tech-total">Total</th>
+                <th class="w-20 text-center align-middle left-header-sticky">Projects</th>
+                <th colspan="2" class="vertical-text text-center align-middle left-header-sticky l-200 heading-tech-total">Total</th>
                 <th colspan="2" class="w-10 vertical-text text-center align-middle" v-for="technology in technologies">{{ technology.name }}</th>
             </tr>
             </thead>
@@ -59,7 +59,7 @@
                 </tr>
                 <tr v-for="project in projects">
                     <td class="w-20 align-middle cell-p left_sticky">{{ project.name }}</td>
-                    <td class="align-middle cell-p text-center heading-tech-total">{{ table[project.id]['total']['week'] }}</td>
+                    <td class="left_sticky l-200 align-middle cell-p text-center heading-tech-total">{{ table[project.id]['total']['week'] }}</td>
                     <td title="Worked monthly / Planned monthly by PM" class="align-middle cell-p text-center heading-tech-total">
                         <span class="tw-hour-month">{{ table[project.id]['total']['tm'] }}</span>
                         <span class="hours-separator">/</span>
