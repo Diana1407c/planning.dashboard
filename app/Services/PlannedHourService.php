@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Engineer;
 use App\Models\PlannedHour;
 use App\Models\Project;
+use App\Models\TeamworkTime;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -152,6 +153,35 @@ class PlannedHourService
         $queryWeek->update([
             'performance_hours' => DB::raw("ROUND($percent*hours/100)")
         ]);
+    }
+
+    public function plannedHoursCollection(array $projectIds, string $periodType, Carbon $from, Carbon $to)
+    {
+        $query=PlannedHour::query()
+            ->select([
+                'planned_hours.planable_type',
+                'planned_hours.year',
+                'planned_hours.period_type',
+                'planned_hours.period_number',
+            ])
+            ->where('period_type', $periodType)//filter
+            ->whereIn('project_id', $projectIds)
+            ->groupBy(['planable_type','year', 'period_number'])
+            ->selectRaw('SUM(hours) as sum_hours')
+            ->selectRaw('SUM(performance_hours) as sum_performance_hours');
+
+        if($periodType==PlannedHour::WEEK_PERIOD_TYPE){
+            $fromPeriodNumber=$from->week;
+            $toPeriodNumber=$to->week;
+        }
+        else{
+            $fromPeriodNumber=$from->month;
+            $toPeriodNumber=$to->month;
+        }
+        $this->queryFromPeriod($query, $from->year, $fromPeriodNumber);
+        $this->queryToPeriod($query, $from->year, $toPeriodNumber);
+
+        return $query->get();
     }
 
     protected function queryFromPeriod($query, int $year, int $periodNumber): void

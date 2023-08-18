@@ -57,7 +57,7 @@ export default {
         return {
             chartType:"LineChart",
             collectionData: [
-                ["Week", "PM", "TL", "TW"],
+                ["Period", "PM", "TL", "TW"],
             ],
             options: {
                 title: 'Project History Report',
@@ -76,7 +76,7 @@ export default {
                     },
                 },
                 hAxis: {
-                    title: "Week",
+                    title: "Period",
                     titleTextStyle:{
                         color:'green',
                         bold: 'true',
@@ -87,7 +87,7 @@ export default {
             filter: {
                 project_ids: [],
                 date: [new Date()],
-                period_type: 'month'
+                period_type: 'week'
             },
             loaded: false,
         };
@@ -121,11 +121,6 @@ export default {
                     period_type: this.filter.period_type
                 }}).then((response) => {
                 this.collectionData = response.data
-                this.dates = response.data.dates
-                this.projects = response.data.projects
-                this.report = response.data.report
-                this.loaded = true;
-
             });
         },
     }
