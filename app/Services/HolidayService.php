@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Holiday;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class HolidayService
 {
@@ -41,5 +42,30 @@ class HolidayService
         }
 
         return $days * Holiday::DAY_HOURS;
+    }
+
+    public function weekWorkHours(Carbon $startOfWeek, Carbon $dayOfWeek)
+    {
+        $hours = $this->workHoursByPeriod($startOfWeek, $dayOfWeek);
+        $holidays = $this->weekHolidays($startOfWeek, $dayOfWeek);
+
+
+        foreach ($holidays as $holiday) {
+            if($dayOfWeek->gte($holiday->date)){
+                $hours += $holiday->hours();
+            }
+        }
+
+        return $hours;
+    }
+
+    public function weekHolidays(Carbon $startOfWeek, Carbon $dayOfWeek): Collection
+    {
+        return Holiday::query()
+            ->whereBetween('date', [$startOfWeek, $dayOfWeek])
+            ->orWhere(function (Builder $query) use ($startOfWeek) {
+                $query->where('every_year', true)
+                    ->whereRaw('WEEK(date)=' . $startOfWeek->week);
+            })->get();
     }
 }
