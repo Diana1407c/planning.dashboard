@@ -17,10 +17,10 @@ class StatisticsController extends Controller
         $periodType=$request->get('period_type');
         $projectIds=$request->get('project_ids');
         $startDate = Carbon::parse($request->get('start_date'));
-        $endDate = $request->has('end_date') ? Carbon::parse($request->get('end_date')) : Carbon::now();
+        $endDate = Carbon::parse($request->get('end_date'));
 
         if (!$request->has('end_date')) {
-            $startDate = $startDate->copy()->subMonths(2);
+            $endDate = $startDate->copy()->addMonth(1);
         }
 
         if($periodType==PlannedHour::WEEK_PERIOD_TYPE){
