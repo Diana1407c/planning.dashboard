@@ -164,7 +164,7 @@ class PlannedHourService
                 'planned_hours.period_type',
                 'planned_hours.period_number',
             ])
-            ->where('period_type', $periodType)//filter
+            ->where('period_type', $periodType)
             ->whereIn('project_id', $projectIds)
             ->groupBy(['planable_type','year', 'period_number'])
             ->selectRaw('SUM(hours) as sum_hours')
@@ -183,6 +183,21 @@ class PlannedHourService
 
         return $query->get();
     }
+
+    public function periodProjectHours(array $projectIds, Carbon $from, Carbon $to)
+    {
+        $query = TeamworkTime::query()
+            ->select([
+                'teamwork_time.project_id',
+                'teamwork_time.billable',
+            ])
+            ->whereIn('project_id', $projectIds)
+            ->selectRaw('SUM(hours) as tw_sum_hours')
+            ->whereBetween('date', [$from, $to]);
+
+        return $query->get();
+    }
+
 
     protected function queryFromPeriod($query, int $year, int $periodNumber): void
     {

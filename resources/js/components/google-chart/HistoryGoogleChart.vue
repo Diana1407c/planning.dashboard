@@ -30,7 +30,7 @@
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-    <div class="col-8">
+    <div v-if="filter.project_ids.length"  class="col-8">
         <GChart
             type="LineChart"
             :options="options"

@@ -16,15 +16,21 @@ class StatisticsController extends Controller
     {
         $periodType=$request->get('period_type');
         $projectIds=$request->get('project_ids');
+        $startDate = Carbon::parse($request->get('start_date'));
+        $endDate = $request->has('end_date') ? Carbon::parse($request->get('end_date')) : Carbon::now();
+
+        if (!$request->has('end_date')) {
+            $startDate = $startDate->copy()->subMonths(2);
+        }
 
         if($periodType==PlannedHour::WEEK_PERIOD_TYPE){
-            $startDate=Carbon::now()->subMonths(3)->startOfWeek();
-            $endDate=Carbon::now()->endOfWeek();
+            $startDate->startOfWeek();
+            $endDate->endOfWeek();
             $addFunction = 'addWeek';
         }
         else{
-            $startDate=Carbon::now()->subMonths(3)->startOfMonth();
-            $endDate=Carbon::now()->endOfMonth();
+            $startDate->startOfMonth();
+            $endDate->endOfMonth();
             $addFunction = 'addMonth';
         }
 
@@ -36,11 +42,20 @@ class StatisticsController extends Controller
             $pmHours = $this->getHoursForType($plannedHours, PlannedHour::TECHNOLOGY_TYPE, $date, $periodType);
             $tlHours = $this->getHoursForType($plannedHours, PlannedHour::ENGINEER_TYPE, $date, $periodType);
 
+            if($periodType==PlannedHour::WEEK_PERIOD_TYPE){
+                $twHoursData = $plannedHourService->periodProjectHours($projectIds, $date, $date->clone()->endOfWeek());
+            }
+            else{
+                $twHoursData = $plannedHourService->periodProjectHours($projectIds, $date, $date->clone()->endOfMonth());
+            }
+
+            $twHours = $twHoursData->pluck('tw_sum_hours')->first() ?? 0;
+
             $rowData = [
                 $periodLabel,
                 (int) $pmHours,
                 (int) $tlHours,
-                100,
+                $twHours,
             ];
             $data[] = $rowData;
         }
