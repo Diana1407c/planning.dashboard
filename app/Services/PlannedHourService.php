@@ -240,6 +240,16 @@ class PlannedHourService
         if (!empty($filter['planable_ids'])) {
             $query->whereIn('planable_id', $filter['planable_ids']);
         }
+
+        if (!empty($filter['project_ids'])) {
+            $query->whereIn('project_id', $filter['project_ids']);
+        }
+
+        if (!empty($filter['project_states'])) {
+            $query->whereHas('project', function ($project) use($filter){
+                $project->whereIn('state', $filter['project_states']);
+            });
+        }
     }
 
     protected function groupedHoursFilterToQuery(Builder $query, array $filter)

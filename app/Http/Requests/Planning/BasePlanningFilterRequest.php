@@ -24,6 +24,7 @@ class BasePlanningFilterRequest extends FormRequest implements PlanningFilterInt
         return [
             'team_ids' => '',
             'project_ids' => '',
+            'project_states' => '',
             'year' => '',
             'period_number' => '',
         ];
