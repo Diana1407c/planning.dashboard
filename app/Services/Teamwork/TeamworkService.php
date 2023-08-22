@@ -273,30 +273,6 @@ class TeamworkService
         return $query->groupBy(['year','period_number'])->get();
     }
 
-//    public function periodProjectHours(array $projectTypes, array $projectIds, Carbon $from, Carbon $to)
-//    {
-//        $query = TeamworkTime::query()
-//            ->select([
-//                'teamwork_time.project_id',
-//                'teamwork_time.billable',
-//            ])
-//            ->selectRaw('SUM(hours) as tw_sum_hours')
-//            ->whereBetween('date', [$from, $to]);
-//
-//        if (!empty($projectIds)) {
-//            $query->whereIn('project_id', $projectIds);
-//        } elseif (!empty($projectTypes)) {
-//            $query->whereIn('project_id', function ($subQuery) use ($projectTypes) {
-//                $subQuery->select('id')
-//                    ->from('projects')
-//                    ->whereIn('type', $projectTypes);
-//            });
-//        }
-//
-//        return $query->get();
-//    }
-
-
     protected static function applyFilter(Builder $query, array $filters): void
     {
         if (!empty($filters['projects_ids'])) {

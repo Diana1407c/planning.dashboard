@@ -15,7 +15,7 @@ class StatisticsController extends Controller
     public function history(TeamworkService $teamworkService,PlannedHourService $plannedHourService, Request $request): JsonResponse
     {
         $periodType=$request->get('period_type');
-        $projectTypes = $request->get('project_types', []);
+        $projectTypes = $request->get('project_types');
         $projectIds=$request->get('project_ids');
         $startDate = Carbon::parse($request->get('start_date'));
         $endDate = Carbon::parse($request->get('end_date'));
