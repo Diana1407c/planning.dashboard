@@ -15,6 +15,7 @@ class StatisticsController extends Controller
     public function history(TeamworkService $teamworkService,PlannedHourService $plannedHourService, Request $request): JsonResponse
     {
         $periodType=$request->get('period_type');
+        $projectTypes = $request->get('project_types', []);
         $projectIds=$request->get('project_ids');
         $startDate = Carbon::parse($request->get('start_date'));
         $endDate = Carbon::parse($request->get('end_date'));
@@ -34,7 +35,9 @@ class StatisticsController extends Controller
             $addFunction = 'addMonth';
         }
 
-        $plannedHours = $plannedHourService->plannedHoursCollection($projectIds,$periodType, $startDate, $endDate);
+        $plannedHours = $plannedHourService->plannedHoursCollection($projectTypes, $projectIds, $periodType, $startDate, $endDate);
+        $twHoursData = $teamworkService->periodProjectHours($projectTypes, $projectIds, $periodType, $startDate, $endDate);
+
         $data = [["Period", "PM", "TL", "TW"]];
 
         for ($date = $startDate->copy(); $date->lte($endDate); $date->$addFunction()) {
@@ -42,14 +45,7 @@ class StatisticsController extends Controller
             $pmHours = $this->getHoursForType($plannedHours, PlannedHour::TECHNOLOGY_TYPE, $date, $periodType);
             $tlHours = $this->getHoursForType($plannedHours, PlannedHour::ENGINEER_TYPE, $date, $periodType);
 
-            if($periodType==PlannedHour::WEEK_PERIOD_TYPE){
-                $twHoursData = $plannedHourService->periodProjectHours($projectIds, $date, $date->clone()->endOfWeek());
-            }
-            else{
-                $twHoursData = $plannedHourService->periodProjectHours($projectIds, $date, $date->clone()->endOfMonth());
-            }
-
-            $twHours = $twHoursData->pluck('tw_sum_hours')->first() ?? 0;
+            $twHours = $twHoursData->where('year', $date->year)->where('period_number', $this->getPeriodNumber($date, $periodType))->pluck('tw_sum_hours')->first() ?? 0;
 
             $rowData = [
                 $periodLabel,
@@ -84,7 +80,7 @@ class StatisticsController extends Controller
     protected function getPeriodNumber(Carbon $date, string $periodType)
     {
         return $periodType == PlannedHour::WEEK_PERIOD_TYPE
-            ? $date->weekOfYear
+            ? $date->week
             : $date->month;
     }
 }

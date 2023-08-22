@@ -22,9 +22,6 @@ class BasePlanningFilterRequest extends FormRequest implements PlanningFilterInt
     public function rules(): array
     {
         return [
-            'team_ids' => '',
-            'project_ids' => '',
-            'project_states' => '',
             'year' => '',
             'period_number' => '',
         ];

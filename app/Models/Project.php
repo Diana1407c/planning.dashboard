@@ -19,7 +19,7 @@ class Project extends Model
     const STATE_ACTIVE = 'active';
     const STATE_MAINTENANCE = 'maintenance';
     const STATE_OPERATIONAL = 'operational';
-    const STATE_CLOSED = 'closed';
+    const STATE_ARCHIVED= 'archived';
 
     const TYPE_BILLABLE = 'billable';
     const TYPE_NON_BILLABLE = 'non_billable';
@@ -65,9 +65,27 @@ class Project extends Model
                 'id' => self::STATE_OPERATIONAL
             ],
             [
-                'name' => ucwords(self::STATE_CLOSED),
-                'id' => self::STATE_CLOSED
+                'name' => ucwords(self::STATE_ARCHIVED),
+                'id' => self::STATE_ARCHIVED
             ]
+        ];
+    }
+
+    public static function indexedTypes(): array
+    {
+        return [
+            [
+                'name' => ucwords(self::TYPE_BILLABLE),
+                'id' => self::TYPE_BILLABLE
+            ],
+            [
+                'name' => ucwords('Non Billable'),
+                'id' => self::TYPE_NON_BILLABLE
+            ],
+            [
+                'name' => ucwords(self::TYPE_HOLIDAY),
+                'id' => self::TYPE_HOLIDAY
+            ],
         ];
     }
 }

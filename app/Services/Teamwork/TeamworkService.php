@@ -238,6 +238,65 @@ class TeamworkService
             ->groupBy(['engineer_id', 'billable'])->get();
     }
 
+        public function periodProjectHours(array $projectTypes, array $projectIds, string $periodType,Carbon $from, Carbon $to)
+    {
+        $query = TeamworkTime::query()
+            ->selectRaw('year(date) as year')
+            ->whereIn('project_id', $projectIds)
+            ->selectRaw('SUM(hours) as tw_sum_hours')
+            ->whereBetween('date', [$from, $to]);
+
+        if($periodType==PlannedHour::WEEK_PERIOD_TYPE){
+        $query->selectRaw('week(date)  as period_number');
+        }
+        else{
+            $query->selectRaw('month(date)  as period_number');
+        }
+
+        if (!empty($projectTypes) && !empty($projectIds)) {
+            $query->whereIn('project_id', function ($subQuery) use ($projectTypes, $projectIds) {
+                $subQuery->select('id')
+                    ->from('projects')
+                    ->whereIn('type', $projectTypes)
+                    ->whereIn('id', $projectIds);
+            });
+        } elseif (!empty($projectTypes && empty($projectIds))) {
+            $query->whereIn('project_id', function ($subQuery) use ($projectTypes) {
+                $subQuery->select('id')
+                    ->from('projects')
+                    ->whereIn('type', $projectTypes);
+            });
+        } elseif ( empty($projectTypes) && !empty($projectIds)) {
+            $query->whereIn('project_id', $projectIds);
+        }
+
+        return $query->groupBy(['year','period_number'])->get();
+    }
+
+//    public function periodProjectHours(array $projectTypes, array $projectIds, Carbon $from, Carbon $to)
+//    {
+//        $query = TeamworkTime::query()
+//            ->select([
+//                'teamwork_time.project_id',
+//                'teamwork_time.billable',
+//            ])
+//            ->selectRaw('SUM(hours) as tw_sum_hours')
+//            ->whereBetween('date', [$from, $to]);
+//
+//        if (!empty($projectIds)) {
+//            $query->whereIn('project_id', $projectIds);
+//        } elseif (!empty($projectTypes)) {
+//            $query->whereIn('project_id', function ($subQuery) use ($projectTypes) {
+//                $subQuery->select('id')
+//                    ->from('projects')
+//                    ->whereIn('type', $projectTypes);
+//            });
+//        }
+//
+//        return $query->get();
+//    }
+
+
     protected static function applyFilter(Builder $query, array $filters): void
     {
         if (!empty($filters['projects_ids'])) {

@@ -73,7 +73,7 @@ class ProjectCrudController extends CrudController
                 Project::STATE_ACTIVE => 'Active',
                 Project::STATE_MAINTENANCE => 'Maintenance',
                 Project::STATE_OPERATIONAL => 'Operational',
-                Project::STATE_CLOSED => 'Closed'
+                Project::STATE_ARCHIVED => 'Archived'
             ],
         ]);
 
