@@ -106,6 +106,11 @@ export default {
     },
     components: {VueDatePicker, multiselect, InfoBox},
     async mounted() {
+        const storedObject = localStorage.getItem("filter-comparison");
+        if (storedObject) {
+            this.filter = JSON.parse(storedObject);
+        }
+
         await this.getReport()
     },
 
@@ -130,6 +135,7 @@ export default {
         },
 
         async getReport(){
+            localStorage.setItem("filter-comparison", JSON.stringify(this.filter));
             await axios.get('reports/comparison', {params: {
                     project_ids: this.filter.project_ids.map(obj => obj.id),
                     start_date: this.filter.date[0],
