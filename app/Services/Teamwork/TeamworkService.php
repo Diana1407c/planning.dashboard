@@ -238,11 +238,10 @@ class TeamworkService
             ->groupBy(['engineer_id', 'billable'])->get();
     }
 
-        public function periodProjectHours(array $projectTypes, array $projectIds, string $periodType,Carbon $from, Carbon $to)
+        public function periodProjectHours($projectTypes, $projectIds, string $periodType,Carbon $from, Carbon $to)
     {
         $query = TeamworkTime::query()
             ->selectRaw('year(date) as year')
-            ->whereIn('project_id', $projectIds)
             ->selectRaw('SUM(hours) as tw_sum_hours')
             ->whereBetween('date', [$from, $to]);
 

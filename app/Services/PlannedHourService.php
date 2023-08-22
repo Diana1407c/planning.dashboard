@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Engineer;
 use App\Models\PlannedHour;
 use App\Models\Project;
-use App\Models\TeamworkTime;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -155,7 +154,7 @@ class PlannedHourService
         ]);
     }
 
-    public function plannedHoursCollection(array $projectTypes, array $projectIds, string $periodType, Carbon $from, Carbon $to)
+    public function plannedHoursCollection($projectTypes, $projectIds, string $periodType, Carbon $from, Carbon $to)
     {
         $query=PlannedHour::query()
             ->select([
@@ -165,7 +164,6 @@ class PlannedHourService
                 'planned_hours.period_number',
             ])
             ->where('period_type', $periodType)
-            ->whereIn('project_id', $projectIds)
             ->groupBy(['planable_type','year', 'period_number'])
             ->selectRaw('SUM(hours) as sum_hours')
             ->selectRaw('SUM(performance_hours) as sum_performance_hours');
@@ -177,7 +175,7 @@ class PlannedHourService
                     ->whereIn('type', $projectTypes)
                     ->whereIn('id', $projectIds);
             });
-        } elseif (!empty($projectTypes && empty($projectIds))) {
+        } elseif (!empty($projectTypes) && empty($projectIds)) {
             $query->whereIn('project_id', function ($subQuery) use ($projectTypes) {
                 $subQuery->select('id')
                     ->from('projects')
