@@ -42,11 +42,13 @@ class NotificationLoggingHoursJob implements ShouldQueue
 
         $requiredHours = $holidayService->weekWorkHours($from, $to);
 
-        $engineerIds = TeamworkTime::query()
+        $whiteList = TeamworkTime::query()
             ->whereIn('engineer_id',  $engineerIds)
             ->whereBetween('date', [$from, $to])
-            ->havingRaw('SUM(hours) < '.$requiredHours)
+            ->havingRaw('SUM(hours) >= '.$requiredHours)
             ->groupBy('engineer_id')->pluck('engineer_id');
+
+        $engineerIds = $engineerIds->diff($whiteList);
 
         if ($engineerIds->isEmpty()) {
             return;
