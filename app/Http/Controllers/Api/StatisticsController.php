@@ -10,13 +10,14 @@ use App\Support\GenericPeriod;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+
 class StatisticsController extends Controller
 {
-    public function history(TeamworkService $teamworkService,PlannedHourService $plannedHourService, Request $request): JsonResponse
+    public function history(TeamworkService $teamworkService, PlannedHourService $plannedHourService, Request $request): JsonResponse
     {
-        $periodType=$request->get('period_type');
+        $periodType = $request->get('period_type');
         $projectTypes = $request->get('project_types');
-        $projectIds=$request->get('project_ids');
+        $projectIds = $request->get('project_ids');
         $startDate = Carbon::parse($request->get('start_date'));
         $endDate = Carbon::parse($request->get('end_date', $startDate->copy()->addMonth(1)));
 
@@ -35,8 +36,8 @@ class StatisticsController extends Controller
 
             $rowData = [
                 $periodLabel,
-                (int) $pmHours,
-                (int) $tlHours,
+                (int)$pmHours,
+                (int)$tlHours,
                 $twHours,
             ];
             $data[] = $rowData;

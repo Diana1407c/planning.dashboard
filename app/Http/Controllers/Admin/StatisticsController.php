@@ -17,7 +17,7 @@ class StatisticsController extends Controller
 {
     public function index(Request $request)
     {
-        return Inertia::render('Reports/Statistics',[
+        return Inertia::render('Reports/Statistics', [
             'allProjects' => ShortProjectResource::collection(Project::all())->toArray($request),
             'projectTypes' => Project::indexedTypes(),
         ])->withViewData([

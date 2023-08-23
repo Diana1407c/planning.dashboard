@@ -13,13 +13,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $state
  * @property boolean $no_performance
  */
-
 class Project extends Model
 {
     const STATE_ACTIVE = 'active';
     const STATE_MAINTENANCE = 'maintenance';
     const STATE_OPERATIONAL = 'operational';
-    const STATE_ARCHIVED= 'archived';
+    const STATE_ARCHIVED = 'archived';
 
     const TYPE_BILLABLE = 'billable';
     const TYPE_NON_BILLABLE = 'non_billable';

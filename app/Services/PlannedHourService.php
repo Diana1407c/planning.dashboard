@@ -156,7 +156,7 @@ class PlannedHourService
 
     public function plannedHoursCollection($projectTypes, $projectIds, string $periodType, Carbon $from, Carbon $to)
     {
-        $query=PlannedHour::query()
+        $query = PlannedHour::query()
             ->select([
                 'planned_hours.planable_type',
                 'planned_hours.year',
@@ -164,34 +164,25 @@ class PlannedHourService
                 'planned_hours.period_number',
             ])
             ->where('period_type', $periodType)
-            ->groupBy(['planable_type','year', 'period_number'])
+            ->groupBy(['planable_type', 'year', 'period_number'])
             ->selectRaw('SUM(hours) as sum_hours')
             ->selectRaw('SUM(performance_hours) as sum_performance_hours');
 
-        if (!empty($projectTypes) && !empty($projectIds)) {
-            $query->whereIn('project_id', function ($subQuery) use ($projectTypes, $projectIds) {
-                $subQuery->select('id')
-                    ->from('projects')
-                    ->whereIn('type', $projectTypes)
-                    ->whereIn('id', $projectIds);
-            });
-        } elseif (!empty($projectTypes) && empty($projectIds)) {
-            $query->whereIn('project_id', function ($subQuery) use ($projectTypes) {
-                $subQuery->select('id')
-                    ->from('projects')
-                    ->whereIn('type', $projectTypes);
-            });
-        } elseif ( empty($projectTypes) && !empty($projectIds)) {
-            $query->whereIn('project_id', $projectIds);
+        if (!empty($projectTypes)) {
+            $query->join('projects', 'projects.id', '=', 'planned_hours.project_id')
+                ->whereIn('projects.type', $projectTypes);
         }
 
-        if($periodType==PlannedHour::WEEK_PERIOD_TYPE){
-            $fromPeriodNumber=$from->week;
-            $toPeriodNumber=$to->week;
+        if (!empty($projectIds)) {
+            $query->whereIn('planned_hours.project_id', $projectIds);
         }
-        else{
-            $fromPeriodNumber=$from->month;
-            $toPeriodNumber=$to->month;
+
+        if ($periodType == PlannedHour::WEEK_PERIOD_TYPE) {
+            $fromPeriodNumber = $from->week;
+            $toPeriodNumber = $to->week;
+        } else {
+            $fromPeriodNumber = $from->month;
+            $toPeriodNumber = $to->month;
         }
         $this->queryFromPeriod($query, $from->year, $fromPeriodNumber);
         $this->queryToPeriod($query, $from->year, $toPeriodNumber);
@@ -246,7 +237,7 @@ class PlannedHourService
         }
 
         if (!empty($filter['project_states'])) {
-            $query->whereHas('project', function ($project) use($filter){
+            $query->whereHas('project', function ($project) use ($filter) {
                 $project->whereIn('state', $filter['project_states']);
             });
         }
