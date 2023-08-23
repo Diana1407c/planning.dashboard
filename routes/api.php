@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\StatisticsController;
 use App\Http\Controllers\Api\AccountantReportController;
 use App\Http\Controllers\Api\EngineerController;
 use App\Http\Controllers\Api\EngineerHistoryController;
@@ -77,5 +78,7 @@ Route::group(['middleware' => array_merge(
 
         Route::get('accountant', [AccountantReportController::class, 'index']);
         Route::get('accountant/export', [AccountantReportController::class, 'export']);
+
+        Route::get('statistics', [StatisticsController::class,'history']);
     });
 });

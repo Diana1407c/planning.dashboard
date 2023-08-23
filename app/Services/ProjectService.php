@@ -17,6 +17,10 @@ class ProjectService
             $query->whereIn('id', $filter['project_ids']);
         }
 
+        if (!empty($filter['project_states'])) {
+            $query->whereIn('state', $filter['project_states']);
+        }
+
         return $query->get();
     }
 }

@@ -238,10 +238,41 @@ class TeamworkService
             ->groupBy(['engineer_id', 'billable'])->get();
     }
 
+    public function periodProjectHours($projectTypes, $projectIds, string $periodType, Carbon $from, Carbon $to)
+    {
+        $query = TeamworkTime::query()
+            ->selectRaw('year(date) as year')
+            ->selectRaw('SUM(hours) as tw_sum_hours')
+            ->whereBetween('teamwork_time.date', [$from, $to]);
+
+        if ($periodType == PlannedHour::WEEK_PERIOD_TYPE) {
+            $query->selectRaw('week(date)  as period_number');
+        } else {
+            $query->selectRaw('month(date)  as period_number');
+        }
+
+        if (!empty($projectTypes)) {
+            $query->join('projects', 'projects.id', '=', 'teamwork_time.project_id')
+                ->whereIn('projects.type', $projectTypes);
+        }
+
+        if (!empty($projectIds)) {
+            $query->whereIn('teamwork_time.project_id', $projectIds);
+        }
+
+        return $query->groupBy(['year', 'period_number'])->get();
+    }
+
     protected static function applyFilter(Builder $query, array $filters): void
     {
         if (!empty($filters['projects_ids'])) {
             $query->whereIn('project_id', $filters['projects_ids']);
+        }
+
+        if (!empty($filters['projects_states'])) {
+            $query->whereHas('project', function ($project) use ($filters) {
+                $project->whereIn('state', $filters['project_states']);
+            });
         }
 
         if (!empty($filters['from_date'])) {

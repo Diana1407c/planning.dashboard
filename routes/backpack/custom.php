@@ -47,6 +47,7 @@ Route::group([
             Route::get('comparison', 'ComparisonReportController@index')->name('page.comparison_report.index');
             Route::get('engineers', 'EngineerReportController@index')->name('page.engineer_report.index');
             Route::get('teamwork-time', 'TeamworkTimeController@index')->name('page.teamwork_time.index');
+            Route::get('statistics', 'StatisticsController@index')->name('page.statistics.index');
             Route::get('accountant', 'AccountantReportController@index')->name('page.accountant_report.index');
         });
     });

@@ -9,22 +9,22 @@ use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 
 /**
- * Class ComparisionReportController
+ * Class StatisticsController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class ComparisonReportController extends Controller
+class StatisticsController extends Controller
 {
     public function index(Request $request)
     {
-        return Inertia::render('Reports/Comparison',[
+        return Inertia::render('Reports/Statistics', [
             'allProjects' => ShortProjectResource::collection(Project::all())->toArray($request),
-            'projectStates' => Project::indexedStates()
+            'projectTypes' => Project::indexedTypes(),
         ])->withViewData([
-            'title' => 'Comparison Report',
+            'title' => 'Statistics',
             'breadcrumbs' => [
                 trans('backpack::crud.admin') => backpack_url('dashboard'),
-                'ComparisonPlanning' => false,
+                'ProjectHistoryReport' => false,
             ],
         ]);
     }

@@ -154,6 +154,42 @@ class PlannedHourService
         ]);
     }
 
+    public function plannedHoursCollection($projectTypes, $projectIds, string $periodType, Carbon $from, Carbon $to)
+    {
+        $query = PlannedHour::query()
+            ->select([
+                'planned_hours.planable_type',
+                'planned_hours.year',
+                'planned_hours.period_type',
+                'planned_hours.period_number',
+            ])
+            ->where('period_type', $periodType)
+            ->groupBy(['planable_type', 'year', 'period_number'])
+            ->selectRaw('SUM(hours) as sum_hours')
+            ->selectRaw('SUM(performance_hours) as sum_performance_hours');
+
+        if (!empty($projectTypes)) {
+            $query->join('projects', 'projects.id', '=', 'planned_hours.project_id')
+                ->whereIn('projects.type', $projectTypes);
+        }
+
+        if (!empty($projectIds)) {
+            $query->whereIn('planned_hours.project_id', $projectIds);
+        }
+
+        if ($periodType == PlannedHour::WEEK_PERIOD_TYPE) {
+            $fromPeriodNumber = $from->week;
+            $toPeriodNumber = $to->week;
+        } else {
+            $fromPeriodNumber = $from->month;
+            $toPeriodNumber = $to->month;
+        }
+        $this->queryFromPeriod($query, $from->year, $fromPeriodNumber);
+        $this->queryToPeriod($query, $from->year, $toPeriodNumber);
+
+        return $query->get();
+    }
+
     protected function queryFromPeriod($query, int $year, int $periodNumber): void
     {
         $query->where(function ($q) use ($year, $periodNumber) {
@@ -194,6 +230,16 @@ class PlannedHourService
 
         if (!empty($filter['planable_ids'])) {
             $query->whereIn('planable_id', $filter['planable_ids']);
+        }
+
+        if (!empty($filter['project_ids'])) {
+            $query->whereIn('project_id', $filter['project_ids']);
+        }
+
+        if (!empty($filter['project_states'])) {
+            $query->whereHas('project', function ($project) use ($filter) {
+                $project->whereIn('state', $filter['project_states']);
+            });
         }
     }
 
