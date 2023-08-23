@@ -78,7 +78,7 @@ export default {
                 ["Period", "PM", "TL", "TW"],
             ],
             options: {
-                title: 'Project History Report',
+                title: 'Projects History Report',
                 lineWidth: 2,
                 titleTextStyle:{
                     fontSize: 26,

@@ -18,22 +18,9 @@ class StatisticsController extends Controller
         $projectTypes = $request->get('project_types');
         $projectIds=$request->get('project_ids');
         $startDate = Carbon::parse($request->get('start_date'));
-        $endDate = Carbon::parse($request->get('end_date'));
+        $endDate = Carbon::parse($request->get('end_date', $startDate->copy()->addMonth(1)));
 
-        if (!$request->has('end_date')) {
-            $endDate = $startDate->copy()->addMonth(1);
-        }
-
-        if($periodType==PlannedHour::WEEK_PERIOD_TYPE){
-            $startDate->startOfWeek();
-            $endDate->endOfWeek();
-            $addFunction = 'addWeek';
-        }
-        else{
-            $startDate->startOfMonth();
-            $endDate->endOfMonth();
-            $addFunction = 'addMonth';
-        }
+        [$startDate, $endDate, $addFunction] = $this->getPeriodStartEndDates($periodType, $startDate, $endDate);
 
         $plannedHours = $plannedHourService->plannedHoursCollection($projectTypes, $projectIds, $periodType, $startDate, $endDate);
         $twHoursData = $teamworkService->periodProjectHours($projectTypes, $projectIds, $periodType, $startDate, $endDate);
@@ -44,8 +31,7 @@ class StatisticsController extends Controller
             $periodLabel = $this->getPeriodLabel($date, $periodType);
             $pmHours = $this->getHoursForType($plannedHours, PlannedHour::TECHNOLOGY_TYPE, $date, $periodType);
             $tlHours = $this->getHoursForType($plannedHours, PlannedHour::ENGINEER_TYPE, $date, $periodType);
-
-            $twHours = $twHoursData->where('year', $date->year)->where('period_number', $this->getPeriodNumber($date, $periodType))->pluck('tw_sum_hours')->first() ?? 0;
+            $twHours = $this->getTeamworkHours($twHoursData, $date, $periodType);
 
             $rowData = [
                 $periodLabel,
@@ -57,6 +43,30 @@ class StatisticsController extends Controller
         }
 
         return response()->json($data);
+    }
+
+    protected function getPeriodStartEndDates(string $periodType, Carbon $startDate, Carbon $endDate): array
+    {
+        if ($periodType == PlannedHour::WEEK_PERIOD_TYPE) {
+            $startDate->startOfWeek();
+            $endDate->endOfWeek();
+            $addFunction = 'addWeek';
+        } else {
+            $startDate->startOfMonth();
+            $endDate->endOfMonth();
+            $addFunction = 'addMonth';
+        }
+
+        return [$startDate, $endDate, $addFunction];
+    }
+
+    protected function getTeamworkHours($twHoursData, Carbon $date, string $periodType)
+    {
+        return $twHoursData
+            ->where('year', $date->year)
+            ->where('period_number', $this->getPeriodNumber($date, $periodType))
+            ->pluck('tw_sum_hours')
+            ->first() ?? 0;
     }
 
     protected function getPeriodLabel(Carbon $date, string $periodType): string
