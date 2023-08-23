@@ -29,7 +29,7 @@
                         @endif
                     </td>
                 @endforeach
-                <td class="danger-total hours">{{ $data->hours[$engineer->id] ? $data->hours[$engineer->id]->sum('hours') : 0 }}</td>
+                <td class="danger-total hours">{{ !empty($data->hours[$engineer->id]) ? $data->hours[$engineer->id]->sum('hours') : 0 }}</td>
             </tr>
         @endforeach
         </tbody>
