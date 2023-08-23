@@ -47,7 +47,7 @@
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-    <div v-if="filter.project_ids.length"  class="col-8">
+    <div v-if="shouldDisplayChart" class="col-8">
         <GChart
             type="LineChart"
             :options="options"
@@ -177,6 +177,11 @@ export default {
             this.filter = storageFilter;
           }
         },
-    }
+    },
+    computed: {
+        shouldDisplayChart() {
+            return this.filter.project_ids.length > 0 || this.filter.project_types.length > 0;
+        },
+    },
 };
 </script>
