@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\PlannedHour;
 use App\Services\PlannedHourService;
 use App\Services\Teamwork\TeamworkService;
-use App\Support\GenericPeriod;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +18,11 @@ class StatisticsController extends Controller
         $projectTypes = $request->get('project_types');
         $projectIds = $request->get('project_ids');
         $startDate = Carbon::parse($request->get('start_date'));
-        $endDate = Carbon::parse($request->get('end_date', $startDate->copy()->addMonth(1)));
+        $endDate = Carbon::parse($request->get('end_date', $startDate->copy()));
+
+        if (!$request->get('end_date')) {
+            $startDate = $startDate->copy()->subMonths(3);
+        }
 
         [$startDate, $endDate, $addFunction] = $this->getPeriodStartEndDates($periodType, $startDate, $endDate);
 
@@ -75,7 +78,7 @@ class StatisticsController extends Controller
         if ($periodType == PlannedHour::WEEK_PERIOD_TYPE) {
             return "{$date->format('d.m.Y')} - {$date->clone()->endOfWeek()->format('d.m.Y')}";
         }
-        return "{$date->format('d.m.Y')} - {$date->clone()->endOfMonth()->format('d.m.Y')}";
+        return "{$date->format('M Y')}";
     }
 
     protected function getHoursForType($plannedHours, string $planableType, Carbon $date, string $periodType)
