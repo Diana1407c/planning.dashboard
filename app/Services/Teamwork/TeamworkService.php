@@ -127,16 +127,20 @@ class TeamworkService
     public static function syncProjects(): void
     {
         $projects = (new TeamworkProxy())->getProjects();
+        $projectIds = [];
 
         foreach ($projects as $project) {
             $id = $project['id'];
             $data = array_diff_key($project, ['id' => '']);
+            $projectIds[] = $id;
 
             Project::query()->updateOrCreate(
                 ['id' => $id],
                 $data
             );
         }
+        Project::whereNotIn('id', $projectIds)
+            ->update(['state' => Project::STATE_ARCHIVED]);
     }
 
     public static function syncTimeEntries(Carbon $fromDate, Carbon $toDate): void
