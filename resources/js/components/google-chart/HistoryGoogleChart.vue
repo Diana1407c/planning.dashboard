@@ -48,12 +48,14 @@
     <div class="d-flex box-filter-separator">
         <hr class="col-12 separator-filter">
     </div>
-    <div v-if="shouldDisplayChart" class="col-8">
-        <GChart
-            type="LineChart"
-            :options="options"
-            :data="collectionData"
-        />
+    <div class="row">
+        <div class="col-12">
+            <GChart
+                type="LineChart"
+                :options="options"
+                :data="collectionData"
+            />
+        </div>
     </div>
 </template>
 
@@ -74,6 +76,9 @@ export default {
         allProjects: Object,
     },
     data() {
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 3);
         return {
             chartType: "LineChart",
             collectionData: [
@@ -107,7 +112,7 @@ export default {
             filter: {
                 project_ids: [],
                 project_types: [],
-                date: [new Date()],
+                date: [startDate, endDate],
                 period_type: 'week',
 
             },
@@ -119,19 +124,6 @@ export default {
         await this.getData()
     },
     methods: {
-        openModal(project, dateIndex, date) {
-            this.projectModal = project
-            this.dateIndexModal = dateIndex
-            this.dateModal = date
-            this.detailOpened = true;
-        },
-
-        closeModal() {
-            this.detailOpened = false;
-            this.projectModal = null;
-            this.dateIndexModal = null;
-            this.dateModal = null;
-        },
         async handleDiselectProjects() {
             this.filter.project_ids = []
             await this.getData()
@@ -182,11 +174,6 @@ export default {
 
                 this.filter = storageFilter;
             }
-        },
-    },
-    computed: {
-        shouldDisplayChart() {
-            return this.filter.project_ids.length > 0 || this.filter.project_types.length > 0;
         },
     },
 };
