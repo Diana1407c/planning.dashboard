@@ -76,6 +76,9 @@ export default {
         allProjects: Object,
     },
     data() {
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 3);
         return {
             chartType: "LineChart",
             collectionData: [
@@ -109,7 +112,7 @@ export default {
             filter: {
                 project_ids: [],
                 project_types: [],
-                date: [new Date()],
+                date: [startDate, endDate],
                 period_type: 'week',
 
             },
