@@ -40,6 +40,7 @@ class Project extends Model
             self::STATE_ACTIVE,
             self::STATE_MAINTENANCE,
             self::STATE_OPERATIONAL,
+            self::STATE_ARCHIVED,
         ];
     }
 
