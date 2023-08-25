@@ -35,8 +35,6 @@ class NotificationLoggingHoursJob implements ShouldQueue
     public function handle(HolidayService $holidayService): void
     {
         $engineerIds = Engineer::query()->whereNotNull('team_id')->pluck('id');
-        $engineerIds->push(461110)->push(441441);
-
         $from = Carbon::now()->startOfWeek()->startOfDay();
         $to = Carbon::now();
 

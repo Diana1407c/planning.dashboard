@@ -15,13 +15,15 @@ class StackTechnologiesEngineersResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $technology = $this->team->technologies()->first();
+
         /** @var Engineer $this */
         return [
             'id' => $this->id,
             'name' => $this->fullName(),
             'team_id' => $this->team_id,
-            'technology_id' => $this->team->technology_id,
-            'stack_id' => $this->team->technology->stack_id,
+            'technology_id' => $technology ? $technology->id : null,
+            'stack_id' => $technology ? $technology->stack_id : null,
         ];
     }
 }

@@ -5,16 +5,26 @@ namespace App\Services\Teamwork;
 use App\Models\Engineer;
 use App\Models\PlannedHour;
 use App\Models\Project;
+use App\Models\Team;
 use App\Models\TeamworkTime;
 use App\Support\GenericPeriod;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class TeamworkService
 {
     public static function getLoggedTime($filters): Collection|array
     {
+        $subSelect = DB::table('team_technology')->select('technology_id')
+            ->whereRaw('team_technology.team_id=teams.id')
+            ->limit(1);
+
+        $subQuery = Team::query()
+            ->select('id')
+            ->selectSub($subSelect, 'technology_id');
+
         $query = TeamworkTime::query()
             ->select(
                 'engineers.id as engineer_id',
@@ -25,7 +35,7 @@ class TeamworkService
             )
             ->selectRaw('YEAR(teamwork_time.date) as year, MONTH(teamwork_time.date) as month, sum(teamwork_time.hours) as hours')
             ->join('engineers', 'engineers.id', '=', 'teamwork_time.engineer_id')
-            ->join('teams', 'teams.id', '=', 'engineers.team_id')
+            ->joinSub($subQuery, 'teams', 'teams.id', '=', 'engineers.team_id')
             ->join('technologies', 'technologies.id', '=', 'teams.technology_id')
             ->join('stacks', 'stacks.id', '=', 'technologies.stack_id')
             ->groupBy(['stacks.id', 'technologies.id', 'engineers.id', 'engineers.first_name', 'engineers.last_name', 'year', 'month']);

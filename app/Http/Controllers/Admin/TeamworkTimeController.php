@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Resources\StackResource;
 use App\Http\Resources\StackTechnologiesEngineersResource;
 use App\Http\Resources\TechnologyResource;
+use App\Models\Engineer;
 use App\Models\Stack;
 use App\Models\Technology;
 use App\Services\EngineerService;
@@ -21,10 +22,13 @@ class TeamworkTimeController extends Controller
 {
     public function index(Request $request)
     {
+        $engineers = Engineer::query()->whereNotNull('team_id')
+            ->with(['team', 'team.technologies'])->get();
+
         return Inertia::render('Reports/TeamworkTime',[
             'allTechnologies' => TechnologyResource::collection(Technology::all())->toArray($request),
             'allStacks' => StackResource::collection(Stack::all())->toArray($request),
-            'allEngineers' => StackTechnologiesEngineersResource::collection(EngineerService::withTeams())->toArray($request)
+            'allEngineers' => StackTechnologiesEngineersResource::collection($engineers)->toArray($request)
         ])->withViewData([
             'title' => 'Teamwork Time',
             'breadcrumbs' => [
