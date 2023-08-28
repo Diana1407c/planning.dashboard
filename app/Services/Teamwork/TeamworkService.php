@@ -7,6 +7,7 @@ use App\Models\PlannedHour;
 use App\Models\Project;
 use App\Models\TeamworkTime;
 use App\Support\GenericPeriod;
+use App\Support\Interval\GenericInterval;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -242,18 +243,13 @@ class TeamworkService
             ->groupBy(['engineer_id', 'billable'])->get();
     }
 
-    public function periodProjectHours($projectTypes, $projectIds, string $periodType, Carbon $from, Carbon $to)
+    public function periodProjectHours($projectTypes, $projectIds, GenericInterval $interval)
     {
         $query = TeamworkTime::query()
             ->selectRaw('year(date) as year')
             ->selectRaw('SUM(hours) as tw_sum_hours')
-            ->whereBetween('teamwork_time.date', [$from, $to]);
-
-        if ($periodType == PlannedHour::WEEK_PERIOD_TYPE) {
-            $query->selectRaw('week(date)  as period_number');
-        } else {
-            $query->selectRaw('month(date)  as period_number');
-        }
+            ->whereBetween('teamwork_time.date', [$interval->from->date,$interval->to->date])
+            ->selectRaw($interval->toSql());
 
         if (!empty($projectTypes)) {
             $query->join('projects', 'projects.id', '=', 'teamwork_time.project_id')

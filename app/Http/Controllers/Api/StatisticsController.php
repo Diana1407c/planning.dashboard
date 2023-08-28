@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\PlannedHour;
 use App\Services\PlannedHourService;
 use App\Services\Teamwork\TeamworkService;
+use App\Support\Interval\GenericInterval;
+use App\Support\Interval\Period;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,28 +16,25 @@ class StatisticsController extends Controller
 {
     public function history(TeamworkService $teamworkService, PlannedHourService $plannedHourService, Request $request): JsonResponse
     {
-        $periodType = $request->get('period_type');
         $projectTypes = $request->get('project_types');
         $projectIds = $request->get('project_ids');
-        $startDate = Carbon::parse($request->get('start_date'));
-        $endDate = Carbon::parse($request->get('end_date', $startDate->copy()));
 
-        if (!$request->get('end_date')) {
-            $startDate = $startDate->copy()->subMonths(3);
-        }
-
-        [$startDate, $endDate, $addFunction] = $this->getPeriodStartEndDates($periodType, $startDate, $endDate);
-
-        $plannedHours = $plannedHourService->plannedHoursCollection($projectTypes, $projectIds, $periodType, $startDate, $endDate);
-        $twHoursData = $teamworkService->periodProjectHours($projectTypes, $projectIds, $periodType, $startDate, $endDate);
+        $interval = GenericInterval::fromString(
+            $request->get('period_type'),
+            $request->get('start_date'),
+            $request->get('end_date')
+        );
+        $plannedHours = $plannedHourService->plannedHoursCollection($projectTypes, $projectIds,$interval);
+        $twHoursData = $teamworkService->periodProjectHours($projectTypes, $projectIds,$interval);
 
         $data = [["Period", "PM", "TL", "TW"]];
+        $periods = $interval->getPeriods();
 
-        for ($date = $startDate->copy(); $date->lte($endDate); $date->$addFunction()) {
-            $periodLabel = $this->getPeriodLabel($date, $periodType);
-            $pmHours = $this->getHoursForType($plannedHours, PlannedHour::TECHNOLOGY_TYPE, $date, $periodType);
-            $tlHours = $this->getHoursForType($plannedHours, PlannedHour::ENGINEER_TYPE, $date, $periodType);
-            $twHours = $this->getTeamworkHours($twHoursData, $date, $periodType);
+        foreach ($periods as $period) {
+            $periodLabel = $period->toLabel();
+            $pmHours = $this->getHoursForType($plannedHours, PlannedHour::TECHNOLOGY_TYPE, $period);
+            $tlHours = $this->getHoursForType($plannedHours, PlannedHour::ENGINEER_TYPE, $period);
+            $twHours = $this->getTeamworkHours($twHoursData, $period);
 
             $rowData = [
                 $periodLabel,
@@ -49,52 +48,22 @@ class StatisticsController extends Controller
         return response()->json($data);
     }
 
-    protected function getPeriodStartEndDates(string $periodType, Carbon $startDate, Carbon $endDate): array
-    {
-        if ($periodType == PlannedHour::WEEK_PERIOD_TYPE) {
-            $startDate->startOfWeek();
-            $endDate->endOfWeek();
-            $addFunction = 'addWeek';
-        } else {
-            $startDate->startOfMonth();
-            $endDate->endOfMonth();
-            $addFunction = 'addMonth';
-        }
-
-        return [$startDate, $endDate, $addFunction];
-    }
-
-    protected function getTeamworkHours($twHoursData, Carbon $date, string $periodType)
+    protected function getTeamworkHours($twHoursData, Period $period)
     {
         return $twHoursData
-            ->where('year', $date->year)
-            ->where('period_number', $this->getPeriodNumber($date, $periodType))
+            ->where('year', $period->date->year)
+            ->where('period_number', $period->periodNumber())
             ->pluck('tw_sum_hours')
             ->first() ?? 0;
     }
 
-    protected function getPeriodLabel(Carbon $date, string $periodType): string
-    {
-        if ($periodType == PlannedHour::WEEK_PERIOD_TYPE) {
-            return "{$date->format('d.m.Y')} - {$date->clone()->endOfWeek()->format('d.m.Y')}";
-        }
-        return "{$date->format('M Y')}";
-    }
-
-    protected function getHoursForType($plannedHours, string $planableType, Carbon $date, string $periodType)
+    protected function getHoursForType($plannedHours, string $planableType, Period $period)
     {
         return $plannedHours
             ->where('planable_type', $planableType)
-            ->where('year', $date->year)
-            ->where('period_number', $this->getPeriodNumber($date, $periodType))
+            ->where('year', $period->date->year)
+            ->where('period_number', $period->periodNumber())
             ->pluck('sum_hours')
             ->first() ?? 0;
-    }
-
-    protected function getPeriodNumber(Carbon $date, string $periodType)
-    {
-        return $periodType == PlannedHour::WEEK_PERIOD_TYPE
-            ? $date->week
-            : $date->month;
     }
 }
