@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Engineer;
 use App\Models\PlannedHour;
 use App\Models\Project;
+use App\Support\Interval\GenericInterval;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -154,7 +155,7 @@ class PlannedHourService
         ]);
     }
 
-    public function plannedHoursCollection($projectTypes, $projectIds, string $periodType, Carbon $from, Carbon $to)
+    public function plannedHoursCollection(array $filters, GenericInterval $interval)
     {
         $query = PlannedHour::query()
             ->select([
@@ -163,29 +164,22 @@ class PlannedHourService
                 'planned_hours.period_type',
                 'planned_hours.period_number',
             ])
-            ->where('period_type', $periodType)
+            ->where('period_type', $interval->type)
             ->groupBy(['planable_type', 'year', 'period_number'])
             ->selectRaw('SUM(hours) as sum_hours')
             ->selectRaw('SUM(performance_hours) as sum_performance_hours');
 
-        if (!empty($projectTypes)) {
+        if (!empty($filters['project_types'])) {
             $query->join('projects', 'projects.id', '=', 'planned_hours.project_id')
-                ->whereIn('projects.type', $projectTypes);
+                ->whereIn('projects.type', $filters['project_types']);
         }
 
-        if (!empty($projectIds)) {
-            $query->whereIn('planned_hours.project_id', $projectIds);
+        if (!empty($filters['project_ids'])) {
+            $query->whereIn('planned_hours.project_id', $filters['project_ids']);
         }
 
-        if ($periodType == PlannedHour::WEEK_PERIOD_TYPE) {
-            $fromPeriodNumber = $from->week;
-            $toPeriodNumber = $to->week;
-        } else {
-            $fromPeriodNumber = $from->month;
-            $toPeriodNumber = $to->month;
-        }
-        $this->queryFromPeriod($query, $from->year, $fromPeriodNumber);
-        $this->queryToPeriod($query, $from->year, $toPeriodNumber);
+        $this->queryFromPeriod($query, $interval->from->date->year, $interval->from->periodNumber());
+        $this->queryToPeriod($query, $interval->to->date->year, $interval->to->periodNumber());
 
         return $query->get();
     }
