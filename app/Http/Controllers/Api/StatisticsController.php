@@ -24,8 +24,8 @@ class StatisticsController extends Controller
             $request->get('start_date'),
             $request->get('end_date')
         );
-        $plannedHours = $plannedHourService->plannedHoursCollection($projectTypes, $projectIds,$interval);
-        $twHoursData = $teamworkService->periodProjectHours($projectTypes, $projectIds,$interval);
+        $plannedHours = $plannedHourService->plannedHoursCollection($projectTypes, $projectIds, $interval);
+        $twHoursData = $teamworkService->periodProjectHours($projectTypes, $projectIds, $interval);
 
         $data = [["Period", "PM", "TL", "TW"]];
         $periods = $interval->getPeriods();

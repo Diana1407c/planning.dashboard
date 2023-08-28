@@ -14,7 +14,7 @@ abstract class DateBase extends PeriodType
 
     abstract public function setPeriodExtreme();
 
-    public function periodNumber():int
+    public function periodNumber(): int
     {
         if ($this->isWeek()) {
             return $this->date->week;

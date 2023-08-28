@@ -248,7 +248,7 @@ class TeamworkService
         $query = TeamworkTime::query()
             ->selectRaw('year(date) as year')
             ->selectRaw('SUM(hours) as tw_sum_hours')
-            ->whereBetween('teamwork_time.date', [$interval->from->date,$interval->to->date])
+            ->whereBetween('teamwork_time.date', [$interval->from->date, $interval->to->date])
             ->selectRaw($interval->toSql());
 
         if (!empty($projectTypes)) {

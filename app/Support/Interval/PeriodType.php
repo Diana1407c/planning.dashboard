@@ -15,7 +15,7 @@ class PeriodType
         return $this->type == PlannedHour::WEEK_PERIOD_TYPE;
     }
 
-    public function toSql():string
+    public function toSql(): string
     {
         if ($this->isWeek()) {
             return "WEEK(date) AS period_number";

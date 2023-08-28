@@ -177,8 +177,8 @@ class PlannedHourService
         if (!empty($projectIds)) {
             $query->whereIn('planned_hours.project_id', $projectIds);
         }
-        $this->queryFromPeriod($query,  $interval->from->date->year, $interval->from->periodNumber());
-        $this->queryToPeriod($query,$interval->to->date->year, $interval->to->periodNumber());
+        $this->queryFromPeriod($query, $interval->from->date->year, $interval->from->periodNumber());
+        $this->queryToPeriod($query, $interval->to->date->year, $interval->to->periodNumber());
 
         return $query->get();
     }
