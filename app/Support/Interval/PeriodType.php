@@ -19,9 +19,8 @@ class PeriodType
     {
         if ($this->isWeek()) {
             return "WEEK(date) AS period_number";
-        } else {
-            return "MONTH(date) AS period_number";
         }
+        return "MONTH(date) AS period_number";
     }
 }
 

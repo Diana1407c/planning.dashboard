@@ -155,7 +155,7 @@ class PlannedHourService
         ]);
     }
 
-    public function plannedHoursCollection($projectTypes, $projectIds, GenericInterval $interval)
+    public function plannedHoursCollection(array $filters, GenericInterval $interval)
     {
         $query = PlannedHour::query()
             ->select([
@@ -169,14 +169,15 @@ class PlannedHourService
             ->selectRaw('SUM(hours) as sum_hours')
             ->selectRaw('SUM(performance_hours) as sum_performance_hours');
 
-        if (!empty($projectTypes)) {
+        if (!empty($filters['project_types'])) {
             $query->join('projects', 'projects.id', '=', 'planned_hours.project_id')
-                ->whereIn('projects.type', $projectTypes);
+                ->whereIn('projects.type', $filters['project_types']);
         }
 
-        if (!empty($projectIds)) {
-            $query->whereIn('planned_hours.project_id', $projectIds);
+        if (!empty($filters['project_ids'])) {
+            $query->whereIn('planned_hours.project_id', $filters['project_ids']);
         }
+
         $this->queryFromPeriod($query, $interval->from->date->year, $interval->from->periodNumber());
         $this->queryToPeriod($query, $interval->to->date->year, $interval->to->periodNumber());
 

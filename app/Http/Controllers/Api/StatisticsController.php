@@ -8,7 +8,6 @@ use App\Services\PlannedHourService;
 use App\Services\Teamwork\TeamworkService;
 use App\Support\Interval\GenericInterval;
 use App\Support\Interval\Period;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,19 +15,18 @@ class StatisticsController extends Controller
 {
     public function history(TeamworkService $teamworkService, PlannedHourService $plannedHourService, Request $request): JsonResponse
     {
-        $projectTypes = $request->get('project_types');
-        $projectIds = $request->get('project_ids');
+        $filters = $request->except(['period_type', 'start_date', 'end_date']);
 
         $interval = GenericInterval::fromString(
             $request->get('period_type'),
             $request->get('start_date'),
             $request->get('end_date')
         );
-        $plannedHours = $plannedHourService->plannedHoursCollection($projectTypes, $projectIds, $interval);
-        $twHoursData = $teamworkService->periodProjectHours($projectTypes, $projectIds, $interval);
+        $plannedHours = $plannedHourService->plannedHoursCollection($filters, $interval);
+        $twHoursData = $teamworkService->periodProjectHours($filters, $interval);
 
         $data = [["Period", "PM", "TL", "TW"]];
-        $periods = $interval->getPeriods();
+        $periods = $interval->Periods();
 
         foreach ($periods as $period) {
             $periodLabel = $period->toLabel();

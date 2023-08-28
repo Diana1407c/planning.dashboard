@@ -64,12 +64,11 @@ class GenericInterval extends PeriodType
         return $periods;
     }
 
-    public function getPeriods()
+    public function Periods()
     {
         if ($this->isWeek()) {
             return $this->weekPeriods();
-        } else {
-            return $this->monthPeriods();
         }
+        return $this->monthPeriods();
     }
 }

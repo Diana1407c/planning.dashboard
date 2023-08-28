@@ -243,7 +243,7 @@ class TeamworkService
             ->groupBy(['engineer_id', 'billable'])->get();
     }
 
-    public function periodProjectHours($projectTypes, $projectIds, GenericInterval $interval)
+    public function periodProjectHours(array $filters, GenericInterval $interval)
     {
         $query = TeamworkTime::query()
             ->selectRaw('year(date) as year')
@@ -251,13 +251,13 @@ class TeamworkService
             ->whereBetween('teamwork_time.date', [$interval->from->date, $interval->to->date])
             ->selectRaw($interval->toSql());
 
-        if (!empty($projectTypes)) {
+        if (!empty($filters['project_types'])) {
             $query->join('projects', 'projects.id', '=', 'teamwork_time.project_id')
-                ->whereIn('projects.type', $projectTypes);
+                ->whereIn('projects.type', $filters['project_types']);
         }
 
-        if (!empty($projectIds)) {
-            $query->whereIn('teamwork_time.project_id', $projectIds);
+        if (!empty($filters['project_ids'])) {
+            $query->whereIn('teamwork_time.project_id', $filters['project_ids']);
         }
 
         return $query->groupBy(['year', 'period_number'])->get();
