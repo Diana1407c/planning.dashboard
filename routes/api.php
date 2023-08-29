@@ -24,38 +24,38 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::group(['middleware' => array_merge(
-    (array) config('backpack.base.web_middleware', 'web'),
-    (array) config('backpack.base.middleware_key', 'admin')
-),], function (){
-    Route::group(['prefix' => 'projects'], function() {
+    (array)config('backpack.base.web_middleware', 'web'),
+    (array)config('backpack.base.middleware_key', 'admin')
+),], function () {
+    Route::group(['prefix' => 'projects'], function () {
         Route::get('', [ProjectController::class, 'index']);
         Route::get('all', [ProjectController::class, 'all']);
     });
 
-    Route::group(['prefix' => 'teams'], function() {
+    Route::group(['prefix' => 'teams'], function () {
         Route::get('', [TeamController::class, 'index']);
         Route::get('all', [TeamController::class, 'all']);
     });
 
-    Route::group(['prefix' => 'stacks'], function() {
+    Route::group(['prefix' => 'stacks'], function () {
         Route::get('', [StackController::class, 'index']);
         Route::get('all', [StackController::class, 'all']);
     });
 
 
-    Route::group(['prefix' => 'tl-planning', 'middleware' => ['permission:manage team_lead_planning']], function() {
+    Route::group(['prefix' => 'tl-planning', 'middleware' => ['permission:manage team_lead_planning']], function () {
         Route::get('weekly', [PlannedHourController::class, 'tlWeekly']);
         Route::get('monthly', [PlannedHourController::class, 'tlMonthly']);
         Route::post('', [PlannedHourController::class, 'tlStore']);
     });
 
-    Route::group(['prefix' => 'pm-planning', 'middleware' => ['permission:manage project_manager_planning']], function() {
+    Route::group(['prefix' => 'pm-planning', 'middleware' => ['permission:manage project_manager_planning']], function () {
         Route::get('weekly', [PlannedHourController::class, 'pmWeekly']);
         Route::get('monthly', [PlannedHourController::class, 'pmMonthly']);
         Route::post('', [PlannedHourController::class, 'pmStore']);
     });
 
-    Route::group(['prefix' => 'engineer/{engineer}', 'middleware' => ['permission:manage engineer']], function() {
+    Route::group(['prefix' => 'engineer/{engineer}', 'middleware' => ['permission:manage engineer']], function () {
         Route::get('performances', [EngineerPerformanceController::class, 'index']);
         Route::post('performances', [EngineerPerformanceController::class, 'store']);
         Route::patch('performances/{engineerPerformance}', [EngineerPerformanceController::class, 'update']);
@@ -64,7 +64,7 @@ Route::group(['middleware' => array_merge(
         Route::get('history', [EngineerHistoryController::class, 'index']);
     });
 
-    Route::group(['prefix' => 'reports', 'middleware' => ['permission:manage reports']], function() {
+    Route::group(['prefix' => 'reports', 'middleware' => ['permission:manage reports']], function () {
         Route::get('comparison', [ReportController::class, 'comparison']);
         Route::get('comparison/export', [ReportController::class, 'export']);
         Route::get('comparison/detail/{project}', [ReportController::class, 'comparisonDetail']);
@@ -79,6 +79,7 @@ Route::group(['middleware' => array_merge(
         Route::get('accountant', [AccountantReportController::class, 'index']);
         Route::get('accountant/export', [AccountantReportController::class, 'export']);
 
-        Route::get('statistics', [StatisticsController::class,'history']);
+        Route::get('statistics', [StatisticsController::class, 'history']);
+        Route::get('pie', [StatisticsController::class, 'pieChartReport']);
     });
 });
