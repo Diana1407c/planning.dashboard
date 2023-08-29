@@ -184,6 +184,41 @@ class PlannedHourService
         return $query->get();
     }
 
+    public function hoursPerProjectType(array $filters, GenericInterval $interval)
+    {
+        $query = PlannedHour::query()
+            ->select([
+                'projects.type',
+            ])
+            ->join('projects', 'projects.id', '=', 'planned_hours.project_id')
+            ->where('planned_hours.period_type', $interval->type)
+            ->where('planned_hours.planable_type', PlannedHour::ENGINEER_TYPE)
+            ->groupBy(['projects.type'])
+            ->selectRaw('SUM(planned_hours.performance_hours) as sum_performance_hours');
+
+        if (!empty($filters['project_states'])) {
+            $query->whereIn('projects.state', $filters['project_states']);
+        }
+
+        if (!empty($filters['project_ids'])) {
+            $query->whereIn('planned_hours.project_id', $filters['project_ids']);
+        }
+
+        if (!empty($filters['team_ids'])) {
+            $query->join('engineers', 'engineers.id', '=', 'planned_hours.planable_id')
+                ->whereIn('engineers.team_id', $filters['team_ids']);
+        }
+
+        if (!empty($filters['engineer_ids'])) {
+            $query->whereIn('planned_hours.planable_id', $filters['engineer_ids']);
+        }
+
+        $this->queryFromPeriod($query, $interval->from->date->year, $interval->from->periodNumber());
+        $this->queryToPeriod($query, $interval->to->date->year, $interval->to->periodNumber());
+
+        return $query->pluck('sum_performance_hours', 'type');
+    }
+
     protected function queryFromPeriod($query, int $year, int $periodNumber): void
     {
         $query->where(function ($q) use ($year, $periodNumber) {

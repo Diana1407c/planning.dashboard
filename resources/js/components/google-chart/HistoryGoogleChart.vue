@@ -1,10 +1,13 @@
 <template>
+    <div class="d-flex box-filter-separator">
+        <hr class="col-12 separator-filter">
+    </div>
     <div class="row">
-        <div class="col-3">
+        <div class="pb-1 col-md-3 col-sm-6 col-12">
             <VueDatePicker v-model="filter.date" multi-calendars multi-calendars-solo range
                            @update:model-value="getData"/>
         </div>
-        <div class="col-3">
+        <div class="pb-1 col-md-3 col-sm-6 col-12">
             <multiselect
                 v-model="filter.project_types"
                 :options="projectTypes"
@@ -17,11 +20,11 @@
                 @select="getData"
                 @remove="getData">
                 <template v-if="filter.project_types.length" #beforeList class="multiselect__element">
-                    <span @click="handleDiselectTypes" class="multiselect__option diselect_all"><span>Diselect All</span></span>
+                    <span @click="handleDiselect('project_types')" class="multiselect__option diselect_all"><span>Diselect All</span></span>
                 </template>
             </multiselect>
         </div>
-        <div class="col-3">
+        <div class="pb-1 col-md-3 col-sm-6 col-12">
             <multiselect
                 v-model="filter.project_ids"
                 :options="allProjects"
@@ -34,11 +37,11 @@
                 @select="getData"
                 @remove="getData">
                 <template v-if="filter.project_ids.length" #beforeList class="multiselect__element">
-                    <span @click="handleDiselectProjects" class="multiselect__option diselect_all"><span>Diselect All</span></span>
+                    <span @click="handleDiselect('project_ids')" class="multiselect__option diselect_all"><span>Diselect All</span></span>
                 </template>
             </multiselect>
         </div>
-        <div class="col-3">
+        <div class="pb-1 col-md-3 col-sm-6 col-12">
             <select v-model="filter.period_type" class="form-control" @change="getData">
                 <option value="week">Weekly</option>
                 <option value="month">Monthly</option>
@@ -51,7 +54,7 @@
     <div class="row">
         <div class="col-12">
             <GChart
-                type="LineChart"
+                :type="chartType"
                 :options="options"
                 :data="collectionData"
             />
@@ -124,13 +127,9 @@ export default {
         await this.getData()
     },
     methods: {
-        async handleDiselectProjects() {
-            this.filter.project_ids = []
-            await this.getData()
-        },
-        async handleDiselectTypes() {
-            this.filter.project_types = []
-            await this.getReport()
+        async handleDiselect(filterValue) {
+            this.filter[filterValue] = [];
+            await this.getData();
         },
         async getData() {
             localStorage.setItem("filter-statistics", JSON.stringify(this.filter));
