@@ -62,6 +62,21 @@ class EngineerService
         return $query->groupBy('engineers.id')->get();
     }
 
+    public function countEngineersByFilter(array $filters)
+    {
+        $query = Engineer::query()
+            ->whereNotNull('team_id');
+
+        if (!empty($filters['team_ids'])) {
+            $query->whereIn('team_id', $filters['team_ids']);
+        }
+        if (!empty($filters['engineer_ids'])) {
+            $query->whereIn('id', $filters['engineer_ids']);
+        }
+
+        return $query->count();
+    }
+
     private static function filterTeams(Builder $query, mixed $team_ids = []): void
     {
         if ($team_ids) {

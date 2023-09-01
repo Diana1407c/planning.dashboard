@@ -17,7 +17,7 @@ abstract class DateBase extends PeriodType
     public function periodNumber(): int
     {
         if ($this->isWeek()) {
-            return $this->date->week;
+            return $this->date->weekOfYear;
         }
         return $this->date->month;
     }

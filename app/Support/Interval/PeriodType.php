@@ -15,12 +15,14 @@ class PeriodType
         return $this->type == PlannedHour::WEEK_PERIOD_TYPE;
     }
 
-    public function toSql(): string
+    public function toSqlFuction(string $column, $alias = null): string
     {
-        if ($this->isWeek()) {
-            return "WEEK(date) AS period_number";
+        $sqlFunction = $this->isWeek() ? "WEEK" : "MONTH";
+        $sql = "$sqlFunction($column)";
+        if ($alias) {
+            return "$sql AS $alias";
         }
-        return "MONTH(date) AS period_number";
+        return $sql;
     }
 }
 

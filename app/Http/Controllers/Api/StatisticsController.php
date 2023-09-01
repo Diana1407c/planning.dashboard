@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\PlannedHour;
 use App\Models\Project;
+use App\Services\EngineerService;
+use App\Services\HolidayService;
 use App\Services\PlannedHourService;
 use App\Services\Teamwork\TeamworkService;
 use App\Support\Interval\GenericInterval;
@@ -69,6 +71,34 @@ class StatisticsController extends Controller
         return response()->json($data);
     }
 
+    public function capacityReport(PlannedHourService $plannedHourService, HolidayService $holidayService, EngineerService $engineerService, Request $request): JsonResponse
+    {
+        $filters = $request->except(['period_type', 'start_date', 'end_date']);
+
+        $interval = GenericInterval::fromString(
+            $request->get('period_type'),
+            $request->get('start_date'),
+            $request->get('end_date')
+        );
+
+        $hoursPerProject = $plannedHourService->capacityHoursPerProject($filters, $interval);
+        $data = [["Project", "Capacity Hours"]];
+
+        $engineerCount = $engineerService->countEngineersByFilter($filters);
+        $totalWorkingHours = $holidayService->workHoursPerInterval($interval);
+        $companyCapacityHours = $engineerCount * $totalWorkingHours;
+
+        $sumPlannedHours = array_sum($hoursPerProject->toArray());
+        $unplannedHours = $companyCapacityHours - $sumPlannedHours;
+
+        $data[] = ['Unplanned projects', (int)$unplannedHours];
+
+        foreach ($hoursPerProject as $projectName => $capacityHours) {
+            $data[] = [$projectName, (int)$capacityHours];
+        }
+
+        return response()->json($data);
+    }
 
     protected function getTeamworkHours($twHoursData, Period $period)
     {

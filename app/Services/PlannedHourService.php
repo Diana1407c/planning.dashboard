@@ -139,11 +139,11 @@ class PlannedHourService
 
         $queryWeek = clone $queryMonth;
         $this->queryFromPeriod($queryMonth, $from->year, $from->month);
-        $this->queryFromPeriod($queryWeek, $from->year, $from->week);
+        $this->queryFromPeriod($queryWeek, $from->year, $from->weekOfYear);
         if ($to) {
             $to->endOfMonth();
             $this->queryToPeriod($queryMonth, $from->year, $to->month);
-            $this->queryToPeriod($queryWeek, $from->year, $to->week);
+            $this->queryToPeriod($queryWeek, $from->year, $to->weekOfYear);
         }
 
         $queryMonth->update([
@@ -217,6 +217,33 @@ class PlannedHourService
         $this->queryToPeriod($query, $interval->to->date->year, $interval->to->periodNumber());
 
         return $query->pluck('sum_performance_hours', 'type');
+    }
+
+    public function capacityHoursPerProject(array $filters, GenericInterval $interval)
+    {
+        $query = PlannedHour::query()
+            ->select([
+                'projects.name',
+            ])
+            ->join('projects', 'projects.id', '=', 'planned_hours.project_id')
+            ->where('planned_hours.period_type', $interval->type)
+            ->where('planned_hours.planable_type', PlannedHour::ENGINEER_TYPE)
+            ->groupBy(['project_id'])
+            ->selectRaw('SUM(planned_hours.performance_hours) as sum_performance_hours');
+
+        if (!empty($filters['team_ids'])) {
+            $query->join('engineers', 'engineers.id', '=', 'planned_hours.planable_id')
+                ->whereIn('engineers.team_id', $filters['team_ids']);
+        }
+
+        if (!empty($filters['engineer_ids'])) {
+            $query->whereIn('planned_hours.planable_id', $filters['engineer_ids']);
+        }
+
+        $this->queryFromPeriod($query, $interval->from->date->year, $interval->from->periodNumber());
+        $this->queryToPeriod($query, $interval->to->date->year, $interval->to->periodNumber());
+
+        return $query->pluck('sum_performance_hours', 'name');
     }
 
     protected function queryFromPeriod($query, int $year, int $periodNumber): void

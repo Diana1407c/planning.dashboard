@@ -25,7 +25,7 @@ class TLWeeklyPlannedHoursMatrix extends TLBaseMatrix
         $filterPrevWeek->period->from->subWeek();
         $filterPrevWeek->period->to->subWeek();
         $filterPrevWeek->set('year', $filterPrevWeek->period->from->year)
-            ->set('period_number', $filterPrevWeek->period->from->week);
+            ->set('period_number', $filterPrevWeek->period->from->weekOfYear);
         $tlHoursPrevWeek = $this->plannedHourService()->hoursByFilter($filterPrevWeek->params)
             ->groupBy(['planable_id', 'project_id']);
 
