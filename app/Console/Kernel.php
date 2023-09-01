@@ -36,6 +36,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('command:sync-teamwork past_month')->cron('0 1 1 * *')->appendOutputTo($this->outputPath);
         $schedule->command('email:send-discrepancy-report')->weekdays()->at('19:00')->appendOutputTo($this->outputPath);
+        $schedule->command('command:sync-teamwork current_week')->fridays()->at('16:30')->appendOutputTo($this->outputPath);
     }
 
     /**
