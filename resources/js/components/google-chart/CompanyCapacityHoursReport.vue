@@ -3,51 +3,17 @@
         <hr class="col-12 separator-filter">
     </div>
     <div class="row">
-        <div class="pb-1 col-md-4 col-sm-6 col-12">
+        <div class="pb-1 col-md-3 col-sm-6 col-12">
             <VueDatePicker v-model="filter.date" multi-calendars multi-calendars-solo range
                            @update:model-value="getData"/>
         </div>
-        <div class="pb-1 col-md-4 col-sm-6 col-12">
+        <div class="pb-1 col-md-3 col-sm-6 col-12">
             <select v-model="filter.period_type" class="form-control" @change="getData">
                 <option value="week">Weekly</option>
                 <option value="month">Monthly</option>
             </select>
         </div>
-        <div class="pb-1 col-md-4 col-sm-6 col-12">
-            <multiselect
-                v-model="filter.project_states"
-                :options="projectStates"
-                :close-on-select="true"
-                :clear-on-select="false"
-                placeholder="Select states"
-                label="name"
-                :multiple="true"
-                track-by="name"
-                @select="getData"
-                @remove="getData">
-                <template v-if="filter.project_states.length" #beforeList class="multiselect__element">
-                    <span @click="handleDiselect('project_states')" class="multiselect__option diselect_all"><span>Diselect All</span></span>
-                </template>
-            </multiselect>
-        </div>
-        <div class="pb-1 col-md-4 col-sm-6 col-12">
-            <multiselect
-                v-model="filter.project_ids"
-                :options="allProjects"
-                :close-on-select="true"
-                :clear-on-select="false"
-                placeholder="Select projects"
-                label="name"
-                :multiple="true"
-                track-by="name"
-                @select="getData"
-                @remove="getData">
-                <template v-if="filter.project_ids.length" #beforeList class="multiselect__element">
-                    <span @click="handleDiselect('project_ids')" class="multiselect__option diselect_all"><span>Diselect All</span></span>
-                </template>
-            </multiselect>
-        </div>
-        <div class="pb-1 col-md-4 col-sm-6 col-12">
+        <div class="pb-1 col-md-3 col-sm-6 col-12">
             <multiselect
                 v-model="filter.team_ids"
                 :options="allTeams"
@@ -65,7 +31,7 @@
                 </template>
             </multiselect>
         </div>
-        <div class="pb-1 col-md-4 col-sm-6 col-12">
+        <div class="pb-1 col-md-3 col-sm-6 col-12">
             <multiselect
                 v-model="filter.engineer_ids"
                 :options="allEngineers"
@@ -103,15 +69,13 @@ import multiselect from "vue-multiselect";
 import VueDatePicker from "@vuepic/vue-datepicker";
 
 export default {
-    name: "ProjectsTypesReport",
+    name: "CompanyCapacityHoursReport",
     components: {
         VueDatePicker,
         multiselect,
         GChart
     },
     props: {
-        projectStates: Object,
-        allProjects: Object,
         allTeams: Object,
         allEngineers: Object,
     },
@@ -122,23 +86,21 @@ export default {
         return {
             chartType: "PieChart",
             pieData: [
-                ["Project Type", "Hours"],
+                ["Project", "Capacity Hours"],
             ],
             options: {
-                title: 'Project Types Report',
+                title: 'Company Capacity Hours Report',
                 titleTextStyle: {
                     fontSize: 26,
                 },
                 pieSliceText: 'percentage',
-                height: 500,
+                height: 700,
                 chartArea: {
                     height: '85%'
                 },
                 is3D: 'true',
             },
             filter: {
-                project_states: [],
-                project_ids: [],
                 team_ids: [],
                 engineer_ids: [],
                 date: [startDate, endDate],
@@ -158,31 +120,16 @@ export default {
         },
 
         async getData() {
-            localStorage.setItem("filter-pie", JSON.stringify(this.filter));
-            await this.getProjects()
+            localStorage.setItem("filter-capacity", JSON.stringify(this.filter));
             await this.getPieChart()
             this.loaded = true;
         },
-
-        async getProjects() {
-            await axios.get('projects', {
-                params: {
-                    project_states: this.filter.project_states.map(obj => obj.id),
-                    project_ids: this.filter.project_ids.map(obj => obj.id),
-                }
-            }).then((response) => {
-                this.projects = response.data.data
-            });
-        },
-
         async getPieChart() {
-            await axios.get('reports/pie', {
+            await axios.get('reports/capacity', {
                 params: {
                     start_date: this.filter.date ? this.filter.date[0] : null,
                     end_date: this.filter.date ? this.filter.date[1] : null,
                     period_type: this.filter.period_type,
-                    project_states: this.filter.project_states.map(obj => obj.id),
-                    project_ids: this.filter.project_ids.map(obj => obj.id),
                     team_ids: this.filter.team_ids.map(obj => obj.id),
                     engineer_ids: this.filter.engineer_ids.map(obj => obj.id),
                 }
@@ -193,7 +140,7 @@ export default {
         },
 
         async setFilter() {
-            const storedObject = localStorage.getItem("filter-pie");
+            const storedObject = localStorage.getItem("filter-capacity");
             if (storedObject) {
                 let storageFilter = JSON.parse(storedObject);
 

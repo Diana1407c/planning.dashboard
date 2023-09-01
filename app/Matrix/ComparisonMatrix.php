@@ -31,9 +31,9 @@ class ComparisonMatrix
     {
         $this->tlPlannedHours = $this->plannedHourService()->groupedHoursByFilter([
             'from_year' => $this->fromDate->year,
-            'from_period_number' => $this->isWeekly() ? $this->fromDate->week : $this->fromDate->month,
+            'from_period_number' => $this->isWeekly() ? $this->fromDate->weekOfYear : $this->fromDate->month,
             'to_year' => $this->toDate->year,
-            'to_period_number' => $this->isWeekly() ? $this->toDate->week : $this->toDate->month,
+            'to_period_number' => $this->isWeekly() ? $this->toDate->weekOfYear : $this->toDate->month,
             'period_type' => $this->periodType,
             'projects_ids' => $this->projects->pluck('id'),
             'planable_type' => PlannedHour::ENGINEER_TYPE,
@@ -41,9 +41,9 @@ class ComparisonMatrix
 
         $this->pmPlannedHours = $this->plannedHourService()->groupedHoursByFilter([
             'from_year' => $this->fromDate->year,
-            'from_period_number' => $this->isWeekly() ? $this->fromDate->week : $this->fromDate->month,
+            'from_period_number' => $this->isWeekly() ? $this->fromDate->weekOfYear : $this->fromDate->month,
             'to_year' => $this->toDate->year,
-            'to_period_number' => $this->isWeekly() ? $this->toDate->week : $this->toDate->month,
+            'to_period_number' => $this->isWeekly() ? $this->toDate->weekOfYear : $this->toDate->month,
             'period_type' => $this->periodType,
             'projects_ids' => $this->projects->pluck('id'),
             'planable_type' => PlannedHour::TECHNOLOGY_TYPE,
@@ -79,8 +79,8 @@ class ComparisonMatrix
         $hours = [];
 
         for ($i = $this->fromDate->clone(); $i->lte($this->toDate); $i->addWeek()) {
-            $this->hoursByPeriod($hours, $i->year, $i->week);
-            $dates[$i->year . '_' . $i->week] = $i->format('j M') . ' - ' . $i->clone()->endOfWeek()->format('j M Y');
+            $this->hoursByPeriod($hours, $i->year, $i->weekOfYear);
+            $dates[$i->year . '_' . $i->weekOfYear] = $i->format('j M') . ' - ' . $i->clone()->endOfWeek()->format('j M Y');
         }
 
         return [

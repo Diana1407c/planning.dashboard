@@ -81,5 +81,6 @@ Route::group(['middleware' => array_merge(
 
         Route::get('statistics', [StatisticsController::class, 'history']);
         Route::get('pie', [StatisticsController::class, 'pieChartReport']);
+        Route::get('capacity', [StatisticsController::class, 'capacityReport']);
     });
 });
