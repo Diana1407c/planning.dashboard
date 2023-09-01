@@ -222,7 +222,6 @@ export default {
         },
 
         plan(event, engineerId, projectId){
-            console.log(this.table)
             let currentVal = this.table.hasOwnProperty('engineers') && this.table['engineers'].hasOwnProperty(engineerId) && this.table['engineers'][[engineerId]].hasOwnProperty(projectId) ? this.table['engineers'][engineerId][projectId] : 0
             if(!event.target.value){
                 event.target.value = currentVal
