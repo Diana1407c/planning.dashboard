@@ -46,7 +46,7 @@
             <button :disabled="!loaded" type="button" class="btn btn-primary date-change-button" @click="handleDateInput(false)"><i class="fa-solid fa-arrow-left"></i> Previous</button>
         </div>
         <div class="col-4 d-flex justify-content-center align-items-center">
-            <div class="week-inscription">{{ start_week }} - {{ end_week }}</div>
+            <div class="week-inscription">{{ start_week }} - {{ end_week }} - {{ hours_count }} hours</div>
         </div>
         <div class="col-4 d-flex justify-content-end">
             <button :disabled="!loaded" type="button" class="btn btn-primary date-change-button" @click="handleDateInput(true)">Next <i class="fa-solid fa-arrow-right"></i></button>
@@ -108,7 +108,7 @@
                 <button type="button" class="btn btn-primary date-change-button" @click="handleDateInput(false)"><i class="fa-solid fa-arrow-left"></i> Previous</button>
             </div>
             <div class="col-4 d-flex justify-content-center align-items-center">
-                <div class="week-inscription">{{ start_week }} - {{ end_week }}</div>
+                <div class="week-inscription">{{ start_week }} - {{ end_week }}- {{ hours_count }} hours</div>
             </div>
             <div class="col-4 d-flex justify-content-end">
                 <button type="button" class="btn btn-primary date-change-button" @click="handleDateInput(true)">Next <i class="fa-solid fa-arrow-right"></i></button>
@@ -123,8 +123,8 @@
 <script>
 import Layout from "./../Layout.vue";
 import Multiselect from 'vue-multiselect';
-const { getWeek } = require('date-fns');
-import { useNotification } from "@kyvg/vue3-notification";
+const {getWeek} = require('date-fns');
+import {useNotification} from "@kyvg/vue3-notification";
 import errorMessages from "../../helpers";
 import Color from "../Elements/Color.vue";
 
@@ -153,6 +153,7 @@ export default {
                 year: null
             },
             loaded: false,
+            hours_count: 0,
         }
     },
     components: {Multiselect},
@@ -194,6 +195,7 @@ export default {
                 }}).then(response => {
                 this.table = response.data.table;
                 this.can_edit = response.data.can_edit
+                this.hours_count = response.data.hours_count
             }).catch(() => {});
         },
 

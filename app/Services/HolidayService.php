@@ -112,4 +112,25 @@ class HolidayService
         });
     }
 
+    public function workHoursPerWeek(Carbon $startOfWeek, Carbon $endOfWeek)
+    {
+        $hours = $this->workHoursByPeriod($startOfWeek, $endOfWeek);
+        $holidays = $this->holidaysPerWeek($startOfWeek, $endOfWeek);
+
+        foreach ($holidays as $holiday) {
+            $hours += $holiday->hours();
+        }
+
+        return $hours;
+    }
+
+    public function holidaysPerWeek(Carbon $startOfWeek, Carbon $endOfWeek)
+    {
+        return Holiday::query()
+            ->whereBetween('date', [$startOfWeek, $endOfWeek])
+            ->orWhere(function (Builder $query) use ($startOfWeek) {
+                $query->where('every_year', true)
+                    ->whereRaw('WEEK(date)=' . $startOfWeek->weekOfYear);
+            })->get();
+    }
 }

@@ -34,6 +34,7 @@ class PlannedHourController extends Controller
         return response()->json([
             'table' => $matrix->matrix(),
             'can_edit' => $this->plannedHourService->canEditPeriodByFilter($request->filter()),
+            'hours_count' => $this->holidayService->workHoursPerWeek($filter->period->from, $filter->period->to),
         ]);
     }
 
@@ -57,6 +58,7 @@ class PlannedHourController extends Controller
         return response()->json([
             'table' => $matrix->matrix(),
             'can_edit' => $this->plannedHourService->canEditPeriodByFilter($request->filter()),
+            'hours_count' => $this->holidayService->workHoursPerWeek($filter->period->from, $filter->period->to),
         ]);
     }
 

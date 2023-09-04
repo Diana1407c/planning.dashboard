@@ -63,7 +63,7 @@
             <button :disabled="!loaded" type="button" class="btn btn-primary date-change-button" @click="handleDateInput(false)"><i class="fa-solid fa-arrow-left"></i> Previous</button>
         </div>
         <div class="col-4 d-flex justify-content-center align-items-center">
-            <div class="week-inscription">{{ start_week }} - {{ end_week }}</div>
+            <div class="week-inscription">{{ start_week }} - {{ end_week }} - {{ hours_count }} hours</div>
         </div>
         <div class="col-4 d-flex justify-content-end">
             <button :disabled="!loaded" type="button" class="btn btn-primary date-change-button" @click="handleDateInput(true)">Next <i class="fa-solid fa-arrow-right"></i></button>
@@ -141,7 +141,7 @@
                 <button type="button" class="btn btn-primary date-change-button" @click="handleDateInput(false)"><i class="fa-solid fa-arrow-left"></i> Previous</button>
             </div>
             <div class="col-4 d-flex justify-content-center align-items-center">
-                <div class="week-inscription">{{ start_week }} - {{ end_week }}</div>
+                <div class="week-inscription">{{ start_week }} - {{ end_week }}- {{ hours_count }} hours</div>
             </div>
             <div class="col-4 d-flex justify-content-end">
                 <button type="button" class="btn btn-primary date-change-button" @click="handleDateInput(true)">Next <i class="fa-solid fa-arrow-right"></i></button>
@@ -188,7 +188,8 @@ export default {
                 week: null,
                 year: null
             },
-            loaded: false
+            loaded: false,
+            hours_count: 0,
         }
     },
     components: {VueMultiselect},
@@ -233,6 +234,7 @@ export default {
                 }}).then(response => {
                 this.table = response.data.table;
                 this.can_edit = response.data.can_edit
+                this.hours_count = response.data.hours_count
             }).catch(() => {});
         },
 
