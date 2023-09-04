@@ -238,8 +238,15 @@ export default {
         },
 
         async getWeekRange() {
-            let startDate = new Date(this.filter.year, 0, 1 + (this.filter.week - 1) * 7);
-            let endDate = new Date(startDate.getTime() + 6 * 24 * 60 * 60 * 1000);
+            let startDate;
+
+            if (this.filter.year < 2023) {
+                startDate = new Date(this.filter.year, 0,  1 + (this.filter.week) * 7);
+            } else {
+                startDate = new Date(this.filter.year, 0, 1 + (this.filter.week - 1) * 7);
+            }
+
+            let endDate = new Date(startDate.getTime());
 
             let monday = startDate.getDate() - startDate.getDay() + 1;
             startDate.setDate(monday);
