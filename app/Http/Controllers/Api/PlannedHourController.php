@@ -18,6 +18,7 @@ use App\Models\Project;
 use App\Services\HolidayService;
 use App\Services\PlannedHourService;
 use App\Support\Filters\PlannedHoursFilter;
+use App\Support\Interval\GenericInterval;
 use Illuminate\Http\JsonResponse;
 
 class PlannedHourController extends Controller
@@ -30,11 +31,12 @@ class PlannedHourController extends Controller
     {
         $filter = PlannedHoursFilter::fromArray($request->filter());
         $matrix = new TLWeeklyPlannedHoursMatrix($filter);
+        $interval = new GenericInterval(PlannedHour::WEEK_PERIOD_TYPE, $filter->period->from, $filter->period->to);
 
         return response()->json([
             'table' => $matrix->matrix(),
             'can_edit' => $this->plannedHourService->canEditPeriodByFilter($request->filter()),
-            'hours_count' => $this->holidayService->workHoursPerWeek($filter->period->from, $filter->period->to),
+            'hours_count' => $this->holidayService->workHoursPerInterval($interval),
         ]);
     }
 
@@ -54,11 +56,12 @@ class PlannedHourController extends Controller
     {
         $filter = PlannedHoursFilter::fromArray($request->filter());
         $matrix = new PMWeeklyPlannedHoursMatrix($filter);
+        $interval = new GenericInterval(PlannedHour::WEEK_PERIOD_TYPE, $filter->period->from, $filter->period->to);
 
         return response()->json([
             'table' => $matrix->matrix(),
             'can_edit' => $this->plannedHourService->canEditPeriodByFilter($request->filter()),
-            'hours_count' => $this->holidayService->workHoursPerWeek($filter->period->from, $filter->period->to),
+            'hours_count' => $this->holidayService->workHoursPerInterval($interval),
         ]);
     }
 

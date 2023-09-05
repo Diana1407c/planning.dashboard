@@ -89,6 +89,10 @@ class HolidayService
             ->orWhere(function (Builder $query) use ($interval) {
                 $this->queryFromPeriod($query, $interval);
                 $this->queryToPeriod($query, $interval);
+            })
+            ->orWhere(function (Builder $query) use ($interval) {
+                $query->where('every_year', true)
+                    ->whereRaw('WEEK(date)=' . $interval->from->date->weekOfYear);
             })->get();
     }
 
@@ -107,30 +111,8 @@ class HolidayService
         $query->where(function ($q) use ($interval) {
             $q->where(function ($qYear) use ($interval) {
                 $qYear->where('date', '=', $interval->to->date->year)
-                    ->whereRaw($interval->toSqlFuction("date") . '<=' . $interval->from->periodNumber());
+                    ->whereRaw($interval->toSqlFuction("date") . '<=' . $interval->to->periodNumber());
             })->orWhere('date', '<', $interval->to->date->year);
         });
-    }
-
-    public function workHoursPerWeek(Carbon $startOfWeek, Carbon $endOfWeek)
-    {
-        $hours = $this->workHoursByPeriod($startOfWeek, $endOfWeek);
-        $holidays = $this->holidaysPerWeek($startOfWeek, $endOfWeek);
-
-        foreach ($holidays as $holiday) {
-            $hours += $holiday->hours();
-        }
-
-        return $hours;
-    }
-
-    public function holidaysPerWeek(Carbon $startOfWeek, Carbon $endOfWeek)
-    {
-        return Holiday::query()
-            ->whereBetween('date', [$startOfWeek, $endOfWeek])
-            ->orWhere(function (Builder $query) use ($startOfWeek) {
-                $query->where('every_year', true)
-                    ->whereRaw('WEEK(date)=' . $startOfWeek->weekOfYear);
-            })->get();
     }
 }
