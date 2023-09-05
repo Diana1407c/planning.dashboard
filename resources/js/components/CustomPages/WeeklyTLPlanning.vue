@@ -52,6 +52,9 @@
                 <template v-if="filter.project_ids.length" #beforeList class="multiselect__element" >
                     <span @click="handleDiselectProjects" class="multiselect__option diselect_all"><span>Diselect All</span></span>
                 </template>
+                <template #beforeList class="multiselect__element" >
+                    <span @click="handleSelectProjects" class="multiselect__option diselect_all"><span>Select Planned Projects</span></span>
+                </template>
             </VueMultiselect>
         </div>
     </div>
@@ -188,7 +191,8 @@ export default {
                 week: null,
                 year: null
             },
-            loaded: false
+            loaded: false,
+            selectedPlannedProjects: [],
         }
     },
     components: {VueMultiselect},
@@ -313,6 +317,24 @@ export default {
             await this.getWeekRange()
             await this.getData()
             this.loaded = true;
+        },
+
+        async handleSelectProjects() {
+            const plannedProjects = this.projects.filter((project) => {
+                return (
+                    this.table.hasOwnProperty('technologies') &&
+                    this.table['technologies']['planned_pm']['total'].hasOwnProperty(project.id) &&
+                    this.table['technologies']['planned_pm']['total'][project.id] > 0
+                );
+            });
+
+            const plannedProjectIds = plannedProjects.map((project) => project.id);
+
+            this.selectedPlannedProjects = plannedProjectIds;
+
+            this.filter.project_ids = plannedProjectIds;
+
+            await this.getData();
         },
 
         async handleDiselectTeams(){

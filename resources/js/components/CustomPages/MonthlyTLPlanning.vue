@@ -55,6 +55,9 @@
                 <template v-if="filter.project_ids.length" #beforeList class="multiselect__element" >
                     <span @click="handleDiselectProjects" class="multiselect__option diselect_all"><span>Diselect All</span></span>
                 </template>
+                <template #beforeList class="multiselect__element" >
+                    <span @click="handleSelectProjects" class="multiselect__option diselect_all"><span>Select Planned Projects</span></span>
+                </template>
             </VueMultiselect>
         </div>
     </div>
