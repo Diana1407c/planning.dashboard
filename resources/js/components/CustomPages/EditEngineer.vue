@@ -5,7 +5,8 @@
                 <h3>Performance</h3>
             </div>
             <div class="col-6 text-right">
-                <button @click="setNewPerformance()" class="btn btn-primary" data-toggle="modal" data-target="#performanceModal">
+                <button @click="setNewPerformance()" class="btn btn-primary" data-toggle="modal"
+                        data-target="#performanceModal">
                     <span class="ladda-label"><i class="la la-plus"></i> Add Performance</span>
                 </button>
             </div>
@@ -15,6 +16,7 @@
                     <tr>
                         <th>Level</th>
                         <th>Level Performance</th>
+                        <th>Project</th>
                         <th>Individual Performance</th>
                         <th>From Date</th>
                         <th>Actions</th>
@@ -25,15 +27,21 @@
                         <td>{{ performance.level.name }}</td>
                         <td>{{ performance.level.performance }}%</td>
                         <td>
+                            <span v-if="performance.project">{{ performance.project.name }}</span>
+                            <span v-else>-</span>
+                        </td>
+                        <td>
                             <span v-if="performance.performance">{{ performance.performance }}%</span>
                             <span v-else>-</span>
                         </td>
                         <td>{{ performance.from_date }}</td>
                         <td>
-                            <button @click="setEditPerformance(performance)" data-toggle="modal" data-target="#performanceModal" class="btn btn-sm btn-link">
+                            <button @click="setEditPerformance(performance)" data-toggle="modal"
+                                    data-target="#performanceModal" class="btn btn-sm btn-link">
                                 <i class="la la-edit"></i> Edit
                             </button>
-                            <button @click="deletePerformance(performance.id)" class="btn btn-sm btn-link" data-button-type="delete">
+                            <button @click="deletePerformance(performance.id)" class="btn btn-sm btn-link"
+                                    data-button-type="delete">
                                 <i class="la la-trash"></i> Delete
                             </button>
                         </td>
@@ -59,7 +67,8 @@
             </div>
         </div>
 
-        <div data-backdrop="false" class="modal fade" id="performanceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div data-backdrop="false" class="modal fade" id="performanceModal" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -77,8 +86,15 @@
                             </select>
                         </div>
                         <div class="form-group col-sm-12">
+                            <label>Project</label>
+                            <select v-model="edit_performance.project_id" class="form-control" name="project">
+                                <option :value="project.id" v-for="project in projects">{{ project.name }}</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-sm-12">
                             <label>Performance</label>
-                            <input type="number" class="form-control" v-model="edit_performance.performance" min="0" max="100" />
+                            <input type="number" class="form-control" v-model="edit_performance.performance" min="0"
+                                   max="100"/>
                         </div>
                         <div class="form-group col-sm-12 required">
                             <label>From Date</label>
@@ -97,16 +113,17 @@
 
 <script>
 import Layout from "./../Layout.vue";
-import { useNotification } from "@kyvg/vue3-notification";
+import {useNotification} from "@kyvg/vue3-notification";
 import errorMessages from "../../helpers";
 
-const { notify } = useNotification()
+const {notify} = useNotification()
 
 export default {
     name: "EditEngineer",
     layout: (h, page) => h(Layout, [page]),
     props: {
         levels: Array,
+        projects: Array,
         engineer: Object
     },
     data() {
@@ -126,6 +143,7 @@ export default {
             this.edit_performance = {
                 id: null,
                 level_id: null,
+                project_id: null,
                 from_date: null,
                 performance: null,
             }
@@ -134,6 +152,7 @@ export default {
             this.edit_performance = {
                 id: performance.id,
                 level_id: performance.level.id,
+                project_id: performance.project.id,
                 from_date: performance.from_date,
                 performance: performance.performance,
             }
@@ -149,18 +168,18 @@ export default {
 
         storePerformance() {
             axios.post(this.basePath() + 'performances', this.edit_performance).then((response) => {
-                this.getPerformances()
-                $('#performanceModal').modal('hide')
+                this.getPerformances();
+                $('#performanceModal').modal('hide');
             }).catch((error) => {
-                this.displayError(error)
+                this.displayError(error);
             });
         },
         updatePerformance() {
             axios.patch(this.basePath() + 'performances/' + this.edit_performance.id, this.edit_performance).then((response) => {
-                this.getPerformances()
-                $('#performanceModal').modal('hide')
+                this.getPerformances();
+                $('#performanceModal').modal('hide');
             }).catch((error) => {
-                this.displayError(error)
+                this.displayError(error);
             });
         },
         deletePerformance(id) {

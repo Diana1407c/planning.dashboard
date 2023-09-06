@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin\Operations;
 
 use App\Models\Engineer;
-use App\Models\EngineerHistory;
 use App\Models\Level;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -13,9 +13,9 @@ trait UpdateEngineerOperation
 {
     protected function setupUpdateRoutes($segment, $routeName, $controller)
     {
-        Route::get($segment.'/{id}/edit', [
-            'as'        => $routeName.'.edit',
-            'uses'      => $controller.'@edit',
+        Route::get($segment . '/{id}/edit', [
+            'as' => $routeName . '.edit',
+            'uses' => $controller . '@edit',
             'operation' => 'update',
         ])->middleware('inertia:inertia');
     }
@@ -53,9 +53,10 @@ trait UpdateEngineerOperation
         /** @var Engineer $engineer */
         $engineer = $this->crud->getEntryWithLocale($id);
 
-        return Inertia::render('EditEngineer',[
+        return Inertia::render('EditEngineer', [
             'engineer' => $engineer,
             'levels' => Level::all(),
+            'projects' => Project::all()->whereNotIn('state',Project::STATE_ARCHIVED),
         ])->withViewData([
             'title' => 'Edit ' . $engineer->fullName(),
             'breadcrumbs' => [

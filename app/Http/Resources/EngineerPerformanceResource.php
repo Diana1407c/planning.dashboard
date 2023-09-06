@@ -17,6 +17,7 @@ class EngineerPerformanceResource extends JsonResource
         return [
             'id' => $this->id,
             'from_date' => $this->from_date,
+            'project' => $this->project,
             'performance' => $this->performance,
             'level' => $this->level
         ];

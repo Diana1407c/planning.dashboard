@@ -10,7 +10,7 @@ class EngineerPerformance extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['engineer_id', 'level_id', 'performance', 'from_date', 'is_current'];
+    protected $fillable = ['engineer_id', 'level_id', 'project_id', 'performance', 'from_date', 'is_current'];
 
     public function engineer()
     {
@@ -25,6 +25,11 @@ class EngineerPerformance extends Model
     public function levelName(): string
     {
         return $this->level->name;
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
     }
 
     public function performancePercent()

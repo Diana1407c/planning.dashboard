@@ -26,6 +26,7 @@ class EngineerPerformanceRequest extends FormRequest
     {
         return [
             'performance' => 'nullable|int|min:0|max:100',
+            'project_id' => 'nullable|int',
             'from_date' => 'required|date',
             'level_id' => 'required|int'
         ];
