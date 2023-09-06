@@ -88,6 +88,7 @@
                         <div class="form-group col-sm-12">
                             <label>Project</label>
                             <select v-model="edit_performance.project_id" class="form-control" name="project">
+                                <option value="">-</option>
                                 <option :value="project.id" v-for="project in projects">{{ project.name }}</option>
                             </select>
                         </div>
@@ -152,7 +153,7 @@ export default {
             this.edit_performance = {
                 id: performance.id,
                 level_id: performance.level.id,
-                project_id: performance.project.id,
+                project_id: performance.project?.id,
                 from_date: performance.from_date,
                 performance: performance.performance,
             }

@@ -80,8 +80,9 @@ class EngineerPerformanceObserver
     protected function resetCurrentPerformance(EngineerPerformance $engineerPerformance): void
     {
         $engineer = $engineerPerformance->engineer;
+        $project = $engineerPerformance->project;
 
-        $currentPerformance = $engineer->performances()->orderBy('from_date', 'desc')->first();
+        $currentPerformance = $engineer->performances()->where('project_id', $project->id)->orderBy('from_date', 'desc')->first();
 
         if (!$currentPerformance) {
             return;
@@ -91,7 +92,7 @@ class EngineerPerformanceObserver
             'is_current' => true,
         ]);
 
-        $engineer->performances()->where('id', '<>', $currentPerformance->id)->update([
+        $engineer->performances()->where('id', '<>', $currentPerformance->id)->where('project_id', $project->id)->update([
             'is_current' => false,
         ]);
     }
