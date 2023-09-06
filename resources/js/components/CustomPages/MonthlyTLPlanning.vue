@@ -304,6 +304,45 @@ export default {
             await this.getData()
         },
 
+        async handleSelectProjects() {
+            const plannedProjectsSet = new Set();
+            const projectNamesMap = {};
+
+            for (const technologyId in this.table.technologies.planned_pm) {
+                if (technologyId === 'total') {
+                    continue;
+                }
+                for (const projectId in this.table.technologies.planned_pm[technologyId]) {
+                    const parsedProjectId = parseInt(projectId, 10);
+                    plannedProjectsSet.add(parsedProjectId);
+                }
+            }
+
+            for (const technologyId in this.table.technologies.planned_tl) {
+                if (technologyId === 'total') {
+                    continue;
+                }
+                for (const projectId in this.table.technologies.planned_tl[technologyId]) {
+                    const parsedProjectId = parseInt(projectId, 10);
+                    plannedProjectsSet.add(parsedProjectId);
+                }
+            }
+
+            for (const project of this.projects) {
+                if (plannedProjectsSet.has(project.id)) {
+                    projectNamesMap[project.id] = project.name;
+                }
+            }
+
+            const plannedProjects = Array.from(plannedProjectsSet).map(projectId => ({
+                id: projectId,
+                name: projectNamesMap[projectId],
+            }));
+
+            this.filter.project_ids = plannedProjects;
+            await this.getData();
+        },
+
         async setFilter() {
             const storedObject = localStorage.getItem("filter-tl-monthly");
             if (storedObject) {

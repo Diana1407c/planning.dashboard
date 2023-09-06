@@ -320,20 +320,41 @@ export default {
         },
 
         async handleSelectProjects() {
-            const plannedProjects = this.projects.filter((project) => {
-                return (
-                    this.table.hasOwnProperty('technologies') &&
-                    this.table['technologies']['planned_pm']['total'].hasOwnProperty(project.id) &&
-                    this.table['technologies']['planned_pm']['total'][project.id] > 0
-                );
-            });
+            const plannedProjectsSet = new Set();
+            const projectNamesMap = {};
 
-            const plannedProjectIds = plannedProjects.map((project) => project.id);
+            for (const technologyId in this.table.technologies.planned_pm) {
+                if (technologyId === 'total') {
+                    continue;
+                }
+                for (const projectId in this.table.technologies.planned_pm[technologyId]) {
+                    const parsedProjectId = parseInt(projectId, 10);
+                    plannedProjectsSet.add(parsedProjectId);
+                }
+            }
 
-            this.selectedPlannedProjects = plannedProjectIds;
+            for (const technologyId in this.table.technologies.planned_tl) {
+                if (technologyId === 'total') {
+                    continue;
+                }
+                for (const projectId in this.table.technologies.planned_tl[technologyId]) {
+                    const parsedProjectId = parseInt(projectId, 10);
+                    plannedProjectsSet.add(parsedProjectId);
+                }
+            }
 
-            this.filter.project_ids = plannedProjectIds;
+            for (const project of this.projects) {
+                if (plannedProjectsSet.has(project.id)) {
+                    projectNamesMap[project.id] = project.name;
+                }
+            }
 
+            const plannedProjects = Array.from(plannedProjectsSet).map(projectId => ({
+                id: projectId,
+                name: projectNamesMap[projectId],
+            }));
+
+            this.filter.project_ids = plannedProjects;
             await this.getData();
         },
 
