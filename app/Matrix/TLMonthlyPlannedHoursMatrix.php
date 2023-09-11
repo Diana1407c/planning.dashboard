@@ -9,6 +9,7 @@ class TLMonthlyPlannedHoursMatrix extends TLBaseMatrix
         $this->setHours();
         $this->setTechnologyData();
         $this->setEngineersData();
+        $this->setProjectData();
 
         return $this->data;
     }

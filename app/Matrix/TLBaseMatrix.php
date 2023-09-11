@@ -3,6 +3,7 @@
 namespace App\Matrix;
 
 use App\Models\Engineer;
+use App\Models\EngineerPerformance;
 use App\Models\PlannedHour;
 use App\Services\PlannedHourService;
 use App\Support\Filters\PlannedHoursFilter;
@@ -107,5 +108,27 @@ class TLBaseMatrix
         }
 
         return $this->plannedHourService;
+    }
+
+    protected function setProjectData()
+    {
+        $projectPerformance = EngineerPerformance::query()
+            ->whereNotNull('performance')
+            ->where('is_current', true)
+            ->groupBy(['engineer_id', 'project_id'])
+            ->selectRaw('performance, engineer_id, project_id')
+            ->get();
+
+        foreach ($projectPerformance as $performance) {
+            $engineerId = $performance->engineer_id;
+            $projectId = $performance->project_id;
+            $performance = $performance->performance;
+
+            if (!isset($this->data['project'][$projectId])) {
+                $this->data['project'][$projectId] = [];
+            }
+
+            $this->data['project'][$projectId][$engineerId] = $performance;
+        }
     }
 }
