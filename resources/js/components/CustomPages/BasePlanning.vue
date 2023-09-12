@@ -51,33 +51,42 @@ export default {
                     if (technologyId === 'total') {
                         continue;
                     }
-                    for (const projectId in this.table.technologies.planned_pm[technologyId]) {
-                        const parsedProjectId = parseInt(projectId, 10);
-                        plannedProjectsSet.add(parsedProjectId);
+
+                    if (this.table.hasOwnProperty('technologies') && this.table.technologies.hasOwnProperty('planned_pm')) {
+                        for (const projectId in this.table.technologies.planned_pm[technologyId]) {
+                            const parsedProjectId = parseInt(projectId, 10);
+                            plannedProjectsSet.add(parsedProjectId);
+                        }
                     }
-                    for (const projectId in this.table.technologies.planned_tl[technologyId]) {
-                        const parsedProjectId = parseInt(projectId);
-                        plannedProjectsSet.add(parsedProjectId);
+                    if (this.table.hasOwnProperty('technologies') && this.table.technologies.hasOwnProperty('planned_tl')) {
+                        for (const projectId in this.table.technologies.planned_tl[technologyId]) {
+                            const parsedProjectId = parseInt(projectId);
+                            plannedProjectsSet.add(parsedProjectId);
+                        }
                     }
                 }
             } else {
-                for (const technologyId in this.table.technologies.planned_pm) {
-                    if (technologyId === 'total') {
-                        continue;
-                    }
-                    for (const projectId in this.table.technologies.planned_pm[technologyId]) {
-                        const parsedProjectId = parseInt(projectId);
-                        plannedProjectsSet.add(parsedProjectId);
+                if (this.table.hasOwnProperty('technologies') && this.table.technologies.hasOwnProperty('planned_pm')) {
+                    for (const technologyId in this.table.technologies.planned_pm) {
+                        if (technologyId === 'total') {
+                            continue;
+                        }
+                        for (const projectId in this.table.technologies.planned_pm[technologyId]) {
+                            const parsedProjectId = parseInt(projectId);
+                            plannedProjectsSet.add(parsedProjectId);
+                        }
                     }
                 }
 
-                for (const technologyId in this.table.technologies.planned_tl) {
-                    if (technologyId === 'total') {
-                        continue;
-                    }
-                    for (const projectId in this.table.technologies.planned_tl[technologyId]) {
-                        const parsedProjectId = parseInt(projectId);
-                        plannedProjectsSet.add(parsedProjectId);
+                if (this.table.hasOwnProperty('technologies') && this.table.technologies.hasOwnProperty('planned_tl')) {
+                    for (const technologyId in this.table.technologies.planned_tl) {
+                        if (technologyId === 'total') {
+                            continue;
+                        }
+                        for (const projectId in this.table.technologies.planned_tl[technologyId]) {
+                            const parsedProjectId = parseInt(projectId);
+                            plannedProjectsSet.add(parsedProjectId);
+                        }
                     }
                 }
             }
